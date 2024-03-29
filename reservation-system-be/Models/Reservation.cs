@@ -8,11 +8,9 @@
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
             public string Status { get; set; } = string.Empty;
-            public ICollection<Reservation>? Reservations { get; set;}
             public VehicleLog? VehicleLog { get; set; }
             public ICollection<Feedback>? Feedbacks { get; set;}
-            public int EmployeeId { get; set; }
-            public Employee? Employee { get; set; }
+            public ICollection<Employee>? Employees { get; set; }
             public CustomerReservation? CusReservation { get; set; }
             public int NoOfDays
             {

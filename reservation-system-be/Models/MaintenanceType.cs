@@ -4,6 +4,8 @@
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public ICollection<VehicleMaintenance> VehicleMaintenances { get; set;} = new List<VehicleMaintenance>();
+        public int MaintenanceTypeId { get; set; }
+        public VehicleMaintenance VehicleMaintenance { get; set; } = null!;
+        
     }
 }

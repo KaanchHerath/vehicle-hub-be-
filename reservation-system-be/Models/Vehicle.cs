@@ -14,13 +14,14 @@ namespace reservation_system_be.Models
         public int VehicleTypeId { get; set; }
         public VehicleType VehicleType { get; set; } = null!;
         public VehicleInsurance? VehicleInsurance { get; set; }
-        public ICollection<VehicleMaintenance> VehicleMaintenances { get; } = new List<VehicleMaintenance>();
+        public int VehicleMaintenanceId { get; set; }
+        public Vehicle VehicleMaintenance { get; set; } = null!;
         public int VehicleModelId { get; set; }
         public VehicleModel? VehicleModel { get; set; }
         public int EmployeeId { get; set; }
         public Employee? Employee { get; set; }
         public List<WishlistVehicle>? WishlistVehicles { get; set; }
-        public ICollection<CustomerReservation>? CustomerReservation { get; set; }
+        public CustomerReservation? CusReservation { get; set; }
         public ICollection<VehiclePhoto>? VehiclePhoto { get; set; }
     }
 }

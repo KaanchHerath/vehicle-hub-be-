@@ -9,7 +9,8 @@
         public string Email { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
-        public ICollection<Reservation>? Reservations { get; set; }
+        public int ReservationId { get; set; }
+        public Reservation? Reservation { get; set; }
         public ICollection<Vehicle>? Vehicles { get; set; }
         public ICollection<EmployeeTelephone>? employeeTelephones { get; set; }
     }

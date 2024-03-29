@@ -14,6 +14,6 @@
         public CustomerWishlist? CustomerWishlist { get; set; }
         public int WishlistId { get; set; }
         public Wishlist? Wishlist { get; set; }
-        public ICollection<CustomerReservation> CustomerReservations { get; } = new List<CustomerReservation>();
+        public CustomerReservation? CusReservation { get; set; }
     }
 }
