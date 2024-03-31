@@ -15,7 +15,7 @@ namespace reservation_system_be.Models
         public VehicleType VehicleType { get; set; } = null!;
         public VehicleInsurance? VehicleInsurance { get; set; }
         public int VehicleMaintenanceId { get; set; }
-        public Vehicle VehicleMaintenance { get; set; } = null!;
+        public VehicleMaintenance VehicleMaintenance { get; set; } = null!;
         public int VehicleModelId { get; set; }
         public VehicleModel? VehicleModel { get; set; }
         public int EmployeeId { get; set; }
