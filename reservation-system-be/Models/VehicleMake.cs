@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public byte[]? Logo { get; set; }
+        public string Logo { get; set; } = string.Empty;
         public ICollection<VehicleModel> VehicleModels { get; set; } = new List<VehicleModel>();
 
     }
