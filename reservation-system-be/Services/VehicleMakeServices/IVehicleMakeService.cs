@@ -6,7 +6,7 @@ namespace reservation_system_be.Services.VehicleMakeServices
     {
         Task<List<VehicleMake>> GetAllVehicleMake();
         Task<VehicleMake?> GetSingleVehicleMake(int id);
-        Task<List<VehicleMake>> AddVehicleMake(VehicleMake hero);
+        Task<List<VehicleMake>> AddVehicleMake(VehicleMake vehicleMake);
         Task<List<VehicleMake>?> UpdateVehicleMake(int id, VehicleMake request);
         Task<List<VehicleMake>?> DeleteVehicleMake(int id);
     }
