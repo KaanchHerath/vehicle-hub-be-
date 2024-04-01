@@ -2,9 +2,13 @@
 {
     public class Wishlist
     {
-        public int Id { get; set; }
-        public int ItemCount { get; set; }
-       public CustomerWishlist? customerWishlist { get; set; }
+        public int VehicleId { get; set; }
+        public Vehicle? Vehicle { get; set; }
+        public int CustomerId { get; set; }
+        public Customer? Customer { get; set; }
+        public CustomerWishlist? customerWishlist { get; set; }
 
     }
 }
+
+

@@ -9,5 +9,7 @@
         public Vehicle? Vehicle { get; set; }
         public int ReservationId { get; set; }
         public Reservation? Reservation { get; set; }
+
+        
     }
 }
