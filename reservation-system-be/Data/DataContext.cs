@@ -5,7 +5,7 @@ namespace reservation_system_be.Data
 {
     public class DataContext : DbContext
     {
-        public DataContext(DbContextOptions<DataContext>options) : base (options){ }
+        public DataContext(DbContextOptions<DataContext>options) : base(options) { }
 
         public DbSet<Vehicle> Vehicles { get; set; }
         public DbSet<VehicleInsurance> VehicleInsurances { get; set; }
@@ -24,7 +24,5 @@ namespace reservation_system_be.Data
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
         public DbSet<CustomerReservation> CustomersReservation { get; set; }
-        public DbSet<CustomerWishlist> CustomersWishlists { get;set; }
-        public DbSet<WishlistVehicle> WishlistsVehicles { get;set; }
     }
 }
