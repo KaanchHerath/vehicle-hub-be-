@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public int ReservationId {  get; set; }
-        public Reservation Reservation { get; set; }
+        public Reservation Reservation { get; set; } = null!;
         public bool Availability {  get; set; }
     }
 }

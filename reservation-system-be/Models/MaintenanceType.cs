@@ -4,7 +4,7 @@
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public int MaintenanceTypeId { get; set; }
+        public int MaintenanceId { get; set; }
         public VehicleMaintenance VehicleMaintenance { get; set; } = null!;
         
     }
