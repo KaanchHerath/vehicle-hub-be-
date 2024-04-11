@@ -12,7 +12,7 @@
             public Feedback? Feedback { get; set; } 
             public ICollection<Employee>? Employees { get; set; }
             public CustomerReservation? CusReservation { get; set; }
-            public ICollection<Notification> Notification { get; } = new ICollection<Notification>(); 
+            public ICollection<Notification> Notification { get; } = new List<Notification>(); 
 
 
             public int NoOfDays

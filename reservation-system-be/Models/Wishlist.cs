@@ -6,8 +6,6 @@
         public Vehicle? Vehicle { get; set; }
         public int CustomerId { get; set; }
         public Customer? Customer { get; set; }
-        public CustomerWishlist? customerWishlist { get; set; }
-
     }
 }
 

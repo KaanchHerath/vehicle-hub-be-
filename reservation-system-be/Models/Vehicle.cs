@@ -22,8 +22,6 @@ namespace reservation_system_be.Models
         public Employee? Employee { get; set; }
         public ICollection <Wishlist>? Wishlist { get; set; }
         public CustomerReservation? CusReservation { get; set; }
-        public Employee Employee { get; set; } = null!;
-        public CustomerReservation CusReservation { get; set; } = null!;
         public ICollection<VehiclePhoto>? VehiclePhoto { get; set; }
     }
 }
