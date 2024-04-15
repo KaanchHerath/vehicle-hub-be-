@@ -12,47 +12,51 @@ namespace reservation_system_be.Services.VehicleTypeServices
         {
             _context = context;
         }
-
-        public async Task<List<VehicleType>> GetAllVehicleType()
+        public async Task<List<VehicleType>> GetAllVehicleTypes()
         {
             return await _context.VehicleTypes.ToListAsync();
         }
 
         public async Task<VehicleType?> GetSingleVehicleType(int id)
         {
-            return await _context.VehicleTypes.FindAsync(id);
+            var vehicleType = await _context.VehicleTypes.FindAsync(id);
+            if (vehicleType == null)
+            {
+                throw new DataNotFoundException("Vehicle type not found");
+            }
+            return vehicleType;
         }
-        public async Task<List<VehicleType>> AddVehicleType(VehicleType vehicleType)
+
+        public async Task<VehicleType> CreateVehicleType(VehicleType vehicleType)
         {
             _context.VehicleTypes.Add(vehicleType);
             await _context.SaveChangesAsync();
-            return await _context.VehicleTypes.ToListAsync();
+            return vehicleType;
         }
-        public async Task<List<VehicleType>?> UpdateVehicleType(int id, VehicleType request)
+
+        public async Task<VehicleType> UpdateVehicleType(int id, VehicleType vehicleType)
         {
-            var vehicleType = await _context.VehicleTypes.FindAsync(id); 
+            var existingVehicleType = await _context.VehicleTypes.FindAsync(id);
+            if (existingVehicleType == null)
+            {
+                throw new DataNotFoundException("Vehicle type not found");
+            }
+            existingVehicleType.Name = vehicleType.Name;
+            existingVehicleType.DepositAmount = vehicleType.DepositAmount;
+            _context.Entry(existingVehicleType).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return existingVehicleType;
+        }
+
+        public async Task DeleteVehicleType(int id)
+        {
+            var vehicleType = await _context.VehicleTypes.FindAsync(id);
             if (vehicleType == null)
             {
-                return null;
+                throw new DataNotFoundException("Vehicle type not found");
             }
-
-            vehicleType.Name = request.Name;
-            vehicleType.DepositAmount = request.DepositAmount;
+            _context.VehicleTypes.Remove(vehicleType);
             await _context.SaveChangesAsync();
-            return await _context.VehicleTypes.ToListAsync();
-
         }
-        public async Task<List<VehicleType>?> DeleteVehicleType(int id)
-        {
-           var vehicleType = await _context.VehicleTypes.FindAsync(id)
-           if(vehicleType == null)
-           {
-                return null;
-           }
-           _context.VehicleTypes.Remove(vehicleType);
-            await _context.SaveChangesAsync();
-            return await _context.VehicleTypes.ToListAsync();
-
-        }
-    }
+    } 
 }

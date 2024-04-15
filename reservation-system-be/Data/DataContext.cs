@@ -8,6 +8,7 @@ namespace reservation_system_be.Data
         public DataContext(DbContextOptions<DataContext>options) : base(options) { }
 
         public DbSet<Vehicle> Vehicles { get; set; }
+        public DbSet<AdditionalFeatures> AdditionalFeatures { get; set; }
         public DbSet<VehicleInsurance> VehicleInsurances { get; set; }
         public DbSet<VehicleMaintenance> VehicleMaintenances { get; set; }
         public DbSet<VehicleLog> VehicleLogs { get; set; }

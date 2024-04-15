@@ -1,7 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.SqlServer.Query.Internal;
-using reservation_system_be.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
+using reservation_system_be.Data;
 using reservation_system_be.Models;
 using reservation_system_be.Services.VehicleTypeServices;
 
@@ -19,58 +17,59 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<VehicleType>>> GetAllVehicleType()
+        public async Task<ActionResult<IEnumerable<VehicleType>>> GetAllVehicleTypes()
         {
-            return await _vehicleTypeService.GetAllVehicleType();
+            var vehicleTypes = await _vehicleTypeService.GetAllVehicleTypes();
+            return Ok(vehicleTypes);
         }
 
         [HttpGet("{id}")]
         public async Task<ActionResult<VehicleType>> GetSingleVehicleType(int id)
         {
-            var vehicleType = await _vehicleTypeService.GetSingleVehicleType(id);
-            if (vehicleType == null)
+            try
+            {
+                var vehicleType = await _vehicleTypeService.GetSingleVehicleType(id);
+                return Ok(vehicleType);
+            }
+            catch (DataNotFoundException)
             {
                 return NotFound();
             }
-            return vehicleType;
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<VehicleType>>> AddVehicleType(VehicleTypeCreateDTO vehicleType)
+        public async Task<ActionResult<VehicleType>> AddVehicleType(VehicleType vehicleType)
         {
-            var newVehicleType = new VehicleType
-            {
-                Name = vehicleType.Name,
-                DepositAmount = vehicleType.DepositAmount
-            };
-            return await _vehicleTypeService.AddVehicleType(newVehicleType);
+            var newVehicleType = await _vehicleTypeService.CreateVehicleType(vehicleType);
+            return CreatedAtAction(nameof(GetSingleVehicleType), new { id = newVehicleType.Id }, newVehicleType);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<List<VehicleType>>> UpdateVehicleType(int id,VehicleTypeCreateDTO vehicleType)
+        public async Task<ActionResult<VehicleType>> UpdateVehicleType(int id,VehicleType vehicleType)
         {
-            var updatedVehicleType = new VehicleType
+            try
             {
-                Name = vehicleType.Name,
-                DepositAmount = vehicleType.DepositAmount
-            };
-            var result = await _vehicleTypeService.UpdateVehicleType(id, updatedVehicleType);
-            if (result == null)
+                var updatedVehicleType = await _vehicleTypeService.UpdateVehicleType(id, vehicleType);
+                return Ok(updatedVehicleType);
+            }
+            catch (DataNotFoundException)
             {
                 return NotFound();
             }
-            return result;
         }
 
         [HttpDelete]
-        public async Task<ActionResult<List<VehicleType>>> DeleteVehicleType(int id)
+        public async Task<IActionResult> DeleteVehicleType(int id)
         {
-            var result = await _vehicleTypeService.DeleteVehicleType(id);
-            if (result == null)
+            try
+            {
+                await _vehicleTypeService.DeleteVehicleType(id);
+                return NoContent();
+            }
+            catch (DataNotFoundException)
             {
                 return NotFound();
             }
-            return result;
         }
     }
 }
