@@ -13,48 +13,51 @@ namespace reservation_system_be.Services.VehicleMakeServices
             _context = context;
         }
 
-        public async Task<List<VehicleMake>> GetAllVehicleMake()
+        public async Task<List<VehicleMake>> GetAllVehicleMakes()
         {
             return await _context.VehicleMakes.ToListAsync();
         }
 
-        public async Task<VehicleMake?> GetSingleVehicleMake(int id)
+        public async Task<VehicleMake> GetVehicleMake(int id)
         {
-            return await _context.VehicleMakes.FindAsync(id);
+            var vehicleMake = await _context.VehicleMakes.FindAsync(id);
+            if (vehicleMake == null)
+            {
+                throw new DataNotFoundException("Vehicle make not found");
+            }
+            return vehicleMake;
         }
 
-        public async Task<List<VehicleMake>> AddVehicleMake(VehicleMake vehicleMake)
+        public async Task<VehicleMake> CreateVehicleMake(VehicleMake vehicleMake)
         {
             _context.VehicleMakes.Add(vehicleMake);
             await _context.SaveChangesAsync();
-            return await _context.VehicleMakes.ToListAsync();
+            return vehicleMake;
         }
 
-        public async Task<List<VehicleMake>?> UpdateVehicleMake(int id, VehicleMake request)
+        public async Task<VehicleMake> UpdateVehicleMake(int id, VehicleMake vehicleMake)
         {
-            var vehicleMake = await _context.VehicleMakes.FindAsync(id);
-            if (vehicleMake == null)
+            var existingVehicleMake = await _context.VehicleMakes.FindAsync(id);
+            if (existingVehicleMake == null)
             {
-                return null;
+                throw new DataNotFoundException("Vehicle make not found");
             }
-
-            vehicleMake.Name = request.Name;
-            vehicleMake.Logo = request.Logo;
+            existingVehicleMake.Name = vehicleMake.Name;
+            existingVehicleMake.Logo = vehicleMake.Logo;
+            _context.Entry(existingVehicleMake).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            return await _context.VehicleMakes.ToListAsync();
+            return existingVehicleMake;
         }
 
-        public async Task<List<VehicleMake>?> DeleteVehicleMake(int id)
+        public async Task DeleteVehicleMake(int id)
         {
             var vehicleMake = await _context.VehicleMakes.FindAsync(id);
             if (vehicleMake == null)
             {
-                return null;
+                throw new DataNotFoundException("Vehicle make not found");
             }
-
             _context.VehicleMakes.Remove(vehicleMake);
             await _context.SaveChangesAsync();
-            return await _context.VehicleMakes.ToListAsync();
         }
     }
 }
