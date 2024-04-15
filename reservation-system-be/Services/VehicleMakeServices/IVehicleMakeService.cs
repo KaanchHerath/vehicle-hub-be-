@@ -4,10 +4,10 @@ namespace reservation_system_be.Services.VehicleMakeServices
 {
     public interface IVehicleMakeService
     {
-        Task<List<VehicleMake>> GetAllVehicleMake();
-        Task<VehicleMake?> GetSingleVehicleMake(int id);
-        Task<List<VehicleMake>> AddVehicleMake(VehicleMake hero);
-        Task<List<VehicleMake>?> UpdateVehicleMake(int id, VehicleMake request);
-        Task<List<VehicleMake>?> DeleteVehicleMake(int id);
+        Task<List<VehicleMake>> GetAllVehicleMakes();
+        Task<VehicleMake> GetVehicleMake(int id);
+        Task<VehicleMake> CreateVehicleMake(VehicleMake vehicleMake);
+        Task<VehicleMake> UpdateVehicleMake(int id, VehicleMake vehicleMake);
+        Task DeleteVehicleMake(int id);
     }
 }

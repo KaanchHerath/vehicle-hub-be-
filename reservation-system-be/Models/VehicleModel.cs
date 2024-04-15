@@ -1,4 +1,7 @@
-﻿namespace reservation_system_be.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
+namespace reservation_system_be.Models
 {
     public class VehicleModel
     {
@@ -8,9 +11,13 @@
         public string EngineCapacity { get; set; } = string.Empty;
         public string SeatingCapacity {  get; set; } = string.Empty;
         public string Fuel { get; set; } = string.Empty;
+        [ForeignKey("Id")]
         public int VehicleMakeId { get; set; }
+        [JsonIgnore]
         public VehicleMake VehicleMake { get; set; } = null!;
+        [JsonIgnore]
         public ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
+        [JsonIgnore]
         public ICollection<AdditionalFeatures>? AdditionalFeatures { get; set; }
 
 

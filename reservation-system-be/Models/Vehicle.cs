@@ -17,10 +17,10 @@ namespace reservation_system_be.Models
         public int VehicleMaintenanceId { get; set; }
         public VehicleMaintenance VehicleMaintenance { get; set; } = null!;
         public int VehicleModelId { get; set; }
-        public VehicleModel? VehicleModel { get; set; }
+        public VehicleModel VehicleModel { get; set; } = null!;
         public int EmployeeId { get; set; }
         public Employee? Employee { get; set; }
-        public List<WishlistVehicle>? WishlistVehicles { get; set; }
+        public ICollection <Wishlist>? Wishlist { get; set; }
         public CustomerReservation? CusReservation { get; set; }
         public ICollection<VehiclePhoto>? VehiclePhoto { get; set; }
     }

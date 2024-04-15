@@ -10,9 +10,8 @@
         public string Status { get; set; } = string.Empty;
         public string Address { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public ICollection<CustomerTelephone>? CustomerTelephones { get; set; }
-        public int WishlistId { get; set; }
-        public Wishlist? Wishlist { get; set; }
+        public required ICollection<CustomerTelephone> CustomerTelephones { get; set; }
+        public ICollection<Wishlist>? Wishlist { get; set; }
         public CustomerReservation? CusReservation { get; set; }
     }
 }

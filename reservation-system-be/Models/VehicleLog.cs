@@ -1,4 +1,7 @@
-﻿namespace reservation_system_be.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
+namespace reservation_system_be.Models
 {
     public class VehicleLog
     {
@@ -7,7 +10,10 @@
         public string Penalty { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public int ExtraDays { get; set; }
+
+        [ForeignKey("ReservationId")]
         public int ReservationId { get; set; }
+        [JsonIgnore]
         public Reservation? Reservation { get; set; }
     }
 }
