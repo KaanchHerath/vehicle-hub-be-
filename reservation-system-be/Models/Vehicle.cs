@@ -19,8 +19,9 @@ namespace reservation_system_be.Models
         public int VehicleModelId { get; set; }
         public VehicleModel VehicleModel { get; set; } = null!;
         public int EmployeeId { get; set; }
-        public Employee Employee { get; set; } = null!;
-        public CustomerReservation CusReservation { get; set; } = null!;
+        public Employee? Employee { get; set; }
+        public ICollection <Wishlist>? Wishlist { get; set; }
+        public CustomerReservation? CusReservation { get; set; }
         public ICollection<VehiclePhoto>? VehiclePhoto { get; set; }
     }
 }

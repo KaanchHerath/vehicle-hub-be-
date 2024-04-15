@@ -1,6 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using reservation_system_be.DTOs;
+﻿using Microsoft.AspNetCore.Mvc;
+using reservation_system_be.Data;
 using reservation_system_be.Models;
 using reservation_system_be.Services.VehicleMakeServices;
 
@@ -18,63 +17,59 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<VehicleMake>>> GetAllVehicleMake()
+        public async Task<ActionResult<IEnumerable<VehicleMake>>> GetAllVehicleMakes()
         {
-            return await _vehicleMakeService.GetAllVehicleMake();
+            var vehicleMakes = await _vehicleMakeService.GetAllVehicleMakes();
+            return Ok(vehicleMakes);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<VehicleMake>> GetSingleVehicleMake(int id)
+        public async Task<ActionResult<VehicleMake>> GetVehicleMake(int id)
         {
-            var vehicleMake = await _vehicleMakeService.GetSingleVehicleMake(id);
-            if (vehicleMake == null)
+            try
+            {
+                var vehicleMake = await _vehicleMakeService.GetVehicleMake(id);
+                return Ok(vehicleMake);
+            }
+            catch (DataNotFoundException)
             {
                 return NotFound();
             }
-
-            return vehicleMake;
         }
 
         [HttpPost]
-        public async Task<ActionResult<List<VehicleMake>>> AddVehicleMake(VehicleMakeCreateDTO vehicleMake)
+        public async Task<ActionResult<VehicleMake>> AddVehicleMake(VehicleMake vehicleMake)
         {
-            var newVehicleMake = new VehicleMake
-            {
-                Name = vehicleMake.Name,
-                Logo = vehicleMake.Logo
-            };
-
-            return await _vehicleMakeService.AddVehicleMake(newVehicleMake);
+            var newVehicleMake = await _vehicleMakeService.CreateVehicleMake(vehicleMake);
+            return CreatedAtAction(nameof(GetVehicleMake), new { id = newVehicleMake.Id }, newVehicleMake);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<List<VehicleMake>>> UpdateVehicleMake(int id, VehicleMakeCreateDTO vehicleMake)
+        public async Task<ActionResult<VehicleMake>> UpdateVehicleMake(int id, VehicleMake vehicleMake)
         {
-            var updatedVehicleMake = new VehicleMake
+            try
             {
-                Name = vehicleMake.Name,
-                Logo = vehicleMake.Logo
-            };
-
-            var result = await _vehicleMakeService.UpdateVehicleMake(id, updatedVehicleMake);
-            if (result == null)
+                var updatedVehicleMake = await _vehicleMakeService.UpdateVehicleMake(id, vehicleMake);
+                return Ok(updatedVehicleMake);
+            }
+            catch (DataNotFoundException)
             {
                 return NotFound();
             }
-
-            return result;
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult<List<VehicleMake>>> DeleteVehicleMake(int id)
+        public async Task<IActionResult> DeleteVehicleMake(int id)
         {
-            var result = await _vehicleMakeService.DeleteVehicleMake(id);
-            if (result == null)
+            try
+            {
+                await _vehicleMakeService.DeleteVehicleMake(id);
+                return NoContent();
+            }
+            catch (DataNotFoundException)
             {
                 return NotFound();
             }
-
-            return result;
-        }   
+        }
     }
 }

@@ -6,28 +6,28 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace reservation_system_be.Migrations
 {
     /// <inheritdoc />
-    public partial class _111 : Migration
+    public partial class Initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
-                name: "FeedbackTypes",
+                name: "Customers",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    FeedbackTypeId = table.Column<int>(type: "int", nullable: true)
+                    NIC = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DrivingLicenseNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_FeedbackTypes", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_FeedbackTypes_FeedbackTypes_FeedbackTypeId",
-                        column: x => x.FeedbackTypeId,
-                        principalTable: "FeedbackTypes",
-                        principalColumn: "Id");
+                    table.PrimaryKey("PK_Customers", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -68,7 +68,7 @@ namespace reservation_system_be.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Logo = table.Column<byte[]>(type: "varbinary(max)", nullable: true)
+                    Logo = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -90,16 +90,23 @@ namespace reservation_system_be.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Wishlists",
+                name: "CustomerTelephone",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    ItemCount = table.Column<int>(type: "int", nullable: false)
+                    CustomerId = table.Column<int>(type: "int", nullable: false),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Wishlists", x => x.Id);
+                    table.PrimaryKey("PK_CustomerTelephone", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_CustomerTelephone_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -114,6 +121,7 @@ namespace reservation_system_be.Migrations
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReservationId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -133,8 +141,8 @@ namespace reservation_system_be.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    AuthorName = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Feedback_Date = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Feedback_Time = table.Column<DateTime>(type: "datetime2", nullable: false),
                     RatingNo = table.Column<int>(type: "int", nullable: false),
@@ -157,7 +165,7 @@ namespace reservation_system_be.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     ReservationId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -165,6 +173,28 @@ namespace reservation_system_be.Migrations
                     table.PrimaryKey("PK_Invoices", x => x.Id);
                     table.ForeignKey(
                         name: "FK_Invoices_Reservations_ReservationId",
+                        column: x => x.ReservationId,
+                        principalTable: "Reservations",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Notifications",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Generated_DateTime = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    ReservationId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Notifications", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Notifications_Reservations_ReservationId",
                         column: x => x.ReservationId,
                         principalTable: "Reservations",
                         principalColumn: "Id",
@@ -201,7 +231,7 @@ namespace reservation_system_be.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    MaintenanceTypeId = table.Column<int>(type: "int", nullable: false),
+                    MaintenanceId = table.Column<int>(type: "int", nullable: false),
                     VehicleMaintenanceId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -240,33 +270,6 @@ namespace reservation_system_be.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Customers",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    NIC = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    DrivingLicenseNo = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    TelephoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Address = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Password = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    WishlistId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Customers", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Customers_Wishlists_WishlistId",
-                        column: x => x.WishlistId,
-                        principalTable: "Wishlists",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "EmployeeTelephone",
                 columns: table => new
                 {
@@ -293,7 +296,6 @@ namespace reservation_system_be.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     PaymentStatus = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PaymentMethod = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PaymentDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     PaymentTime = table.Column<DateTime>(type: "datetime2", nullable: false),
                     InvoiceId = table.Column<int>(type: "int", nullable: false)
@@ -315,7 +317,7 @@ namespace reservation_system_be.Migrations
                 {
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
-                    Features = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Features = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     VehicleModelId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -376,32 +378,6 @@ namespace reservation_system_be.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "CustomersWishlists",
-                columns: table => new
-                {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerId = table.Column<int>(type: "int", nullable: false),
-                    WishlistId = table.Column<int>(type: "int", nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_CustomersWishlists", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_CustomersWishlists_Customers_CustomerId",
-                        column: x => x.CustomerId,
-                        principalTable: "Customers",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                    table.ForeignKey(
-                        name: "FK_CustomersWishlists_Wishlists_WishlistId",
-                        column: x => x.WishlistId,
-                        principalTable: "Wishlists",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
-                });
-
-            migrationBuilder.CreateTable(
                 name: "CustomersReservation",
                 columns: table => new
                 {
@@ -431,7 +407,7 @@ namespace reservation_system_be.Migrations
                         column: x => x.VehicleId,
                         principalTable: "Vehicles",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.NoAction);
                 });
 
             migrationBuilder.CreateTable(
@@ -476,25 +452,23 @@ namespace reservation_system_be.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "WishlistsVehicles",
+                name: "Wishlists",
                 columns: table => new
                 {
-                    Id = table.Column<int>(type: "int", nullable: false)
-                        .Annotation("SqlServer:Identity", "1, 1"),
-                    CustomerWishlistId = table.Column<int>(type: "int", nullable: false),
-                    VehicleId = table.Column<int>(type: "int", nullable: false)
+                    VehicleId = table.Column<int>(type: "int", nullable: false),
+                    CustomerId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_WishlistsVehicles", x => x.Id);
+                    table.PrimaryKey("PK_Wishlists", x => new { x.VehicleId, x.CustomerId });
                     table.ForeignKey(
-                        name: "FK_WishlistsVehicles_CustomersWishlists_CustomerWishlistId",
-                        column: x => x.CustomerWishlistId,
-                        principalTable: "CustomersWishlists",
+                        name: "FK_Wishlists_Customers_CustomerId",
+                        column: x => x.CustomerId,
+                        principalTable: "Customers",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_WishlistsVehicles_Vehicles_VehicleId",
+                        name: "FK_Wishlists_Vehicles_VehicleId",
                         column: x => x.VehicleId,
                         principalTable: "Vehicles",
                         principalColumn: "Id",
@@ -505,11 +479,6 @@ namespace reservation_system_be.Migrations
                 name: "IX_AdditionalFeatures_VehicleModelId",
                 table: "AdditionalFeatures",
                 column: "VehicleModelId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Customers_WishlistId",
-                table: "Customers",
-                column: "WishlistId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_CustomersReservation_CustomerId",
@@ -530,16 +499,9 @@ namespace reservation_system_be.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_CustomersWishlists_CustomerId",
-                table: "CustomersWishlists",
-                column: "CustomerId",
-                unique: true);
-
-            migrationBuilder.CreateIndex(
-                name: "IX_CustomersWishlists_WishlistId",
-                table: "CustomersWishlists",
-                column: "WishlistId",
-                unique: true);
+                name: "IX_CustomerTelephone_CustomerId",
+                table: "CustomerTelephone",
+                column: "CustomerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Employees_ReservationId",
@@ -554,12 +516,8 @@ namespace reservation_system_be.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_Feedbacks_ReservationId",
                 table: "Feedbacks",
-                column: "ReservationId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_FeedbackTypes_FeedbackTypeId",
-                table: "FeedbackTypes",
-                column: "FeedbackTypeId");
+                column: "ReservationId",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Invoices_ReservationId",
@@ -570,6 +528,11 @@ namespace reservation_system_be.Migrations
                 name: "IX_MaintenanceTypes_VehicleMaintenanceId",
                 table: "MaintenanceTypes",
                 column: "VehicleMaintenanceId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Notifications_ReservationId",
+                table: "Notifications",
+                column: "ReservationId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Payments_InvoiceId",
@@ -620,14 +583,9 @@ namespace reservation_system_be.Migrations
                 column: "VehicleTypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_WishlistsVehicles_CustomerWishlistId",
-                table: "WishlistsVehicles",
-                column: "CustomerWishlistId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_WishlistsVehicles_VehicleId",
-                table: "WishlistsVehicles",
-                column: "VehicleId");
+                name: "IX_Wishlists_CustomerId",
+                table: "Wishlists",
+                column: "CustomerId");
         }
 
         /// <inheritdoc />
@@ -640,16 +598,19 @@ namespace reservation_system_be.Migrations
                 name: "CustomersReservation");
 
             migrationBuilder.DropTable(
+                name: "CustomerTelephone");
+
+            migrationBuilder.DropTable(
                 name: "EmployeeTelephone");
 
             migrationBuilder.DropTable(
                 name: "Feedbacks");
 
             migrationBuilder.DropTable(
-                name: "FeedbackTypes");
+                name: "MaintenanceTypes");
 
             migrationBuilder.DropTable(
-                name: "MaintenanceTypes");
+                name: "Notifications");
 
             migrationBuilder.DropTable(
                 name: "Payments");
@@ -664,19 +625,16 @@ namespace reservation_system_be.Migrations
                 name: "VehiclePhoto");
 
             migrationBuilder.DropTable(
-                name: "WishlistsVehicles");
+                name: "Wishlists");
 
             migrationBuilder.DropTable(
                 name: "Invoices");
 
             migrationBuilder.DropTable(
-                name: "CustomersWishlists");
+                name: "Customers");
 
             migrationBuilder.DropTable(
                 name: "Vehicles");
-
-            migrationBuilder.DropTable(
-                name: "Customers");
 
             migrationBuilder.DropTable(
                 name: "Employees");
@@ -689,9 +647,6 @@ namespace reservation_system_be.Migrations
 
             migrationBuilder.DropTable(
                 name: "VehicleTypes");
-
-            migrationBuilder.DropTable(
-                name: "Wishlists");
 
             migrationBuilder.DropTable(
                 name: "Reservations");

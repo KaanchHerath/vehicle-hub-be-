@@ -9,9 +9,12 @@
             public DateTime EndDate { get; set; }
             public string Status { get; set; } = string.Empty;
             public VehicleLog? VehicleLog { get; set; }
-            public ICollection<Feedback>? Feedbacks { get; set;}
+            public Feedback? Feedback { get; set; } 
             public ICollection<Employee>? Employees { get; set; }
             public CustomerReservation? CusReservation { get; set; }
+            public ICollection<Notification> Notification { get; } = new List<Notification>(); 
+
+
             public int NoOfDays
             {
                 get
@@ -21,3 +24,4 @@
             }
     }
 }
+
