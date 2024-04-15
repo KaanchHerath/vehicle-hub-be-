@@ -6,7 +6,7 @@
         public string InsuranceNo { get; set; } = string.Empty;
         public DateTime? ExpiryDate { get; set; }
         public int VehicleId { get; set; }
-        public Vehicle Vehicle { get; set; } = null;
+        public Vehicle Vehicle { get; set; } = null!;
         public bool Status
             {
                 get
