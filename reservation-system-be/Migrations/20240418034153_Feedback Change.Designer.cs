@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using reservation_system_be.Data;
 
@@ -11,9 +12,11 @@ using reservation_system_be.Data;
 namespace reservation_system_be.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240418034153_Feedback Change")]
+    partial class FeedbackChange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -264,6 +267,31 @@ namespace reservation_system_be.Migrations
                     b.ToTable("Invoices");
                 });
 
+            modelBuilder.Entity("reservation_system_be.Models.MaintenanceType", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("MaintenanceId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("VehicleMaintenanceId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("VehicleMaintenanceId");
+
+                    b.ToTable("MaintenanceTypes");
+                });
+
             modelBuilder.Entity("reservation_system_be.Models.Notification", b =>
                 {
                     b.Property<int>("Id")
@@ -388,6 +416,9 @@ namespace reservation_system_be.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("VehicleMaintenanceId")
+                        .HasColumnType("int");
+
                     b.Property<int>("VehicleModelId")
                         .HasColumnType("int");
 
@@ -397,6 +428,8 @@ namespace reservation_system_be.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("EmployeeId");
+
+                    b.HasIndex("VehicleMaintenanceId");
 
                     b.HasIndex("VehicleModelId");
 
@@ -479,16 +512,7 @@ namespace reservation_system_be.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("VehicleId");
 
                     b.ToTable("VehicleMaintenances");
                 });
@@ -511,7 +535,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Vehicle");
+                    b.ToTable("VehicleMakes");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleModel", b =>
@@ -701,6 +725,17 @@ namespace reservation_system_be.Migrations
                     b.Navigation("Reservation");
                 });
 
+            modelBuilder.Entity("reservation_system_be.Models.MaintenanceType", b =>
+                {
+                    b.HasOne("reservation_system_be.Models.VehicleMaintenance", "VehicleMaintenance")
+                        .WithMany("MaintenanceTypes")
+                        .HasForeignKey("VehicleMaintenanceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("VehicleMaintenance");
+                });
+
             modelBuilder.Entity("reservation_system_be.Models.Notification", b =>
                 {
                     b.HasOne("reservation_system_be.Models.Reservation", "Reservation")
@@ -731,6 +766,12 @@ namespace reservation_system_be.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("reservation_system_be.Models.VehicleMaintenance", "VehicleMaintenance")
+                        .WithMany("Vehicle")
+                        .HasForeignKey("VehicleMaintenanceId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.HasOne("reservation_system_be.Models.VehicleModel", "VehicleModel")
                         .WithMany("Vehicles")
                         .HasForeignKey("VehicleModelId")
@@ -744,6 +785,8 @@ namespace reservation_system_be.Migrations
                         .IsRequired();
 
                     b.Navigation("Employee");
+
+                    b.Navigation("VehicleMaintenance");
 
                     b.Navigation("VehicleModel");
 
@@ -770,17 +813,6 @@ namespace reservation_system_be.Migrations
                         .IsRequired();
 
                     b.Navigation("Reservation");
-                });
-
-            modelBuilder.Entity("reservation_system_be.Models.VehicleMaintenance", b =>
-                {
-                    b.HasOne("reservation_system_be.Models.Vehicle", "Vehicle")
-                        .WithMany("VehicleMaintenance")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleModel", b =>
@@ -864,11 +896,16 @@ namespace reservation_system_be.Migrations
 
                     b.Navigation("VehicleInsurance");
 
-                    b.Navigation("VehicleMaintenance");
-
                     b.Navigation("VehiclePhoto");
 
                     b.Navigation("Wishlist");
+                });
+
+            modelBuilder.Entity("reservation_system_be.Models.VehicleMaintenance", b =>
+                {
+                    b.Navigation("MaintenanceTypes");
+
+                    b.Navigation("Vehicle");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleMake", b =>

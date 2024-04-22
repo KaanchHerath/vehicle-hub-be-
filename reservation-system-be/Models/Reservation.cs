@@ -10,9 +10,16 @@ namespace reservation_system_be.Models
             public DateTime EndTime { get; set; }
             public DateTime StartDate { get; set; }
             public DateTime EndDate { get; set; }
+            [JsonConverter(typeof(JsonStringEnumConverter))]
+            public Status Status { get; set; } = Status.Waiting;
             public string Status { get; set; } = string.Empty;
             [JsonIgnore]
             public VehicleLog? VehicleLog { get; set; }
+            public Feedback? Feedback { get; set; } 
+            public ICollection<Employee>? Employees { get; set; }
+            [ForeignKey("CustomerReservationId")]
+            public int CustomerReservationId { get; set; }
+            [JsonIgnore]
             [JsonIgnore]
             public Feedback? Feedback { get; set; }
             [JsonIgnore]
@@ -35,5 +42,13 @@ namespace reservation_system_be.Models
                 }
             }
     }
+    public enum Status
+    {
+        Waiting,
+        Pending,
+        Confirmed,
+        Cancelled
+    }
 }
+
 
