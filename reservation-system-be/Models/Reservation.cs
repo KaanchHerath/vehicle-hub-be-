@@ -18,21 +18,11 @@ namespace reservation_system_be.Models
             [JsonConverter(typeof(JsonStringEnumConverter))]
             public Status Status { get; set; } = Status.Waiting;
             [JsonIgnore]
-            public string Status { get; set; } = string.Empty;
-            [JsonIgnore]
             public VehicleLog? VehicleLog { get; set; }
             [JsonIgnore]
             public Feedback? Feedback { get; set; }
             [JsonIgnore]
-            public ICollection<Employee>? Employees { get; set; }
-
-            [JsonIgnore]
-            [JsonIgnore]
-            public Feedback? Feedback { get; set; }
-            [JsonIgnore]
             public CustomerReservation? CusReservation { get; set; }
-            [JsonIgnore]
-            public ICollection<Notification> Notification { get; } = new List<Notification>(); 
             [JsonIgnore]
             public ICollection<Notification> Notifications { get; } = new List<Notification>();
             [ForeignKey("EmployeeId")]
