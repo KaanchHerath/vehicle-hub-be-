@@ -8,13 +8,13 @@ namespace reservation_system_be.Data
         public DataContext(DbContextOptions<DataContext>options) : base(options) { }
 
         public DbSet<Vehicle> Vehicles { get; set; }
+        public DbSet<AdditionalFeatures> AdditionalFeatures { get; set; }
         public DbSet<VehicleInsurance> VehicleInsurances { get; set; }
         public DbSet<VehicleMaintenance> VehicleMaintenances { get; set; }
         public DbSet<VehicleLog> VehicleLogs { get; set; }
         public DbSet<VehicleType> VehicleTypes { get; set; }
-        public DbSet<VehicleMake> VehicleMakes { get; set; }
+        public DbSet<VehicleMake> VehicleMake { get; set; }
         public DbSet<VehicleModel> VehicleModels { get; set; }
-        public DbSet<MaintenanceType> MaintenanceTypes { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
@@ -23,7 +23,7 @@ namespace reservation_system_be.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
-        public DbSet<CustomerReservation> CustomersReservation { get; set; }
+        public DbSet<CustomerReservation> CustomerReservations { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
