@@ -1,5 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
+using reservation_system_be.Services.CustomerReservationService;
+using reservation_system_be.Services.ReservationService;
 using reservation_system_be.Services.VehicleMakeServices;
 using reservation_system_be.Services.VehicleTypeServices;
 using System.Text.Json.Serialization;
@@ -24,6 +26,8 @@ builder.Services.AddSwaggerGen();
 //Injection List
 builder.Services.AddScoped<IVehicleMakeService, VehicleMakeService>();
 builder.Services.AddScoped<IVehicleTypeService, VehicleTypeService>();
+builder.Services.AddScoped<IReservationService, ReservationService>();
+builder.Services.AddScoped<ICustomerReservationService, CustomerReservationService>();
 
 
 builder.Services.AddCors(options =>

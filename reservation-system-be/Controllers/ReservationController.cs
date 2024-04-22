@@ -42,18 +42,18 @@ namespace reservation_system_be.Controllers
             return await _reservationService.CreateReservation(reservation);
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Reservation>> UpdateReservation(int id, Reservation reservation)
-        {
-            try
-            {
-                return await _reservationService.UpdateReservation(id, reservation);
-            }
-            catch (DataNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-        }
+        //[HttpPut("{id}")]
+        //public async Task<ActionResult<Reservation>> UpdateReservation(int id, Reservation reservation)
+        //{
+        //    try
+        //    {
+        //        return await _reservationService.UpdateReservation(id, reservation);
+        //    }
+        //    catch (DataNotFoundException e)
+        //    {
+        //        return NotFound(e.Message);
+        //    }
+        //}
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteReservation(int id)

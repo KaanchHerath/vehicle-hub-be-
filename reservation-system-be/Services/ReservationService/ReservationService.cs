@@ -35,19 +35,19 @@ namespace reservation_system_be.Services.ReservationService
             return reservation;
         }
 
-        public async Task<Reservation> UpdateReservation(int id, Reservation reservation)
-        {
-            var existingReservation = await _context.Reservations.FindAsync(id);
-            if (existingReservation == null)
-            {
-                throw new DataNotFoundException("Reservation not found");
-            }
-            existingReservation.CustomerReservationId = reservation.CustomerReservationId;
-
-            _context.Entry(existingReservation).State = EntityState.Modified;
-            await _context.SaveChangesAsync();
-            return existingReservation;
-        }
+        //public async Task<Reservation> UpdateReservation(int id, Reservation reservation)
+        //{
+        //    var existingReservation = await _context.Reservations.FindAsync(id);
+        //    if (existingReservation == null)
+        //    {
+        //       throw new DataNotFoundException("Reservation not found");
+        //    }
+        //    existingReservation.CustomerReservationId = reservation.CustomerReservationId;
+        //
+        //    _context.Entry(existingReservation).State = EntityState.Modified;
+        //    await _context.SaveChangesAsync();
+        //    return existingReservation;
+        //}
 
         public async Task DeleteReservation(int id)
         {

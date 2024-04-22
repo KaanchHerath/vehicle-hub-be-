@@ -16,7 +16,9 @@ namespace reservation_system_be.Models
         public int VehicleId { get; set; }
         [JsonIgnore]
         public Vehicle? Vehicle { get; set; }
-        
+
+        [ForeignKey("ReservationId")]
+        public int ReservationId { get; set; }
         [JsonIgnore]
         public Reservation? Reservation { get; set; }
     }

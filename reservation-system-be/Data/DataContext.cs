@@ -24,7 +24,7 @@ namespace reservation_system_be.Data
         public DbSet<Customer> Customers { get; set; }
         public DbSet<Reservation> Reservations { get; set; }
         public DbSet<Wishlist> Wishlists { get; set; }
-        public DbSet<CustomerReservation> CustomersReservation { get; set; }
+        public DbSet<CustomerReservation> CustomerReservations { get; set; }
 
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
