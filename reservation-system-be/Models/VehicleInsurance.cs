@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace reservation_system_be.Models
@@ -7,6 +8,7 @@ namespace reservation_system_be.Models
     {
         public int Id { get; set; }
         public string InsuranceNo { get; set; } = string.Empty;
+        [JsonConverter(typeof(DateOnlyJsonConverter))]
         public DateTime? ExpiryDate { get; set; }
 
         [ForeignKey("VehicleId")]
@@ -17,7 +19,7 @@ namespace reservation_system_be.Models
             {
                 get
                 {
-                   return DateTime.Now <= ExpiryDate;
+                    return DateTime.Now <= ExpiryDate;
                 }
             }
     }
