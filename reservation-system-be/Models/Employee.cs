@@ -1,4 +1,7 @@
-﻿namespace reservation_system_be.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+
+namespace reservation_system_be.Models
 {
     public class Employee
     {
@@ -10,9 +13,14 @@
         public string Role { get; set; } = string.Empty;
         public string Status { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
+        [ForeignKey("ReservationId")]
         public int ReservationId { get; set; }
+        [JsonIgnore]
         public Reservation? Reservation { get; set; }
+        [JsonIgnore]
         public ICollection<Vehicle>? Vehicles { get; set; }
+        [JsonIgnore]
         public ICollection<EmployeeTelephone>? employeeTelephones { get; set; }
+        
     }
 }

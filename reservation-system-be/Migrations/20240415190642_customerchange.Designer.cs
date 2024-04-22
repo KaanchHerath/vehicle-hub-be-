@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using reservation_system_be.Data;
 
@@ -11,9 +12,11 @@ using reservation_system_be.Data;
 namespace reservation_system_be.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240415190642_customerchange")]
+    partial class customerchange
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -53,9 +56,6 @@ namespace reservation_system_be.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ContactNo")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("DrivingLicenseNo")
@@ -113,6 +113,28 @@ namespace reservation_system_be.Migrations
                         .IsUnique();
 
                     b.ToTable("CustomersReservation");
+                });
+
+            modelBuilder.Entity("reservation_system_be.Models.CustomerTelephone", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("CustomerId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("PhoneNumber")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CustomerId");
+
+                    b.ToTable("CustomerTelephone");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Employee", b =>
@@ -640,6 +662,17 @@ namespace reservation_system_be.Migrations
                     b.Navigation("Vehicle");
                 });
 
+            modelBuilder.Entity("reservation_system_be.Models.CustomerTelephone", b =>
+                {
+                    b.HasOne("reservation_system_be.Models.Customer", "Customer")
+                        .WithMany("CustomerTelephones")
+                        .HasForeignKey("CustomerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Customer");
+                });
+
             modelBuilder.Entity("reservation_system_be.Models.Employee", b =>
                 {
                     b.HasOne("reservation_system_be.Models.Reservation", "Reservation")
@@ -818,6 +851,8 @@ namespace reservation_system_be.Migrations
             modelBuilder.Entity("reservation_system_be.Models.Customer", b =>
                 {
                     b.Navigation("CusReservation");
+
+                    b.Navigation("CustomerTelephones");
 
                     b.Navigation("Wishlist");
                 });
