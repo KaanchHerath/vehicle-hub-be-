@@ -41,7 +41,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("VehicleModelId");
 
-                    b.ToTable("AdditionalFeatures", (string)null);
+                    b.ToTable("AdditionalFeatures");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Customer", b =>
@@ -55,6 +55,9 @@ namespace reservation_system_be.Migrations
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ContactNo")
+                        .HasColumnType("int");
 
                     b.Property<string>("DrivingLicenseNo")
                         .IsRequired()
@@ -76,13 +79,12 @@ namespace reservation_system_be.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.CustomerReservation", b =>
@@ -113,29 +115,7 @@ namespace reservation_system_be.Migrations
                     b.HasIndex("VehicleId")
                         .IsUnique();
 
-                    b.ToTable("CustomersReservation", (string)null);
-                });
-
-            modelBuilder.Entity("reservation_system_be.Models.CustomerTelephone", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("CustomerId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("PhoneNumber")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CustomerId");
-
-                    b.ToTable("CustomerTelephone", (string)null);
+                    b.ToTable("CustomerReservations");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Employee", b =>
@@ -149,6 +129,9 @@ namespace reservation_system_be.Migrations
                     b.Property<string>("Address")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("ContactNo")
+                        .HasColumnType("int");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -166,40 +149,16 @@ namespace reservation_system_be.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("ReservationId")
-                        .HasColumnType("int");
-
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("Status")
+                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ReservationId");
-
-                    b.ToTable("Employees", (string)null);
-                });
-
-            modelBuilder.Entity("reservation_system_be.Models.EmployeeTelephone", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("EmployeeId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("EmployeeId");
-
-                    b.ToTable("EmployeeTelephone", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Feedback", b =>
@@ -239,7 +198,7 @@ namespace reservation_system_be.Migrations
                     b.HasIndex("ReservationId")
                         .IsUnique();
 
-                    b.ToTable("Feedbacks", (string)null);
+                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Invoice", b =>
@@ -261,32 +220,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("ReservationId");
 
-                    b.ToTable("Invoices", (string)null);
-                });
-
-            modelBuilder.Entity("reservation_system_be.Models.MaintenanceType", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<int>("MaintenanceId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("VehicleMaintenanceId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("VehicleMaintenanceId");
-
-                    b.ToTable("MaintenanceTypes", (string)null);
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Notification", b =>
@@ -315,7 +249,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("ReservationId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Payment", b =>
@@ -348,7 +282,7 @@ namespace reservation_system_be.Migrations
                     b.HasIndex("InvoiceId")
                         .IsUnique();
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Reservation", b =>
@@ -358,6 +292,9 @@ namespace reservation_system_be.Migrations
                         .HasColumnType("int");
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int?>("EmployeeId")
+                        .HasColumnType("int");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
@@ -371,13 +308,14 @@ namespace reservation_system_be.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("Status")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Reservations", (string)null);
+                    b.HasIndex("EmployeeId");
+
+                    b.ToTable("Reservations");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Vehicle", b =>
@@ -427,7 +365,29 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("VehicleTypeId");
 
-                    b.ToTable("Vehicles", (string)null);
+                    b.ToTable("Vehicles");
+                });
+
+            modelBuilder.Entity("reservation_system_be.Models.VehicleAvailability", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("Availability")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("ReservationId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ReservationId")
+                        .IsUnique();
+
+                    b.ToTable("VehicleAvailability");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleInsurance", b =>
@@ -453,7 +413,7 @@ namespace reservation_system_be.Migrations
                     b.HasIndex("VehicleId")
                         .IsUnique();
 
-                    b.ToTable("VehicleInsurances", (string)null);
+                    b.ToTable("VehicleInsurances");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleLog", b =>
@@ -486,7 +446,7 @@ namespace reservation_system_be.Migrations
                     b.HasIndex("ReservationId")
                         .IsUnique();
 
-                    b.ToTable("VehicleLogs", (string)null);
+                    b.ToTable("VehicleLogs");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleMaintenance", b =>
@@ -513,7 +473,9 @@ namespace reservation_system_be.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleMaintenances", (string)null);
+                    b.HasIndex("VehicleId");
+
+                    b.ToTable("VehicleMaintenances");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleMake", b =>
@@ -534,7 +496,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleMakes", (string)null);
+                    b.ToTable("VehicleMake");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleModel", b =>
@@ -572,7 +534,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("VehicleMakeId");
 
-                    b.ToTable("VehicleModels", (string)null);
+                    b.ToTable("VehicleModels");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehiclePhoto", b =>
@@ -593,7 +555,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("VehiclePhoto", (string)null);
+                    b.ToTable("VehiclePhoto");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleType", b =>
@@ -613,7 +575,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleTypes", (string)null);
+                    b.ToTable("VehicleTypes");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Wishlist", b =>
@@ -628,7 +590,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Wishlists", (string)null);
+                    b.ToTable("Wishlists");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.AdditionalFeatures", b =>
@@ -669,39 +631,6 @@ namespace reservation_system_be.Migrations
                     b.Navigation("Vehicle");
                 });
 
-            modelBuilder.Entity("reservation_system_be.Models.CustomerTelephone", b =>
-                {
-                    b.HasOne("reservation_system_be.Models.Customer", "Customer")
-                        .WithMany("CustomerTelephones")
-                        .HasForeignKey("CustomerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Customer");
-                });
-
-            modelBuilder.Entity("reservation_system_be.Models.Employee", b =>
-                {
-                    b.HasOne("reservation_system_be.Models.Reservation", "Reservation")
-                        .WithMany("Employees")
-                        .HasForeignKey("ReservationId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Reservation");
-                });
-
-            modelBuilder.Entity("reservation_system_be.Models.EmployeeTelephone", b =>
-                {
-                    b.HasOne("reservation_system_be.Models.Employee", "Employee")
-                        .WithMany("employeeTelephones")
-                        .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Employee");
-                });
-
             modelBuilder.Entity("reservation_system_be.Models.Feedback", b =>
                 {
                     b.HasOne("reservation_system_be.Models.Reservation", "Reservation")
@@ -716,7 +645,7 @@ namespace reservation_system_be.Migrations
             modelBuilder.Entity("reservation_system_be.Models.Invoice", b =>
                 {
                     b.HasOne("reservation_system_be.Models.Reservation", "Reservation")
-                        .WithMany()
+                        .WithMany("Invoices")
                         .HasForeignKey("ReservationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -727,7 +656,7 @@ namespace reservation_system_be.Migrations
             modelBuilder.Entity("reservation_system_be.Models.Notification", b =>
                 {
                     b.HasOne("reservation_system_be.Models.Reservation", "Reservation")
-                        .WithMany("Notification")
+                        .WithMany("Notifications")
                         .HasForeignKey("ReservationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -744,6 +673,15 @@ namespace reservation_system_be.Migrations
                         .IsRequired();
 
                     b.Navigation("Invoice");
+                });
+
+            modelBuilder.Entity("reservation_system_be.Models.Reservation", b =>
+                {
+                    b.HasOne("reservation_system_be.Models.Employee", "Employee")
+                        .WithMany("Reservations")
+                        .HasForeignKey("EmployeeId");
+
+                    b.Navigation("Employee");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Vehicle", b =>
@@ -771,6 +709,17 @@ namespace reservation_system_be.Migrations
                     b.Navigation("VehicleModel");
 
                     b.Navigation("VehicleType");
+                });
+
+            modelBuilder.Entity("reservation_system_be.Models.VehicleAvailability", b =>
+                {
+                    b.HasOne("reservation_system_be.Models.Reservation", "Reservation")
+                        .WithOne("VehicleAvailability")
+                        .HasForeignKey("reservation_system_be.Models.VehicleAvailability", "ReservationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Reservation");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleInsurance", b =>
@@ -851,16 +800,14 @@ namespace reservation_system_be.Migrations
                 {
                     b.Navigation("CusReservation");
 
-                    b.Navigation("CustomerTelephones");
-
                     b.Navigation("Wishlist");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Employee", b =>
                 {
-                    b.Navigation("Vehicles");
+                    b.Navigation("Reservations");
 
-                    b.Navigation("employeeTelephones");
+                    b.Navigation("Vehicles");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Invoice", b =>
@@ -872,11 +819,13 @@ namespace reservation_system_be.Migrations
                 {
                     b.Navigation("CusReservation");
 
-                    b.Navigation("Employees");
-
                     b.Navigation("Feedback");
 
-                    b.Navigation("Notification");
+                    b.Navigation("Invoices");
+
+                    b.Navigation("Notifications");
+
+                    b.Navigation("VehicleAvailability");
 
                     b.Navigation("VehicleLog");
                 });
