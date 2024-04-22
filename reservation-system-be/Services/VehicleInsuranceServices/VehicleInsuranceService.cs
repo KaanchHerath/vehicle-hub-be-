@@ -12,49 +12,49 @@ namespace reservation_system_be.Services.VehicleInsuranceServices
         {
             _context = context;
         }
-
-        public async Task<List<VehicleInsurance>> GetAllVehicleInsurance()
+        public async Task<List<VehicleInsurance>> GetAllVehicleInsurances()
         {
             return await _context.VehicleInsurances.ToListAsync();
         }
-
-        public async Task<VehicleInsurance?> GetSingleVehicleInsurance(int id)
+        public async Task<VehicleInsurance> GetSingleVehicleInsurance(int id)
         {
-            return await _context.VehicleInsurances.FindAsync(id);
+            var vehicleInsurance = await _context.VehicleInsurances.FindAsync(id);
+            if (vehicleInsurance == null)
+            {
+                throw new DataNotFoundException("Vehicle Insurance not found");
+            }
+            return vehicleInsurance;
         }
-        public async Task<List<VehicleInsurance>> AddVehicleInsurance(VehicleInsurance vehicleInsurance)
+        public async Task<VehicleInsurance> CreateVehicleInsurance(VehicleInsurance vehicleInsurance)
         {
             _context.VehicleInsurances.Add(vehicleInsurance);
             await _context.SaveChangesAsync();
-            return await _context.VehicleInsurances.ToListAsync();
+            return vehicleInsurance;
         }
 
-        public async Task<List<VehicleInsurance>?> UpdateVehicleInsurance(int id, VehicleInsurance request)
+        public async Task<VehicleInsurance> UpdateVehicleInsurance(int id, VehicleInsurance vehicleInsurance)
         {
-            var vehicleInsurance = await _context.VehicleInsurances.FindAsync(id);
-            if (vehicleInsurance == null)
+            var existingVehicleInsurance = await _context.VehicleInsurances.FindAsync(id);
+            if (existingVehicleInsurance == null)
             {
-                return null;
+                throw new DataNotFoundException("Vehicle Insurance not found");
             }
-
-            vehicleInsurance.InsuranceNo = request.InsuranceNo;
-            vehicleInsurance.ExpiryDate = request.ExpiryDate;
-            vehicleInsurance.VehicleId = request.VehicleId;
+            existingVehicleInsurance.InsuranceNo = vehicleInsurance.InsuranceNo;
+            existingVehicleInsurance.ExpiryDate = vehicleInsurance.ExpiryDate;
+            existingVehicleInsurance.VehicleId = vehicleInsurance.VehicleId;
+            _context.Entry(existingVehicleInsurance).State = EntityState.Modified;
             await _context.SaveChangesAsync();
-            return await _context.VehicleInsurances.ToListAsync();
-                      }
-
-        public async Task<List<VehicleInsurance>?> DeleteVehicleInsurance(int id)
+            return existingVehicleInsurance;
+        }
+        public async Task DeleteVehicleInsurance(int id)
         {
             var vehicleInsurance = await _context.VehicleInsurances.FindAsync(id);
             if (vehicleInsurance == null)
             {
-                return null;
+                throw new DataNotFoundException("Vehicle Insurance not found");
             }
-
             _context.VehicleInsurances.Remove(vehicleInsurance);
             await _context.SaveChangesAsync();
-            return await _context.VehicleInsurances.ToListAsync();
         }
     }
 }

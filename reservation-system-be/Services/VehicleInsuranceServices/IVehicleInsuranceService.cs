@@ -4,10 +4,10 @@ namespace reservation_system_be.Services.VehicleInsuranceServices
 {
     public interface IVehicleInsuranceService
     {
-        Task<List<VehicleInsurance>> GetAllVehicleInsurance();
-        Task<VehicleInsurance?> GetSingleVehicleInsurance(int id);
-        Task<List<VehicleInsurance>> AddVehicleInsurance(VehicleInsurance vehicleInsurance);
-        Task<List<VehicleInsurance>?> UpdateVehicleInsurance(int id, VehicleInsurance request);
-        Task<List<VehicleInsurance>?> DeleteVehicleInsurance(int id);
+        Task<List<VehicleInsurance>> GetAllVehicleInsurances();
+        Task<VehicleInsurance> GetSingleVehicleInsurance(int id);
+        Task<VehicleInsurance> CreateVehicleInsurance(VehicleInsurance vehicleInsurance);
+        Task<VehicleInsurance> UpdateVehicleInsurance(int id, VehicleInsurance vehicleInsurance);
+        Task DeleteVehicleInsurance(int id);
     }
 }
