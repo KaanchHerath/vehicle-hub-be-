@@ -8,7 +8,6 @@
         public DateTime Feedback_Date { get; set; } 
         public DateTime Feedback_Time { get; set; } 
         public int RatingNo { get; set; }
-
         public  int ReservationId { get; set; } // Optional foreign key property
         public required Reservation Reservation { get; set; }// Optional reference navigation to principal
     }

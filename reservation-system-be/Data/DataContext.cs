@@ -13,9 +13,8 @@ namespace reservation_system_be.Data
         public DbSet<VehicleMaintenance> VehicleMaintenances { get; set; }
         public DbSet<VehicleLog> VehicleLogs { get; set; }
         public DbSet<VehicleType> VehicleTypes { get; set; }
-        public DbSet<VehicleMake> VehicleMakes { get; set; }
+        public DbSet<VehicleMake> VehicleMake { get; set; }
         public DbSet<VehicleModel> VehicleModels { get; set; }
-        public DbSet<MaintenanceType> MaintenanceTypes { get; set; }
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Invoice> Invoices { get; set; }
         public DbSet<Feedback> Feedbacks { get; set; }
