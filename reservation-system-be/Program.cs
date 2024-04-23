@@ -13,6 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using reservation_system_be.Services.EmployeeServices;
 using reservation_system_be.Services.VehicleServices;
+using reservation_system_be.Services.VehicleLogServices;
+using reservation_system_be.Services.VehicleMaintenanceServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -43,6 +45,9 @@ builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(options =>
  options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
+builder.Services.AddControllers().AddJsonOptions(options =>
+ options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -57,7 +62,8 @@ builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<CustomerAuthService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
 builder.Services.AddScoped<IVehicleService, VehicleService>();
-
+builder.Services.AddScoped<IVehicleLogService, VehicleLogService>();
+builder.Services.AddScoped<IVehicleMaintenanceService, VehicleMaintenanceService>();
 
 
 builder.Services.AddCors(options =>
