@@ -9,7 +9,7 @@ namespace reservation_system_be.Models
         public int Id { get; set; }
         public string InsuranceNo { get; set; } = string.Empty;
         [JsonConverter(typeof(DateOnlyJsonConverter))]
-        public DateTime? ExpiryDate { get; set; }
+        public DateTime ExpiryDate { get; set; }
 
         [ForeignKey("VehicleId")]
         public int VehicleId { get; set; }
