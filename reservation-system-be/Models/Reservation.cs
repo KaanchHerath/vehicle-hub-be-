@@ -7,13 +7,13 @@ namespace reservation_system_be.Models
     public class Reservation
     {
             public int Id { get; set; }
-            [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm:ss}")]
+            [JsonConverter(typeof(TimeOnlyJsonConverter))]
             public DateTime StartTime { get; set; }
-            [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm:ss}")]
+            [JsonConverter(typeof(TimeOnlyJsonConverter))]
             public DateTime EndTime { get; set; }
-            [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy/MM/dd}")]
+            [JsonConverter(typeof(DateOnlyJsonConverter))]
             public DateTime StartDate { get; set; }
-            [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy/MM/dd}")]
+            [JsonConverter(typeof(DateOnlyJsonConverter))]
             public DateTime EndDate { get; set; }
             [JsonConverter(typeof(JsonStringEnumConverter))]
             public Status Status { get; set; } = Status.Waiting;
@@ -22,7 +22,7 @@ namespace reservation_system_be.Models
             [JsonIgnore]
             public Feedback? Feedback { get; set; }
             [JsonIgnore]
-            public CustomerReservation? CusReservation { get; set; }
+            public CustomerReservation? CustomerReservation { get; set; }
             [JsonIgnore]
             public ICollection<Notification> Notifications { get; } = new List<Notification>();
             [ForeignKey("EmployeeId")]
