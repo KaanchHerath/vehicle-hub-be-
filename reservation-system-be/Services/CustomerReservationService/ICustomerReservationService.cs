@@ -7,8 +7,8 @@ namespace reservation_system_be.Services.CustomerReservationService
     {
         Task<List<CustomerReservation>> GetAllCustomerReservations();
         Task<CustomerReservation> GetCustomerReservation(int id);
-        Task<CustomerReservation> CreateCustomerReservation(CustomerReservationDto customerReservationDto);
-        Task<CustomerReservation> UpdateCustomerReservation(int id, CustomerReservationDto customerReservationDto);
+        Task<CustomerReservation> CreateCustomerReservation(CreateCustomerReservationDto customerReservationDto);
+        Task<CustomerReservation> UpdateCustomerReservation(int id, CreateCustomerReservationDto customerReservationDto);
         Task DeleteCustomerReservation(int id);
     }
 }

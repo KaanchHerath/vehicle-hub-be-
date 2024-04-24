@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using reservation_system_be.DTOs;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -15,6 +17,11 @@ namespace reservation_system_be.Models
             public DateTime StartDate { get; set; }
             [JsonConverter(typeof(DateOnlyJsonConverter))]
             public DateTime EndDate { get; set; }
+            [ForeignKey("EmployeeId")]
+            [DefaultValue(2)]
+            public int EmployeeId { get; set; } = 2;
+            [JsonIgnore]
+            public Employee? Employee { get; set; }
             [JsonConverter(typeof(JsonStringEnumConverter))]
             public Status Status { get; set; } = Status.Waiting;
             [JsonIgnore]
@@ -25,10 +32,6 @@ namespace reservation_system_be.Models
             public CustomerReservation? CustomerReservation { get; set; }
             [JsonIgnore]
             public ICollection<Notification> Notifications { get; } = new List<Notification>();
-            [ForeignKey("EmployeeId")]
-            public int? EmployeeId { get; set; }
-            [JsonIgnore]
-            public Employee? Employee { get; set; }
             [JsonIgnore]
             public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
             [JsonIgnore]
@@ -46,6 +49,7 @@ namespace reservation_system_be.Models
         Waiting,
         Pending,
         Confirmed,
+        Completed,
         Cancelled
     }
 }

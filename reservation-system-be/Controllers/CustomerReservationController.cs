@@ -38,13 +38,13 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CustomerReservation>> CreateCustomerReservation(CustomerReservationDto customerReservationDto)
+        public async Task<ActionResult<CustomerReservation>> CreateCustomerReservation(CreateCustomerReservationDto customerReservationDto)
         {
             return await _customerReservationService.CreateCustomerReservation(customerReservationDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<CustomerReservation>> UpdateCustomerReservation(int id, CustomerReservationDto customerReservationDto)
+        public async Task<ActionResult<CustomerReservation>> UpdateCustomerReservation(int id, CreateCustomerReservationDto customerReservationDto)
         {
             try
             {
