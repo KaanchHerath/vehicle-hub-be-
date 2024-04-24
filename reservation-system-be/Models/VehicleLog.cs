@@ -7,9 +7,9 @@ namespace reservation_system_be.Models
     {
         public int Id { get; set; }
         public int EndMileage { get; set; }
-        public string Penalty { get; set; } = string.Empty;
-        public string Description { get; set; } = string.Empty;
-        public int ExtraDays { get; set; }
+        public int? Penalty { get; set; }
+        public string? Description { get; set; }
+        public int? ExtraDays { get; set; }
 
         [ForeignKey("ReservationId")]
         public int ReservationId { get; set; }

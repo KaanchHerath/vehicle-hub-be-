@@ -293,7 +293,7 @@ namespace reservation_system_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("EmployeeId")
+                    b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndDate")
@@ -425,18 +425,16 @@ namespace reservation_system_be.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EndMileage")
                         .HasColumnType("int");
 
-                    b.Property<int>("ExtraDays")
+                    b.Property<int?>("ExtraDays")
                         .HasColumnType("int");
 
-                    b.Property<string>("Penalty")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("Penalty")
+                        .HasColumnType("int");
 
                     b.Property<int>("ReservationId")
                         .HasColumnType("int");
@@ -679,7 +677,9 @@ namespace reservation_system_be.Migrations
                 {
                     b.HasOne("reservation_system_be.Models.Employee", "Employee")
                         .WithMany("Reservations")
-                        .HasForeignKey("EmployeeId");
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Employee");
                 });
