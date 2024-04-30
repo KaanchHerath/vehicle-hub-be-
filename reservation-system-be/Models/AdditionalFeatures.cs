@@ -28,7 +28,7 @@ namespace reservation_system_be.Models
         [ForeignKey("VehicleModelId")]
         public int VehicleModelId { get; set; }
         [JsonIgnore]
-        public VehicleModel VehicleModel { get; set; } = null!;
+        public VehicleModel? VehicleModel { get; set; }
 
     }
 }

@@ -38,12 +38,32 @@ namespace reservation_system_be.Services.AdditionalFeaturesServices
 
         public async Task<AdditionalFeatures> UpdateAdditionalFeatures(int id, AdditionalFeatures additionalFeatures)
         {
-            if (id != additionalFeatures.Id)
+            var existingAdditionalFeatures = await _context.AdditionalFeatures.FindAsync(id);
+            if (existingAdditionalFeatures == null)
             {
-                throw new Exception("Id mismatch");
+                throw new DataNotFoundException("AdditionalFeatures not found");
             }
 
-            _context.Entry(additionalFeatures).State = EntityState.Modified;
+            existingAdditionalFeatures.ABS = additionalFeatures.ABS;
+            existingAdditionalFeatures.AcFront = additionalFeatures.AcFront;
+            existingAdditionalFeatures.SecuritySystem = additionalFeatures.SecuritySystem;
+            existingAdditionalFeatures.Bluetooth = additionalFeatures.Bluetooth;
+            existingAdditionalFeatures.ParkingSensor = additionalFeatures.ParkingSensor;
+            existingAdditionalFeatures.AirbagDriver = additionalFeatures.AirbagDriver;
+            existingAdditionalFeatures.AirbagPassenger = additionalFeatures.AirbagPassenger;
+            existingAdditionalFeatures.AirbagSide = additionalFeatures.AirbagSide;
+            existingAdditionalFeatures.FogLights = additionalFeatures.FogLights;
+            existingAdditionalFeatures.NavigationSystem = additionalFeatures.NavigationSystem;
+            existingAdditionalFeatures.Sunroof = additionalFeatures.Sunroof;
+            existingAdditionalFeatures.TintedGlass = additionalFeatures.TintedGlass;
+            existingAdditionalFeatures.PowerWindow = additionalFeatures.PowerWindow;
+            existingAdditionalFeatures.RearWindowWiper = additionalFeatures.RearWindowWiper;
+            existingAdditionalFeatures.AlloyWheels = additionalFeatures.AlloyWheels;
+            existingAdditionalFeatures.ElectricMirrors = additionalFeatures.ElectricMirrors;
+            existingAdditionalFeatures.AutomaticHeadlights = additionalFeatures.AutomaticHeadlights;
+            existingAdditionalFeatures.KeylessEntry = additionalFeatures.KeylessEntry;
+
+            _context.Entry(existingAdditionalFeatures).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return additionalFeatures;
         }

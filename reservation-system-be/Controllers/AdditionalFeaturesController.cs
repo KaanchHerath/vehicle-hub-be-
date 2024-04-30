@@ -11,6 +11,7 @@ namespace reservation_system_be.Controllers
     public class AdditionalFeaturesController : ControllerBase
     {
         private readonly IAdditionalFeaturesService _additionalFeaturesService;
+
         public AdditionalFeaturesController(IAdditionalFeaturesService additionalFeaturesService) 
         {
             _additionalFeaturesService = additionalFeaturesService;
@@ -22,7 +23,7 @@ namespace reservation_system_be.Controllers
             return await _additionalFeaturesService.GetAllAdditionalFeatures();
         }
 
-        [HttpGet]
+        [HttpGet("{id}")]
         public async Task<ActionResult<AdditionalFeatures>> GetAdditionalFeatures(int id)
         {
             try
