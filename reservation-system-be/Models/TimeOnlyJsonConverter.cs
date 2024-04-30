@@ -8,9 +8,9 @@ public class TimeOnlyJsonConverter : JsonConverter<DateTime>
 
     public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        string timeAsString = reader.GetString();
+        string timeAsString = reader.GetString() ?? throw new JsonException("Time string is null.");
         TimeOnly time = TimeOnly.ParseExact(timeAsString, TimeFormat, System.Globalization.CultureInfo.InvariantCulture);
-        return DateTime.Today.Add(time.ToTimeSpan()); // Combines the TimeOnly part with today's date, adjust based on your needs
+        return DateTime.Parse(time.ToString());
     }
 
     public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
