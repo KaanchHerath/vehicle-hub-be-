@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
+using reservation_system_be.DTOs;
 using reservation_system_be.Models;
 using reservation_system_be.Services.VehicleModelServices;
 
@@ -39,9 +40,9 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VehicleModel>> CreateVehicleModel(VehicleModel vehicleModel)
+        public async Task<ActionResult<VehicleModel>> CreateVehicleModel(CreateVehicleModelDto createVehicleModelDto)
         {
-            var newVehicleModel = await _vehicleModelService.CreateVehicleModel(vehicleModel);
+            var newVehicleModel = await _vehicleModelService.CreateVehicleModel(createVehicleModelDto);
             return CreatedAtAction(nameof(GetVehicleModel), new { id = newVehicleModel.Id }, newVehicleModel);
         }
 
