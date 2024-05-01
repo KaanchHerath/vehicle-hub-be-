@@ -16,6 +16,7 @@ using reservation_system_be.Services.VehicleServices;
 using reservation_system_be.Services.VehicleLogServices;
 using reservation_system_be.Services.VehicleMaintenanceServices;
 using reservation_system_be.Services.AdditionalFeaturesServices;
+using reservation_system_be.Services.VehicleModelServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -69,6 +70,7 @@ builder.Services.AddScoped<IVehicleService, VehicleService>();
 builder.Services.AddScoped<IVehicleLogService, VehicleLogService>();
 builder.Services.AddScoped<IVehicleMaintenanceService, VehicleMaintenanceService>();
 builder.Services.AddScoped<IAdditionalFeaturesService, AdditionalFeaturesService>();
+builder.Services.AddScoped<IVehicleModelService, VehicleModelService>();
 
 
 builder.Services.AddCors(options =>
