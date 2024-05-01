@@ -1,4 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using Microsoft.Extensions.Logging;
 using reservation_system_be.Models;
 
 namespace reservation_system_be.Data
@@ -32,6 +34,21 @@ namespace reservation_system_be.Data
 
             // Configure the composite key for Wishlist
             modelBuilder.Entity<Wishlist>().HasKey(w => new { w.VehicleId, w.CustomerId });
+
+
+            var timeOnlyConverter = new ValueConverter<TimeOnly, TimeSpan>(
+            timeOnly => timeOnly.ToTimeSpan(),
+            timeSpan => TimeOnly.FromTimeSpan(timeSpan));
+
+            modelBuilder.Entity<Reservation>()
+                .Property(e => e.StartTime)
+                .HasColumnType("time")
+                .HasConversion(timeOnlyConverter);
+
+            modelBuilder.Entity<Reservation>()
+                .Property(e => e.EndTime)
+                .HasColumnType("time")
+                .HasConversion(timeOnlyConverter);
         }
     }
 }

@@ -1,21 +1,17 @@
-﻿using System;
-using System.Text.Json;
+﻿using System.Globalization;
 using System.Text.Json.Serialization;
+using System.Text.Json;
 
-public class TimeOnlyJsonConverter : JsonConverter<DateTime>
+public class TimeOnlyJsonConverter : JsonConverter<TimeOnly>
 {
-    private const string TimeFormat = "HH:mm:ss";
-
-    public override DateTime Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
+    public override TimeOnly Read(ref Utf8JsonReader reader, Type typeToConvert, JsonSerializerOptions options)
     {
-        string timeAsString = reader.GetString() ?? throw new JsonException("Time string is null.");
-        TimeOnly time = TimeOnly.ParseExact(timeAsString, TimeFormat, System.Globalization.CultureInfo.InvariantCulture);
-        return DateTime.Parse(time.ToString());
+        var timeString = reader.GetString() ?? throw new JsonException("Expected time string.");
+        return TimeOnly.ParseExact(timeString, "HH:mm:ss", CultureInfo.InvariantCulture);
     }
 
-    public override void Write(Utf8JsonWriter writer, DateTime value, JsonSerializerOptions options)
+    public override void Write(Utf8JsonWriter writer, TimeOnly value, JsonSerializerOptions options)
     {
-        TimeOnly timeOnly = TimeOnly.FromDateTime(value);
-        writer.WriteStringValue(timeOnly.ToString(TimeFormat));
+        writer.WriteStringValue(value.ToString("HH:mm:ss", CultureInfo.InvariantCulture));
     }
 }

@@ -10,9 +10,9 @@ namespace reservation_system_be.Models
     {
             public int Id { get; set; }
             [JsonConverter(typeof(TimeOnlyJsonConverter))]
-            public DateTime StartTime { get; set; }
+            public TimeOnly StartTime { get; set; }
             [JsonConverter(typeof(TimeOnlyJsonConverter))]
-            public DateTime EndTime { get; set; }
+            public TimeOnly EndTime { get; set; }
             [JsonConverter(typeof(DateOnlyJsonConverter))]
             public DateTime StartDate { get; set; }
             [JsonConverter(typeof(DateOnlyJsonConverter))]

@@ -16,6 +16,6 @@ namespace reservation_system_be.Models
         [JsonIgnore]
         public ICollection<Wishlist>? Wishlist { get; set; }
         [JsonIgnore]
-        public CustomerReservation? CusReservation { get; set; }
+        public ICollection<CustomerReservation>? CusReservation { get; set; }
     }
 }
