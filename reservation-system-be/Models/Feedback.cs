@@ -1,4 +1,6 @@
-﻿namespace reservation_system_be.Models
+﻿using System.Text.Json.Serialization;
+
+namespace reservation_system_be.Models
 {
     public class Feedback
     {
@@ -10,7 +12,8 @@
         public DateTime Feedback_Date { get; set; } 
         public DateTime Feedback_Time { get; set; } 
         
-        public  int ReservationId { get; set; } // Optional foreign key property
-        public required Reservation Reservation { get; set; }// Optional reference navigation to principal
+        public  int? ReservationId { get; set; } // Optional foreign key property
+        [JsonIgnore]
+        public Reservation Reservation { get; set; }// Optional reference navigation to principal
     }
 }
