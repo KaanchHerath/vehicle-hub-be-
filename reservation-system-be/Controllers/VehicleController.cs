@@ -68,5 +68,18 @@ namespace reservation_system_be.Controllers
                 return NotFound(e.Message);
             }
         }
+
+        [HttpGet("search")]
+        public async Task<ActionResult<List<Vehicle>>> SearchVehicle(String search)
+        {
+            try
+            {
+                return await _vehicleService.SearchVehicle(search);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
     }
 }
