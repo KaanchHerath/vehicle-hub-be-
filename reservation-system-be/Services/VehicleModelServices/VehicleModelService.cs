@@ -9,12 +9,10 @@ namespace reservation_system_be.Services.VehicleModelServices
     public class VehicleModelService : IVehicleModelService
     {
         private readonly DataContext _context;
-        private readonly IAdditionalFeaturesService _additionalFeaturesService;
-
-        public VehicleModelService(DataContext context, IAdditionalFeaturesService additionalFeaturesService)
+  
+        public VehicleModelService(DataContext context)
         {
             _context = context;
-            _additionalFeaturesService = additionalFeaturesService;
         }
 
         public async Task<List<VehicleModel>> GetAllVehicleModels()
@@ -32,44 +30,10 @@ namespace reservation_system_be.Services.VehicleModelServices
             return vehicleModel;
         }
 
-        public async Task<VehicleModel> CreateVehicleModel(CreateVehicleModelDto createVehicleModelDto)
+        public async Task<VehicleModel> CreateVehicleModel(VehicleModel vehicleModel)
         {
-            var vehicleModel = new VehicleModel
-            {
-                Name = createVehicleModelDto.VehicleModel.Name,
-                Year = createVehicleModelDto.VehicleModel.Year,
-                EngineCapacity = createVehicleModelDto.VehicleModel.EngineCapacity,
-                SeatingCapacity = createVehicleModelDto.VehicleModel.SeatingCapacity,
-                Fuel = createVehicleModelDto.VehicleModel.Fuel,
-                VehicleMakeId = createVehicleModelDto.VehicleModel.VehicleMakeId
-            };
             _context.VehicleModels.Add(vehicleModel);
             await _context.SaveChangesAsync();
-
-            var additionalFeatures = new AdditionalFeatures
-            {
-                ABS = createVehicleModelDto.AdditionalFeatures.ABS,
-                AcFront = createVehicleModelDto.AdditionalFeatures.AcFront,
-                SecuritySystem = createVehicleModelDto.AdditionalFeatures.SecuritySystem,
-                Bluetooth = createVehicleModelDto.AdditionalFeatures.Bluetooth,
-                ParkingSensor = createVehicleModelDto.AdditionalFeatures.ParkingSensor,
-                AirbagDriver = createVehicleModelDto.AdditionalFeatures.AirbagDriver,
-                AirbagPassenger = createVehicleModelDto.AdditionalFeatures.AirbagPassenger,
-                AirbagSide = createVehicleModelDto.AdditionalFeatures.AirbagSide,
-                FogLights = createVehicleModelDto.AdditionalFeatures.FogLights,
-                NavigationSystem = createVehicleModelDto.AdditionalFeatures.NavigationSystem,
-                Sunroof = createVehicleModelDto.AdditionalFeatures.Sunroof,
-                TintedGlass = createVehicleModelDto.AdditionalFeatures.TintedGlass,
-                PowerWindow = createVehicleModelDto.AdditionalFeatures.PowerWindow,
-                RearWindowWiper = createVehicleModelDto.AdditionalFeatures.RearWindowWiper,
-                AlloyWheels = createVehicleModelDto.AdditionalFeatures.AlloyWheels,
-                ElectricMirrors = createVehicleModelDto.AdditionalFeatures.ElectricMirrors,
-                AutomaticHeadlights = createVehicleModelDto.AdditionalFeatures.AutomaticHeadlights,
-                KeylessEntry = createVehicleModelDto.AdditionalFeatures.KeylessEntry,
-                VehicleModelId = vehicleModel.Id
-            };
-            await _additionalFeaturesService.AddAdditionalFeatures(additionalFeatures);
-
             return vehicleModel;
         }
 
@@ -81,6 +45,11 @@ namespace reservation_system_be.Services.VehicleModelServices
                 throw new DataNotFoundException("Vehicle model not found");
             }
             existingVehicleModel.Name = vehicleModel.Name;
+            existingVehicleModel.VehicleMakeId = vehicleModel.VehicleMakeId;
+            existingVehicleModel.Year = vehicleModel.Year;
+            existingVehicleModel.EngineCapacity = vehicleModel.EngineCapacity;
+            existingVehicleModel.SeatingCapacity = vehicleModel.SeatingCapacity;
+            existingVehicleModel.Fuel = vehicleModel.Fuel;
             existingVehicleModel.VehicleMakeId = vehicleModel.VehicleMakeId;
             _context.Entry(existingVehicleModel).State = EntityState.Modified;
             await _context.SaveChangesAsync();
@@ -97,9 +66,5 @@ namespace reservation_system_be.Services.VehicleModelServices
             _context.VehicleModels.Remove(vehicleModel);
             return _context.SaveChangesAsync();
         }
-
-       
-
-       
     }
 }

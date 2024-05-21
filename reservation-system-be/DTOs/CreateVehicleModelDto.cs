@@ -4,6 +4,6 @@ namespace reservation_system_be.DTOs
 {
     public record struct CreateVehicleModelDto(
         VehicleModel VehicleModel,
-        AdditionalFeatures AdditionalFeatures
+        string[] AdditionalFeatures
     );
 }
