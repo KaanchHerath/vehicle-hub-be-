@@ -7,7 +7,7 @@ namespace reservation_system_be.Services.VehicleServices
     public class VehicleService : IVehicleService
     {
         private readonly DataContext _context;
-        
+
         public VehicleService(DataContext context)
         {
             _context = context;
@@ -65,6 +65,31 @@ namespace reservation_system_be.Services.VehicleServices
             await _context.SaveChangesAsync();
         }
 
-       
+        public async Task<List<Vehicle>> SearchVehicle(string search)
+        {
+            var vehicles = await _context.Vehicles
+                .Join(
+                    _context.VehicleTypes,
+                    vehicle => vehicle.VehicleTypeId,
+                    vehicleType => vehicleType.Id,
+                    (vehicle, vehicleType) => new { Vehicle = vehicle, VehicleType = vehicleType }
+                )
+                .Join(
+                    _context.VehicleModels,
+                    vehicleWithType => vehicleWithType.Vehicle.VehicleModelId,
+                    vehicleModel => vehicleModel.Id,
+                    (vehicleWithType, vehicleModel) => new { Vehicle = vehicleWithType.Vehicle, VehicleType = vehicleWithType.VehicleType, VehicleModel = vehicleModel }
+                )
+                .Where(
+                    vehicleModelWithType => vehicleModelWithType.VehicleModel.Name.Contains(search) ||
+                                             vehicleModelWithType.VehicleType.Name.Contains(search)
+                )
+                .Select(result => result.Vehicle)
+                .ToListAsync();
+
+            return vehicles;
+        }
+
+
     }
 }

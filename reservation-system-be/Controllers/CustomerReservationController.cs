@@ -19,14 +19,14 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<object>>> GetAllCustomerReservations()
+        public async Task<ActionResult<IEnumerable<CustomerReservationDto>>> GetAllCustomerReservations()
         {
             var customerReservation = await _customerReservationService.GetAllCustomerReservations();
             return Ok(customerReservation);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerReservation>> GetCustomerReservation(int id)
+        public async Task<ActionResult<CustomerReservationDto>> GetCustomerReservation(int id)
         {
             try
             {

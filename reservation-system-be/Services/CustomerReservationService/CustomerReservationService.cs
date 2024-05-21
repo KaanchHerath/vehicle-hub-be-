@@ -1,8 +1,10 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
 using reservation_system_be.DTOs;
+using reservation_system_be.Helper;
 using reservation_system_be.Models;
 using reservation_system_be.Services.CustomerServices;
+using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Services.ReservationService;
 using reservation_system_be.Services.VehicleServices;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -15,72 +17,79 @@ namespace reservation_system_be.Services.CustomerReservationService
     {
         private readonly DataContext _context;
         private readonly IReservationService _reservationService;
+        private readonly ICustomerService _customerService;
+        private readonly IVehicleService _vehicleService;
+        private readonly IEmailService _emailService;
 
-        public CustomerReservationService(DataContext context, IReservationService reservationService)
+        public CustomerReservationService(DataContext context, IReservationService reservationService, ICustomerService customerService, IVehicleService vehicleService,IEmailService emailService)
         {
             _context = context;
             _reservationService = reservationService;
+            _customerService = customerService;
+            _vehicleService = vehicleService;
+            _emailService = emailService;
         }
 
-        public async Task<IEnumerable<object>> GetAllCustomerReservations()
+        public async Task<IEnumerable<CustomerReservationDto>> GetAllCustomerReservations()
         {
             var customerReservations = await _context.CustomerReservations
+            .Include(cr => cr.Customer)
+            .Include(cr => cr.Vehicle)
+            .Include(cr => cr.Reservation)
+            .ToListAsync();
+
+            if (customerReservations == null || !customerReservations.Any())
+            {
+                throw new DataNotFoundException("No customer reservations found");
+            }
+
+            var customerReservationDtos = new List<CustomerReservationDto>();
+
+            foreach (var customerReservation in customerReservations)
+            {
+                var customerDto = await _customerService.GetCustomer(customerReservation.CustomerId);
+                var vehicleDto = await _vehicleService.GetVehicle(customerReservation.VehicleId);
+                var reservationDto = await _reservationService.GetReservation(customerReservation.ReservationId);
+
+                var customerReservationDto = new CustomerReservationDto
+                {
+                    Id = customerReservation.Id,
+                    Customer = customerDto,
+                    Vehicle = vehicleDto,
+                    Reservation = reservationDto
+                };
+
+                customerReservationDtos.Add(customerReservationDto);
+            }
+
+            return customerReservationDtos;
+        }
+
+
+
+        public async Task<CustomerReservationDto> GetCustomerReservation(int id)
+        {
+            var customerReservation = await _context.CustomerReservations
                 .Include(cr => cr.Customer)
                 .Include(cr => cr.Vehicle)
                 .Include(cr => cr.Reservation)
-                .Select(cr => new
-                {
-                    Id = cr.Id,
-                    Customer = new
-                    {
-                        Id = cr.Customer.Id,
-                        Name = cr.Customer.Name,
-                        NIC = cr.Customer.NIC,
-                        DrivingLicenseNo = cr.Customer.DrivingLicenseNo,
-                        Email = cr.Customer.Email,
-                        Status = cr.Customer.Status,
-                        ContactNo = cr.Customer.ContactNo,
-                        Address = cr.Customer.Address
-                    },
-                    Vehicle = new
-                    {
-                        Id = cr.Vehicle.Id,
-                        RegistrationNumber = cr.Vehicle.RegistrationNumber,
-                        ChassisNo = cr.Vehicle.ChassisNo,
-                        Colour = cr.Vehicle.Colour,
-                        Mileage = cr.Vehicle.Mileage,
-                        CostPerDay = cr.Vehicle.CostPerDay,
-                        Transmission = cr.Vehicle.Transmission,
-                        VehicleTypeId = cr.Vehicle.VehicleTypeId,
-                        VehicleModelId = cr.Vehicle.VehicleModelId,
-                        EmployeeId = cr.Vehicle.EmployeeId
-                    },
-                    Reservation = new
-                    {
-                        Id = cr.Reservation.Id,
-                        StartTime = cr.Reservation.StartTime,
-                        EndTime = cr.Reservation.EndTime,
-                        StartDate = cr.Reservation.StartDate,
-                        EndDate = cr.Reservation.EndDate,
-                        EmployeeId = cr.Reservation.EmployeeId,
-                        Status = cr.Reservation.Status
-                    }
-                })
-                .ToListAsync();
+                .FirstOrDefaultAsync(cr => cr.Id == id);
+                
 
-            return customerReservations;
-        }
-
-
-
-        public async Task<CustomerReservation> GetCustomerReservation(int id)
-        {
-            var customerReservation = await _context.CustomerReservations.FindAsync(id);
             if (customerReservation == null)
             {
                 throw new DataNotFoundException("Customer Reservation not found");
             }
-            return customerReservation;
+
+            var customerReservationDto = new CustomerReservationDto
+            {
+                Id = customerReservation.Id,
+                Customer = await _customerService.GetCustomer(customerReservation.CustomerId),
+                Vehicle = await _vehicleService.GetVehicle(customerReservation.VehicleId),
+                Reservation = await _reservationService.GetReservation(customerReservation.ReservationId)
+            };
+
+            return customerReservationDto;
         }
 
         public async Task<CustomerReservation> CreateCustomerReservation(CreateCustomerReservationDto customerReservationDto)
@@ -94,6 +103,16 @@ namespace reservation_system_be.Services.CustomerReservationService
             };
             _context.CustomerReservations.Add(customerReservation);
             await _context.SaveChangesAsync();
+
+            var cr = await GetCustomerReservation(customerReservation.Id);
+            MailRequest mailRequest = new MailRequest
+            {
+                ToEmail = cr.Customer.Email,
+                Subject = "VehicleHub - Reservation Request",
+                Body = $"Dear {cr.Customer.Name},\n\nYour reservation request has been received. Your reservation is scheduled for {cr.Reservation.StartDate} to {cr.Reservation.EndDate}. Please contact us if you have any questions.\n\nSincerely,\nVehicleHub"
+            };
+            await _emailService.SendEmailAsync(mailRequest);
+
             return customerReservation;
         }
 
