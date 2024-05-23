@@ -35,9 +35,8 @@ namespace reservation_system_be.Services.CustomerAuthServices
                 throw new ArgumentException("Email and password are required");
             }
 
-
-            //Check if username already exists
-            if (_context.Customers.Any(u => u.Email == customer.Email))
+            //Check if email already exists
+            if(_context.Customers.Any(u => u.Email == customer.Email))
             {
                 throw new InvalidOperationException("Email already exists");
             }
