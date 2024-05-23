@@ -2,32 +2,74 @@
 using reservation_system_be.Models;
 using Microsoft.EntityFrameworkCore;
 using reservation_system_be.DTOs;
-using reservation_system_be.Services.AdditionalFeaturesServices;
+using reservation_system_be.Services.VehicleMakeServices;
 
 namespace reservation_system_be.Services.VehicleModelServices
 {
     public class VehicleModelService : IVehicleModelService
     {
         private readonly DataContext _context;
+        private readonly IVehicleMakeService _vehicleMakeService;
   
-        public VehicleModelService(DataContext context)
+        public VehicleModelService(DataContext context, IVehicleMakeService vehicleMakeService)
         {
             _context = context;
+            _vehicleMakeService = vehicleMakeService;
         }
 
-        public async Task<List<VehicleModel>> GetAllVehicleModels()
+        public async Task<IEnumerable<VehicleModelDto>> GetAllVehicleModels()
         {
-            return await _context.VehicleModels.ToListAsync();
+            var vehicleModels = await _context.VehicleModels
+            .Include(v => v.VehicleMake)
+            .ToListAsync();
+
+            if (vehicleModels == null || !vehicleModels.Any())
+            {
+                throw new DataNotFoundException("No vehicle models found");
+            }
+
+            var  vehicleModelDtos = new List<VehicleModelDto>();
+
+            foreach (var vehicleModel in vehicleModels)
+            {
+                var vehicleMake = await _vehicleMakeService.GetVehicleMake(vehicleModel.VehicleMakeId);
+
+                var vehicleModelDto = new VehicleModelDto
+                {
+                    Id = vehicleModel.Id,
+                    Name = vehicleModel.Name,
+                    VehicleMake = vehicleMake,
+                    Year = vehicleModel.Year,
+                    EngineCapacity = vehicleModel.EngineCapacity
+                };
+
+                vehicleModelDtos.Add(vehicleModelDto);
+            }
+
+            return vehicleModelDtos;
         }
 
-        public async Task<VehicleModel> GetVehicleModel(int id)
+        public async Task<VehicleModelDto> GetVehicleModel(int id)
         {
-            var vehicleModel = await _context.VehicleModels.FindAsync(id);
+            var vehicleModel = await _context.VehicleModels
+            .Include(v => v.VehicleMake)
+            .FirstOrDefaultAsync(v => v.Id==id);
+
             if (vehicleModel == null)
             {
                 throw new DataNotFoundException("Vehicle model not found");
             }
-            return vehicleModel;
+
+            var vehicleModelDto = new VehicleModelDto
+            {
+                Id = vehicleModel.Id,
+                Name = vehicleModel.Name,
+                VehicleMake = await _vehicleMakeService.GetVehicleMake(vehicleModel.VehicleMakeId),
+                Year = vehicleModel.Year,
+                EngineCapacity = vehicleModel.EngineCapacity
+            };
+
+            return vehicleModelDto;
         }
 
         public async Task<VehicleModel> CreateVehicleModel(VehicleModel vehicleModel)
