@@ -7,6 +7,7 @@ namespace reservation_system_be.Models
     {
         public int Id { get; set; }
         public string Type { get; set; } = string.Empty;
+        public decimal Amount { get; set; }
         [JsonIgnore]
         public Payment? Payment { get; set; }
         [ForeignKey("ReservationId")]
