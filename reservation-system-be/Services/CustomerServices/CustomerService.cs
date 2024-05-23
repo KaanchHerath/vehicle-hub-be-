@@ -56,7 +56,6 @@ namespace reservation_system_be.Services.CustomerServices
             existingCustomer.Email = customer.Email;
             existingCustomer.Status = customer.Status;
             existingCustomer.Address = customer.Address;
-            existingCustomer.Password = customer.Password;
             existingCustomer.ContactNo = customer.ContactNo;
 
             if (!string.IsNullOrEmpty(customer.Password))
