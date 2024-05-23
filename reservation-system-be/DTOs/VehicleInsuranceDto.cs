@@ -2,11 +2,12 @@
 
 namespace reservation_system_be.DTOs
 {
-    public record struct CustomerReservationDto
+    public record struct VehicleInsuranceDto
     (
         int Id,
-        Customer Customer,
+        string InsuranceNo,
+        DateTime ExpiryDate,
         VehicleDto Vehicle,
-        Reservation Reservation
+        bool Status
     );
 }

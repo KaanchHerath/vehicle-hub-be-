@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
 using reservation_system_be.DTOs;
 using reservation_system_be.Models;
@@ -19,14 +18,14 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<IEnumerable<VehicleModel>>>> GetAllVehicleModels()
+        public async Task<ActionResult<List<IEnumerable<VehicleModelDto>>>> GetAllVehicleModels()
         {
             var vehicleModels = await _vehicleModelService.GetAllVehicleModels();
             return Ok(vehicleModels);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<VehicleModel>> GetVehicleModel(int id)
+        public async Task<ActionResult<VehicleModelDto>> GetVehicleModel(int id)
         {
             try
             {
@@ -40,10 +39,9 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VehicleModel>> CreateVehicleModel(CreateVehicleModelDto createVehicleModelDto)
+        public async Task<ActionResult<VehicleModel>> CreateVehicleModel(VehicleModel vehicleModel)
         {
-            var newVehicleModel = await _vehicleModelService.CreateVehicleModel(createVehicleModelDto);
-            return CreatedAtAction(nameof(GetVehicleModel), new { id = newVehicleModel.Id }, newVehicleModel);
+            return await _vehicleModelService.CreateVehicleModel(vehicleModel);
         }
 
         [HttpPut("{id}")]

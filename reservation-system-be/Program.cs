@@ -23,6 +23,7 @@ using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Services.CustomerSideServices;
 using reservation_system_be.Services.AdminPanelServices;
 
+using reservation_system_be.Services.EmployeeAuthService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -80,6 +81,7 @@ builder.Services.AddScoped<IVehicleMaintenanceService, VehicleMaintenanceService
 builder.Services.AddScoped<IAdditionalFeaturesService, AdditionalFeaturesService>();
 builder.Services.AddScoped<IVehicleModelService, VehicleModelService>();
 builder.Services.AddScoped<IFeedbackReportService, FeedbackReportService>();
+builder.Services.AddScoped<EmployeeAuthService>();
 builder.Services.AddScoped<IAdminPanelService, AdminPanelService>();
 builder.Services.AddScoped<ICustomerSideServices, CustomerSideServices>();
 

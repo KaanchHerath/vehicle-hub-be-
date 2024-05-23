@@ -56,8 +56,13 @@ namespace reservation_system_be.Services.CustomerServices
             existingCustomer.Email = customer.Email;
             existingCustomer.Status = customer.Status;
             existingCustomer.Address = customer.Address;
-            existingCustomer.Password = customer.Password;
             existingCustomer.ContactNo = customer.ContactNo;
+
+            if (!string.IsNullOrEmpty(customer.Password))
+            {
+                // Hash the new password
+                existingCustomer.Password = BCrypt.Net.BCrypt.HashPassword(customer.Password);
+            }
 
             _context.Entry(existingCustomer).State = EntityState.Modified;
             await _context.SaveChangesAsync();

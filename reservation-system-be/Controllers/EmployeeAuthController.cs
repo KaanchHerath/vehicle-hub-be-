@@ -2,10 +2,12 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using reservation_system_be.Data;
+using reservation_system_be.DTOs;
 using reservation_system_be.Models;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using reservation_system_be.Services.EmployeeAuthService;
 
 namespace reservation_system_be.Controllers
 {
@@ -13,54 +15,42 @@ namespace reservation_system_be.Controllers
     [ApiController]
     public class EmployeeAuthController : ControllerBase
     {
-        private readonly DataContext _context;
-        private readonly IConfiguration _config;
+        private readonly EmployeeAuthService _employeeAuthService;
 
 
-        public EmployeeAuthController(DataContext context, IConfiguration config)
+        public EmployeeAuthController(EmployeeAuthService employeeAuthService)
         {
-            _context = context;
-            _config = config;
+            _employeeAuthService = employeeAuthService;
         }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register(Employee employee)
+        {
+            try
+            {
+                var result = await _employeeAuthService.Register(employee);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
         [HttpPost("login")]
         public async Task<IActionResult> Login(Employee employee)
         {
-            //Find user by username
-            var user =  _context.Employees.FirstOrDefault(u => u.Email == employee.Email);
-
-            //Verify user exists and password is correct
-            if (user == null || !BCrypt.Net.BCrypt.Verify(employee.Password, employee.Password))
+            try
             {
-                return Unauthorized("Invalid username or password");
+                var token = await _employeeAuthService.Login(employee);
+                return Ok(new { token });
+            }
+            catch (Exception ex)
+            {
+                return Unauthorized(ex.Message);
             }
 
-            //Generate JWT token
-            var tokenstring = GenerateJWTToken(employee);
-
-            //Return token to the client
-            return Ok(new { token = tokenstring });
         }
-
-        private string GenerateJWTToken(Employee employee)
-        {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
-            var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
-
-            var claims = new[]
-            {
-                new Claim(JwtRegisteredClaimNames.Sub, employee.Email),
-                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Role, employee.Role)
-            };
-
-            var token = new JwtSecurityToken(
-                    issuer: _config["Jwt:Issuer"],
-                    audience: _config["Jwt:Issuer"],
-                    claims: claims,
-                    expires: DateTime.Now.AddHours(1),//token expiration time
-                    signingCredentials: credentials
-                );
-            return new JwtSecurityTokenHandler().WriteToken(token);
-        }
+       
     }
 }

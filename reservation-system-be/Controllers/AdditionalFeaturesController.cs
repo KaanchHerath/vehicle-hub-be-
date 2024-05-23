@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
+using reservation_system_be.DTOs;
 using reservation_system_be.Models;
 using reservation_system_be.Services.AdditionalFeaturesServices;
 
@@ -18,13 +19,14 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<AdditionalFeatures>>> GetAllAdditionalFeatures()
+        public async Task<ActionResult<List<AdditionalFeaturesDto>>> GetAllAdditionalFeatures()
         {
-            return await _additionalFeaturesService.GetAllAdditionalFeatures();
+            var additionalFeatures = await _additionalFeaturesService.GetAllAdditionalFeatures();
+            return Ok(additionalFeatures);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AdditionalFeatures>> GetAdditionalFeatures(int id)
+        public async Task<ActionResult<AdditionalFeaturesDto>> GetAdditionalFeatures(int id)
         {
             try
             {

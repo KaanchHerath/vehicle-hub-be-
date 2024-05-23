@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
+using reservation_system_be.DTOs;
 using reservation_system_be.Models;
 using reservation_system_be.Services.VehicleInsuranceServices;
 
@@ -16,14 +17,14 @@ namespace reservation_system_be.Controllers
             _vehicleInsuranceService = vehicleInsuranceService;
         }
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<VehicleInsurance>>> GetAllVehicleInsurance()
+        public async Task<ActionResult<IEnumerable<VehicleInsuranceDto>>> GetAllVehicleInsurance()
         {
             var vehicleInsurances = await _vehicleInsuranceService.GetAllVehicleInsurances();
             return Ok(vehicleInsurances);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<VehicleInsurance>> GetSingleVehicleInsurance(int id)
+        public async Task<ActionResult<VehicleInsuranceDto>> GetSingleVehicleInsurance(int id)
         {
             try
             {

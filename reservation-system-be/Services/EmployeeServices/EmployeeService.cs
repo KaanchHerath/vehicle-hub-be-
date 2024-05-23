@@ -60,11 +60,17 @@ namespace reservation_system_be.Services.EmployeeServices
                 existingEmployee.Password = employee.Password;
                 existingEmployee.Role = employee.Role;
 
-                _context.Entry(existingEmployee).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-                return existingEmployee;
-
+            if (!string.IsNullOrEmpty(employee.Password))
+            {
+                // Hash the new password
+                existingEmployee.Password = BCrypt.Net.BCrypt.HashPassword(employee.Password);
             }
+
+            _context.Entry(existingEmployee).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+            return existingEmployee;
+
+        }
 
             public async Task DeleteEmployee(int id)
             {
