@@ -20,6 +20,8 @@ using reservation_system_be.Services.VehicleModelServices;
 using reservation_system_be.Services.FeedbackReportService;
 using reservation_system_be.Helper;
 using reservation_system_be.Services.EmailServices;
+using reservation_system_be.Services.CustomerSideServices;
+using reservation_system_be.Services.AdminPanelServices;
 
 
 
@@ -78,6 +80,8 @@ builder.Services.AddScoped<IVehicleMaintenanceService, VehicleMaintenanceService
 builder.Services.AddScoped<IAdditionalFeaturesService, AdditionalFeaturesService>();
 builder.Services.AddScoped<IVehicleModelService, VehicleModelService>();
 builder.Services.AddScoped<IFeedbackReportService, FeedbackReportService>();
+builder.Services.AddScoped<IAdminPanelService, AdminPanelService>();
+builder.Services.AddScoped<ICustomerSideServices, CustomerSideServices>();
 
 builder.Services.AddTransient<IEmailService, EmailService>();
 
