@@ -19,13 +19,14 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<CustomerReservation>>> GetAllCustomerReservations()
+        public async Task<ActionResult<IEnumerable<CustomerReservationDto>>> GetAllCustomerReservations()
         {
-            return await _customerReservationService.GetAllCustomerReservations();
+            var customerReservation = await _customerReservationService.GetAllCustomerReservations();
+            return Ok(customerReservation);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<CustomerReservation>> GetCustomerReservation(int id)
+        public async Task<ActionResult<CustomerReservationDto>> GetCustomerReservation(int id)
         {
             try
             {
@@ -38,13 +39,13 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<CustomerReservation>> CreateCustomerReservation(CustomerReservationDto customerReservationDto)
+        public async Task<ActionResult<CustomerReservation>> CreateCustomerReservation(CreateCustomerReservationDto customerReservationDto)
         {
             return await _customerReservationService.CreateCustomerReservation(customerReservationDto);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<CustomerReservation>> UpdateCustomerReservation(int id, CustomerReservationDto customerReservationDto)
+        public async Task<ActionResult<CustomerReservation>> UpdateCustomerReservation(int id, CreateCustomerReservationDto customerReservationDto)
         {
             try
             {

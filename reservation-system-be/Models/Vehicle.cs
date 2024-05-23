@@ -16,7 +16,7 @@ namespace reservation_system_be.Models
         [ForeignKey("VehicleTypeId")]
         public int VehicleTypeId { get; set; }
         [JsonIgnore]
-        public VehicleType VehicleType { get; set; } = null!;
+        public VehicleType? VehicleType { get; set; }
         [JsonIgnore]
         public VehicleInsurance? VehicleInsurance { get; set; }
         [JsonIgnore]
@@ -25,7 +25,7 @@ namespace reservation_system_be.Models
         [ForeignKey("VehicleModelId")]
         public int VehicleModelId { get; set; }
         [JsonIgnore]
-        public VehicleModel VehicleModel { get; set; } = null!;
+        public VehicleModel? VehicleModel { get; set; }
         [ForeignKey("EmployeeId")]
         public int EmployeeId { get; set; }
         [JsonIgnore]
@@ -33,7 +33,7 @@ namespace reservation_system_be.Models
         [JsonIgnore]
         public ICollection <Wishlist>? Wishlist { get; set; }
         [JsonIgnore]
-        public CustomerReservation? CusReservation { get; set; }
+        public ICollection<CustomerReservation>? CusReservation { get; set; }
         [JsonIgnore]
         public ICollection<VehiclePhoto>? VehiclePhoto { get; set; }
     }

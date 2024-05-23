@@ -18,8 +18,6 @@ namespace reservation_system_be.Models
         [JsonIgnore]
         public ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
         [JsonIgnore]
-        public ICollection<AdditionalFeatures>? AdditionalFeatures { get; set; }
-
-
+        public AdditionalFeatures? AdditionalFeatures { get; set; }
     }
 }

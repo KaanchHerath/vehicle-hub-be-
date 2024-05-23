@@ -1,4 +1,6 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using reservation_system_be.DTOs;
+using System.ComponentModel;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -7,14 +9,19 @@ namespace reservation_system_be.Models
     public class Reservation
     {
             public int Id { get; set; }
-            [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm:ss}")]
-            public DateTime StartTime { get; set; }
-            [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:HH:mm:ss}")]
-            public DateTime EndTime { get; set; }
-            [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy/MM/dd}")]
+            [JsonConverter(typeof(TimeOnlyJsonConverter))]
+            public TimeOnly StartTime { get; set; }
+            [JsonConverter(typeof(TimeOnlyJsonConverter))]
+            public TimeOnly EndTime { get; set; }
+            [JsonConverter(typeof(DateOnlyJsonConverter))]
             public DateTime StartDate { get; set; }
-            [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:yyyy/MM/dd}")]
+            [JsonConverter(typeof(DateOnlyJsonConverter))]
             public DateTime EndDate { get; set; }
+            [ForeignKey("EmployeeId")]
+            [DefaultValue(2)]
+            public int EmployeeId { get; set; } = 2;
+            [JsonIgnore]
+            public Employee? Employee { get; set; }
             [JsonConverter(typeof(JsonStringEnumConverter))]
             public Status Status { get; set; } = Status.Waiting;
             [JsonIgnore]
@@ -22,13 +29,9 @@ namespace reservation_system_be.Models
             [JsonIgnore]
             public Feedback? Feedback { get; set; }
             [JsonIgnore]
-            public CustomerReservation? CusReservation { get; set; }
+            public CustomerReservation? CustomerReservation { get; set; }
             [JsonIgnore]
             public ICollection<Notification> Notifications { get; } = new List<Notification>();
-            [ForeignKey("EmployeeId")]
-            public int? EmployeeId { get; set; }
-            [JsonIgnore]
-            public Employee? Employee { get; set; }
             [JsonIgnore]
             public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
             [JsonIgnore]
@@ -46,6 +49,7 @@ namespace reservation_system_be.Models
         Waiting,
         Pending,
         Confirmed,
+        Completed,
         Cancelled
     }
 }

@@ -12,6 +12,15 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using reservation_system_be.Services.EmployeeServices;
+using reservation_system_be.Services.VehicleServices;
+using reservation_system_be.Services.VehicleLogServices;
+using reservation_system_be.Services.VehicleMaintenanceServices;
+using reservation_system_be.Services.AdditionalFeaturesServices;
+using reservation_system_be.Services.VehicleModelServices;
+using reservation_system_be.Services.FeedbackReportService;
+using reservation_system_be.Helper;
+using reservation_system_be.Services.EmailServices;
+
 using reservation_system_be.Services.EmployeeAuthService;
 
 
@@ -43,6 +52,14 @@ builder.Services.AddControllers();
 builder.Services.AddControllers().AddJsonOptions(options =>
  options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
 
+builder.Services.AddControllers().AddJsonOptions(options =>
+ options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
+
+builder.Services.AddControllers().AddJsonOptions(options =>
+ options.JsonSerializerOptions.Converters.Add(new TimeOnlyJsonConverter()));
+
+builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("EmailSettings"));
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -56,8 +73,15 @@ builder.Services.AddScoped<ICustomerReservationService, CustomerReservationServi
 builder.Services.AddScoped<ICustomerService, CustomerService>();
 builder.Services.AddScoped<CustomerAuthService>();
 builder.Services.AddScoped<IEmployeeService, EmployeeService>();
+builder.Services.AddScoped<IVehicleService, VehicleService>();
+builder.Services.AddScoped<IVehicleLogService, VehicleLogService>();
+builder.Services.AddScoped<IVehicleMaintenanceService, VehicleMaintenanceService>();
+builder.Services.AddScoped<IAdditionalFeaturesService, AdditionalFeaturesService>();
+builder.Services.AddScoped<IVehicleModelService, VehicleModelService>();
+builder.Services.AddScoped<IFeedbackReportService, FeedbackReportService>();
 builder.Services.AddScoped<EmployeeAuthService>();
 
+builder.Services.AddTransient<IEmailService, EmailService>();
 
 
 builder.Services.AddCors(options =>

@@ -30,9 +30,59 @@ namespace reservation_system_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Features")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<bool>("ABS")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AcFront")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AirbagDriver")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AirbagPassenger")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AirbagSide")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AlloyWheels")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("AutomaticHeadlights")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Bluetooth")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ElectricMirrors")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("FogLights")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("KeylessEntry")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("NavigationSystem")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("ParkingSensor")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("PowerWindow")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("RearWindowWiper")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("SecuritySystem")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("Sunroof")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("TintedGlass")
+                        .HasColumnType("bit");
 
                     b.Property<int>("VehicleModelId")
                         .HasColumnType("int");
@@ -53,12 +103,14 @@ namespace reservation_system_be.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Address")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("ContactNo")
                         .HasColumnType("int");
 
                     b.Property<string>("DrivingLicenseNo")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Email")
@@ -66,6 +118,7 @@ namespace reservation_system_be.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NIC")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
@@ -103,14 +156,12 @@ namespace reservation_system_be.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CustomerId")
-                        .IsUnique();
+                    b.HasIndex("CustomerId");
 
                     b.HasIndex("ReservationId")
                         .IsUnique();
 
-                    b.HasIndex("VehicleId")
-                        .IsUnique();
+                    b.HasIndex("VehicleId");
 
                     b.ToTable("CustomerReservations");
                 });
@@ -290,20 +341,20 @@ namespace reservation_system_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<int?>("EmployeeId")
+                    b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
                     b.Property<DateTime>("EndDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("EndTime")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeSpan>("EndTime")
+                        .HasColumnType("time");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime>("StartTime")
-                        .HasColumnType("datetime2");
+                    b.Property<TimeSpan>("StartTime")
+                        .HasColumnType("time");
 
                     b.Property<int>("Status")
                         .HasColumnType("int");
@@ -395,7 +446,7 @@ namespace reservation_system_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<DateTime?>("ExpiryDate")
+                    b.Property<DateTime>("ExpiryDate")
                         .HasColumnType("datetime2");
 
                     b.Property<string>("InsuranceNo")
@@ -422,18 +473,16 @@ namespace reservation_system_be.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Description")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EndMileage")
                         .HasColumnType("int");
 
-                    b.Property<int>("ExtraDays")
+                    b.Property<int?>("ExtraDays")
                         .HasColumnType("int");
 
-                    b.Property<string>("Penalty")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int?>("Penalty")
+                        .HasColumnType("int");
 
                     b.Property<int>("ReservationId")
                         .HasColumnType("int");
@@ -604,20 +653,20 @@ namespace reservation_system_be.Migrations
             modelBuilder.Entity("reservation_system_be.Models.CustomerReservation", b =>
                 {
                     b.HasOne("reservation_system_be.Models.Customer", "Customer")
-                        .WithOne("CusReservation")
-                        .HasForeignKey("reservation_system_be.Models.CustomerReservation", "CustomerId")
+                        .WithMany("CusReservation")
+                        .HasForeignKey("CustomerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("reservation_system_be.Models.Reservation", "Reservation")
-                        .WithOne("CusReservation")
+                        .WithOne("CustomerReservation")
                         .HasForeignKey("reservation_system_be.Models.CustomerReservation", "ReservationId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("reservation_system_be.Models.Vehicle", "Vehicle")
-                        .WithOne("CusReservation")
-                        .HasForeignKey("reservation_system_be.Models.CustomerReservation", "VehicleId")
+                        .WithMany("CusReservation")
+                        .HasForeignKey("VehicleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -676,7 +725,9 @@ namespace reservation_system_be.Migrations
                 {
                     b.HasOne("reservation_system_be.Models.Employee", "Employee")
                         .WithMany("Reservations")
-                        .HasForeignKey("EmployeeId");
+                        .HasForeignKey("EmployeeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("Employee");
                 });
@@ -814,7 +865,7 @@ namespace reservation_system_be.Migrations
 
             modelBuilder.Entity("reservation_system_be.Models.Reservation", b =>
                 {
-                    b.Navigation("CusReservation");
+                    b.Navigation("CustomerReservation");
 
                     b.Navigation("Feedback");
 
