@@ -6,7 +6,7 @@ namespace reservation_system_be.DTOs
     (
         int Id,
         Customer Customer,
-        Vehicle Vehicle,
+        VehicleDto Vehicle,
         Reservation Reservation
     );
 }
