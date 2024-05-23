@@ -1,29 +1,70 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
+using reservation_system_be.DTOs;
 using reservation_system_be.Models;
+using reservation_system_be.Services.VehicleServices;
 
 namespace reservation_system_be.Services.VehicleInsuranceServices
 {
     public class VehicleInsuranceService : IVehicleInsuranceService
     {
         private readonly DataContext _context;
+        private readonly IVehicleService _vehicleService;
 
-        public VehicleInsuranceService(DataContext context)
+        public VehicleInsuranceService(DataContext context, IVehicleService vehicleService)
         {
             _context = context;
+            _vehicleService = vehicleService;
         }
-        public async Task<List<VehicleInsurance>> GetAllVehicleInsurances()
+        public async Task<IEnumerable<VehicleInsuranceDto>> GetAllVehicleInsurances()
         {
-            return await _context.VehicleInsurances.ToListAsync();
+            var vehicleInsurances = await _context.VehicleInsurances
+            .Include(vi => vi.Vehicle)
+            .ToListAsync();
+            
+            if (vehicleInsurances == null || !vehicleInsurances.Any())
+            {
+                throw new DataNotFoundException("No vehicle insurances found");
+            }
+
+            var vehicleInsuranceDtos = new List<VehicleInsuranceDto>();
+
+            foreach (var vehicleInsurance in vehicleInsurances)
+            {
+                var vehicle = await _vehicleService.GetVehicle(vehicleInsurance.VehicleId);
+                var vehicleInsuranceDto = new VehicleInsuranceDto
+                {
+                    Id = vehicleInsurance.Id,
+                    InsuranceNo = vehicleInsurance.InsuranceNo,
+                    ExpiryDate = vehicleInsurance.ExpiryDate,
+                    Vehicle = vehicle,
+                    Status = vehicleInsurance.Status
+                };
+
+                vehicleInsuranceDtos.Add(vehicleInsuranceDto);
+            }
+            return vehicleInsuranceDtos;
         }
-        public async Task<VehicleInsurance> GetSingleVehicleInsurance(int id)
+        public async Task<VehicleInsuranceDto> GetSingleVehicleInsurance(int id)
         {
-            var vehicleInsurance = await _context.VehicleInsurances.FindAsync(id);
+            var vehicleInsurance = await _context.VehicleInsurances
+            .Include(vi => vi.Vehicle)
+            .FirstOrDefaultAsync();
+
             if (vehicleInsurance == null)
             {
                 throw new DataNotFoundException("Vehicle Insurance not found");
             }
-            return vehicleInsurance;
+
+            var vehicleInsuranceDto = new VehicleInsuranceDto
+            {
+                Id = vehicleInsurance.Id,
+                InsuranceNo = vehicleInsurance.InsuranceNo,
+                ExpiryDate = vehicleInsurance.ExpiryDate,
+                Vehicle = await _vehicleService.GetVehicle(vehicleInsurance.VehicleId),
+                Status = vehicleInsurance.Status
+            };
+            return vehicleInsuranceDto;
         }
         public async Task<VehicleInsurance> CreateVehicleInsurance(VehicleInsurance vehicleInsurance)
         {

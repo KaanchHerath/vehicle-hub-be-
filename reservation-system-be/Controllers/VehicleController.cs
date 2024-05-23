@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
+using reservation_system_be.DTOs;
 using reservation_system_be.Models;
 using reservation_system_be.Services.VehicleServices;
 
@@ -18,13 +19,14 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Vehicle>>> GetAllVehicles()
+        public async Task<ActionResult<List<VehicleDto>>> GetAllVehicles()
         {
-            return await _vehicleService.GetAllVehicles();
+            var vehicles = await _vehicleService.GetAllVehicles();
+            return Ok(vehicles);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Vehicle>> GetVehicle(int id)
+        public async Task<ActionResult<VehicleDto>> GetVehicle(int id)
         {
             try
             {

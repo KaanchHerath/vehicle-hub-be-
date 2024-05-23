@@ -7,8 +7,8 @@ namespace reservation_system_be.Services.VehicleModelServices
     {
         Task<VehicleModel> CreateVehicleModel(VehicleModel vehicleModel);
         Task<VehicleModel> UpdateVehicleModel(int id, VehicleModel vehicleModel);
-        Task<VehicleModel> GetVehicleModel(int id);
-        Task<List<VehicleModel>> GetAllVehicleModels();
+        Task<VehicleModelDto> GetVehicleModel(int id);
+        Task<IEnumerable<VehicleModelDto>> GetAllVehicleModels();
         Task DeleteVehicleModel(int id);
     }
 }
