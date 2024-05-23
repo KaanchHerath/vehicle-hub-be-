@@ -10,7 +10,6 @@ namespace reservation_system_be.Models
         public string PaymentMethod { get; set; } = string.Empty;
         public DateTime PaymentDate { get; set; }
         public DateTime PaymentTime { get; set; }
-        public decimal Amount { get; set; }
         [ForeignKey("InvoiceId")]
         public int InvoiceId { get; set; }
         [JsonIgnore]
