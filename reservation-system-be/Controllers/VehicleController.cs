@@ -24,7 +24,7 @@ namespace reservation_system_be.Controllers
             var vehicles = await _vehicleService.GetAllVehicles();
             return Ok(vehicles);
         }
-
+       
         [HttpGet("{id}")]
         public async Task<ActionResult<VehicleDto>> GetVehicle(int id)
         {
