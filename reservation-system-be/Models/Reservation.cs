@@ -33,8 +33,6 @@ namespace reservation_system_be.Models
             [JsonIgnore]
             public ICollection<Notification> Notifications { get; } = new List<Notification>();
             [JsonIgnore]
-            public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
-            [JsonIgnore]
             public VehicleAvailability? VehicleAvailability { get; set; }
             public int NoOfDays
             {

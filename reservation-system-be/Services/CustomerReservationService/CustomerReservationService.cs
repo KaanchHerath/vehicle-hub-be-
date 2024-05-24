@@ -104,15 +104,6 @@ namespace reservation_system_be.Services.CustomerReservationService
             _context.CustomerReservations.Add(customerReservation);
             await _context.SaveChangesAsync();
 
-            var cr = await GetCustomerReservation(customerReservation.Id);
-            MailRequest mailRequest = new MailRequest
-            {
-                ToEmail = cr.Customer.Email,
-                Subject = "VehicleHub - Reservation Request",
-                Body = $"Dear {cr.Customer.Name},\n\nYour reservation request has been received. Your reservation is scheduled for {cr.Reservation.StartDate} to {cr.Reservation.EndDate}. Please contact us if you have any questions.\n\nSincerely,\nVehicleHub"
-            };
-            await _emailService.SendEmailAsync(mailRequest);
-
             return customerReservation;
         }
 
