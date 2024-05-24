@@ -39,17 +39,26 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<AdditionalFeatures>> AddAdditionalFeatures(AdditionalFeatures additionalFeatures)
-        {
-            return await _additionalFeaturesService.AddAdditionalFeatures(additionalFeatures);
+        public async Task<ActionResult> AddAdditionalFeatures(CreateVehicleModelDto createVehicleModelDto)
+        { 
+            try
+            {
+                await _additionalFeaturesService.AddAdditionalFeatures(createVehicleModelDto);
+                return Ok();
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<AdditionalFeatures>> UpdateAdditionalFeatures(int id, AdditionalFeatures additionalFeatures)
+        public async Task<ActionResult> UpdateAdditionalFeatures(int id, CreateVehicleModelDto createVehicleModelDto)
         {
             try
             {
-                return await _additionalFeaturesService.UpdateAdditionalFeatures(id, additionalFeatures);
+                await _additionalFeaturesService.UpdateAdditionalFeatures(id, createVehicleModelDto);
+                return Ok();
             }
             catch (DataNotFoundException e)
             {

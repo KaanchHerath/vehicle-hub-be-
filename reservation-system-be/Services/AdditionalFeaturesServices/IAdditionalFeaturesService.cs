@@ -7,8 +7,8 @@ namespace reservation_system_be.Services.AdditionalFeaturesServices
     {
         Task<IEnumerable<AdditionalFeaturesDto>> GetAllAdditionalFeatures();
         Task<AdditionalFeaturesDto> GetAdditionalFeatures(int id);
-        Task<AdditionalFeatures> AddAdditionalFeatures(AdditionalFeatures additionalFeatures);
-        Task<AdditionalFeatures> UpdateAdditionalFeatures(int id, AdditionalFeatures additionalFeatures);
+        Task AddAdditionalFeatures(CreateVehicleModelDto createVehicleModelDto);
+        Task UpdateAdditionalFeatures(int id, CreateVehicleModelDto createVehicleModelDto);
         Task DeleteAdditionalFeatures(int id);
     }
 }
