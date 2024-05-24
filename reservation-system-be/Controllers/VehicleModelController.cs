@@ -41,7 +41,8 @@ namespace reservation_system_be.Controllers
         [HttpPost]
         public async Task<ActionResult<VehicleModel>> CreateVehicleModel(VehicleModel vehicleModel)
         {
-            return await _vehicleModelService.CreateVehicleModel(vehicleModel);
+            var newVehicleModel = await _vehicleModelService.CreateVehicleModel(vehicleModel);
+            return Ok(newVehicleModel);
         }
 
         [HttpPut("{id}")]

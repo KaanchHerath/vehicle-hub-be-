@@ -5,7 +5,7 @@ namespace reservation_system_be.Services.VehicleModelServices
 {
     public interface IVehicleModelService
     {
-        Task<VehicleModel> CreateVehicleModel(VehicleModel vehicleModel);
+        Task<VehicleModel> CreateVehicleModel(VehicleModel VehicleModel);
         Task<VehicleModel> UpdateVehicleModel(int id, VehicleModel vehicleModel);
         Task<VehicleModelDto> GetVehicleModel(int id);
         Task<IEnumerable<VehicleModelDto>> GetAllVehicleModels();
