@@ -6,16 +6,16 @@ using reservation_system_be.Services.CustomerReservationService;
 using reservation_system_be.Services.EmployeeServices;
 using reservation_system_be.Services.ReservationService;
 
-namespace reservation_system_be.Services.AdminPanelServices
+namespace reservation_system_be.Services.AdminReservationServices
 {
-    public class AdminPanelService : IAdminPanelService
+    public class AdminReservationService : IAdminReservationService
     {
         private readonly DataContext _context;
         private readonly ICustomerReservationService _customerReservationService;
         private readonly IEmployeeService _employeeService;
         private readonly IReservationService _reservationService;
 
-        public AdminPanelService(DataContext context, ICustomerReservationService customerReservationService, IEmployeeService employeeService, IReservationService reservationService)
+        public AdminReservationService(DataContext context, ICustomerReservationService customerReservationService, IEmployeeService employeeService, IReservationService reservationService)
         {
             _context = context;
             _customerReservationService = customerReservationService;
@@ -64,6 +64,20 @@ namespace reservation_system_be.Services.AdminPanelServices
             }
 
             return viewReservations;
+        }
+
+        public async Task BeginReservation(int id)
+        {
+            var customerReservation = await _customerReservationService.GetCustomerReservation(id);
+
+            if (customerReservation.Reservation.Status != Status.Confirmed)
+            {
+                throw new Exception("Not a confirmed Reservation");
+            }
+
+            customerReservation.Reservation.Status = Status.Ongoing;
+
+            await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
         }
     }
 }
