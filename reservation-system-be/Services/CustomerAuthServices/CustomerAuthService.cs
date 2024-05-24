@@ -9,7 +9,8 @@ using reservation_system_be.Data;
 using reservation_system_be.DTOs;
 using reservation_system_be.Models;
 using reservation_system_be.Services.CustomerServices;
-
+using reservation_system_be.Services.EmailServices;
+using reservation_system_be.Helper;
 
 
 namespace reservation_system_be.Services.CustomerAuthServices
@@ -18,13 +19,15 @@ namespace reservation_system_be.Services.CustomerAuthServices
     public class CustomerAuthService
     {
        
-        private readonly DataContext _context;
+        private readonly ICustomerService _customerService;
+        private readonly IEmailService _emailService;
         private readonly IConfiguration _config;
 
-        public CustomerAuthService(DataContext context, IConfiguration config)
+        public CustomerAuthService(ICustomerService customerService, IEmailService emailService, IConfiguration config)
         {
            
-            _context = context;
+            _customerService = customerService;
+            _emailService = emailService;
             _config = config;
         }
         public async Task<string> Register(CustomerAuthDTO customer)
@@ -36,7 +39,8 @@ namespace reservation_system_be.Services.CustomerAuthServices
             }
 
             //Check if email already exists
-            if(_context.Customers.Any(u => u.Email == customer.Email))
+            var existingCustomer = await _customerService.GetCustomerByEmail(customer.Email);
+            if (existingCustomer != null)
             {
                 throw new InvalidOperationException("Email already exists");
             }
@@ -48,12 +52,20 @@ namespace reservation_system_be.Services.CustomerAuthServices
             {
                 Email = customer.Email,
                 Password = customer.Password,
-                // Assign other properties as needed
+              
             };
 
             //Add user to database
-            _context.Customers.Add(newCustomer);
-            await _context.SaveChangesAsync();
+            await _customerService.AddCustomer(newCustomer);
+
+            //send welcome email
+            var mailRequest = new MailRequest
+            {
+                ToEmail = customer.Email,
+                Subject = "Welcome to Vehicle Hub",
+                Body = "<h1>Welcome!</h1> <br> <p>Thank you for reistering with our service. Now you can reserve vehicles whenever you need.</p>"
+            };
+            await _emailService.SendEmailAsync(mailRequest);
 
             return "User registered successfully";
         }
@@ -66,10 +78,10 @@ namespace reservation_system_be.Services.CustomerAuthServices
             }
 
             //Find user by Email
-            var user = await _context.Customers.FirstOrDefaultAsync(u => u.Email == customer.Email);
+            var user = await _customerService.GetCustomerByEmail(customer.Email);
 
             //Verify user exists and password is correct
-            if(user == null || !BCrypt.Net.BCrypt.Verify(customer.Password, user.Password))
+            if (user == null || !BCrypt.Net.BCrypt.Verify(customer.Password, user.Password))
             {
                 throw new UnauthorizedAccessException("Invalid email or password");
             }
@@ -106,7 +118,7 @@ namespace reservation_system_be.Services.CustomerAuthServices
 
         public async Task<string> ForgotPassword(string email)
         {
-            var user = _context.Customers.FirstOrDefault(u => u.Email == email);
+            var user = await _customerService.GetCustomerByEmail(email);
 
             if (user == null)
             {
@@ -117,7 +129,7 @@ namespace reservation_system_be.Services.CustomerAuthServices
 
             // user.PasswordResetToken = CreateRandomToken();
             // user.ResetTokenExpires = DateTime.Now.AddDays(1);
-            await _context.SaveChangesAsync();
+            await _customerService.UpdateCustomer(user.Id, user);
 
             return "You may now reset your password.";
         }

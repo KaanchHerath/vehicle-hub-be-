@@ -38,9 +38,13 @@ namespace reservation_system_be.Services.CustomerServices
             return customer;
         }
 
-       
+        public async Task<Customer> GetCustomerByEmail(string email)
+        {
+            return await _context.Customers.FirstOrDefaultAsync(u => u.Email == email);
+        }
 
-        
+
+
         public async Task<Customer> UpdateCustomer(int id, Customer customer)
         {
             var existingCustomer = await _context.Customers.FindAsync(id);
@@ -56,7 +60,6 @@ namespace reservation_system_be.Services.CustomerServices
             existingCustomer.Email = customer.Email;
             existingCustomer.Status = customer.Status;
             existingCustomer.Address = customer.Address;
-            existingCustomer.Password = customer.Password;
             existingCustomer.ContactNo = customer.ContactNo;
 
             if (!string.IsNullOrEmpty(customer.Password))
