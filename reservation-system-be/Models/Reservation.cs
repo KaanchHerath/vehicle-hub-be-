@@ -47,6 +47,8 @@ namespace reservation_system_be.Models
         Waiting,
         Pending,
         Confirmed,
+        Ongoing,
+        Ended,
         Completed,
         Cancelled
     }
