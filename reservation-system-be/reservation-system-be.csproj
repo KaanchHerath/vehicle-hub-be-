@@ -34,10 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\FeedbackReportService\" />
-<<<<<<< Updated upstream
     <Folder Include="Services\EmployeeVehicleServices\" />
-=======
     <Folder Include="Services\InvoiceService\" />
->>>>>>> Stashed changes
   </ItemGroup>
 </Project>
