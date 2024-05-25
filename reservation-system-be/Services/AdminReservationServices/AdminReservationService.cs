@@ -28,11 +28,6 @@ namespace reservation_system_be.Services.AdminReservationServices
             var customerReservation = await _customerReservationService.GetCustomerReservation(id);
             var employee = await _employeeService.GetEmployee(eid);
 
-            if (customerReservation == null || employee == null)
-            {
-                throw new DataNotFoundException("Reservation not found");
-            }
-
             customerReservation.Reservation.Status = Status.Pending;
             customerReservation.Reservation.EmployeeId = employee.Id;
 

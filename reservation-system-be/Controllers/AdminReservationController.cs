@@ -6,11 +6,11 @@ namespace reservation_system_be.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AdminPanelController : ControllerBase
+    public class AdminReservationController : ControllerBase
     {
         private readonly IAdminReservationService _adminReservationService;
 
-        public AdminPanelController(IAdminReservationService adminReservationService)
+        public AdminReservationController(IAdminReservationService adminReservationService)
         {
             _adminReservationService = adminReservationService;
         }
