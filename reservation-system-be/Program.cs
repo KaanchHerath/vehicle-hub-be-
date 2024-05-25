@@ -18,6 +18,7 @@ using reservation_system_be.Services.VehicleMaintenanceServices;
 using reservation_system_be.Services.AdditionalFeaturesServices;
 using reservation_system_be.Services.VehicleModelServices;
 using reservation_system_be.Services.FeedbackReportService;
+using reservation_system_be.Services.InvoiceService;
 using reservation_system_be.Helper;
 using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Services.FrontReservationServices;
@@ -83,6 +84,8 @@ builder.Services.AddScoped<IVehicleModelService, VehicleModelService>();
 builder.Services.AddScoped<IFeedbackReportService, FeedbackReportService>();
 builder.Services.AddScoped<EmployeeAuthService>();
 builder.Services.AddScoped<IAdminReservationService, AdminReservationService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+
 builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>();
 builder.Services.AddTransient<IEmailService, EmailService>();
 
