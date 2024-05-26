@@ -24,6 +24,7 @@ using reservation_system_be.Services.CustomerSideServices;
 using reservation_system_be.Services.AdminReservationServices;
 
 using reservation_system_be.Services.EmployeeAuthService;
+using reservation_system_be.Services.AdminVehicleServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -84,6 +85,7 @@ builder.Services.AddScoped<IFeedbackReportService, FeedbackReportService>();
 builder.Services.AddScoped<EmployeeAuthService>();
 builder.Services.AddScoped<IAdminReservationService, AdminReservationService>();
 builder.Services.AddScoped<ICustomerSideServices, CustomerSideServices>();
+builder.Services.AddScoped<IAdminVehicleService, AdminVehicleService>();
 
 builder.Services.AddTransient<IEmailService, EmailService>();
 

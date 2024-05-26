@@ -13,71 +13,47 @@ namespace reservation_system_be.Controllers
     {
         private readonly IAdditionalFeaturesService _additionalFeaturesService;
 
-        public AdditionalFeaturesController(IAdditionalFeaturesService additionalFeaturesService) 
+        public AdditionalFeaturesController(IAdditionalFeaturesService additionalFeaturesService)
         {
             _additionalFeaturesService = additionalFeaturesService;
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<AdditionalFeaturesDto>>> GetAllAdditionalFeatures()
+        public async Task<IEnumerable<AdditionalFeaturesDto>> GetAllAdditionalFeatures()
         {
-            var additionalFeatures = await _additionalFeaturesService.GetAllAdditionalFeatures();
-            return Ok(additionalFeatures);
+            return await _additionalFeaturesService.GetAllAdditionalFeatures();
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<AdditionalFeaturesDto>> GetAdditionalFeatures(int id)
+        public async Task<AdditionalFeaturesDto> GetAdditionalFeatures(int id)
         {
-            try
-            {
-                return await _additionalFeaturesService.GetAdditionalFeatures(id);
-            }
-            catch (DataNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
+            return await _additionalFeaturesService.GetAdditionalFeatures(id);
         }
 
         [HttpPost]
-        public async Task<ActionResult> AddAdditionalFeatures(CreateVehicleModelDto createVehicleModelDto)
-        { 
-            try
-            {
-                await _additionalFeaturesService.AddAdditionalFeatures(createVehicleModelDto);
-                return Ok();
-            }
-            catch (DataNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
+        public async Task<ActionResult<AdditionalFeatures>> AddAdditionalFeatures(AdditionalFeatures additionalFeatures)
+        {
+            var newAdditionalFeatures = await _additionalFeaturesService.AddAdditionalFeatures(additionalFeatures);
+            return CreatedAtAction(nameof(GetAdditionalFeatures), new { id = newAdditionalFeatures.Id }, newAdditionalFeatures);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateAdditionalFeatures(int id, CreateVehicleModelDto createVehicleModelDto)
+        public async Task<IActionResult> UpdateAdditionalFeatures(int id, AdditionalFeatures additionalFeatures)
         {
-            try
+            if (id != additionalFeatures.Id)
             {
-                await _additionalFeaturesService.UpdateAdditionalFeatures(id, createVehicleModelDto);
-                return Ok();
+                return BadRequest();
             }
-            catch (DataNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
+            await _additionalFeaturesService.UpdateAdditionalFeatures(id, additionalFeatures);
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteAdditionalFeatures(int id)
+        public async Task<IActionResult> DeleteAdditionalFeatures(int id)
         {
-            try
-            {
-                await _additionalFeaturesService.DeleteAdditionalFeatures(id);
-                return Ok();
-            }
-            catch (DataNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
+            await _additionalFeaturesService.DeleteAdditionalFeatures(id);
+            return NoContent();
         }
+       
     }
 }
