@@ -30,6 +30,7 @@
 
   <ItemGroup>
     <None Remove="Services\FeedbackReportService\" />
+    <None Remove="Services\InvoiceService\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\FeedbackReportService\" />
