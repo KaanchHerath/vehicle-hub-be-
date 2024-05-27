@@ -46,7 +46,7 @@ namespace reservation_system_be.Services.VehicleLogServices
             existingVehicleLog.Penalty = vehicleLog.Penalty;
             existingVehicleLog.Description = vehicleLog.Description;
             existingVehicleLog.ExtraDays = vehicleLog.ExtraDays;
-            existingVehicleLog.ReservationId = vehicleLog.ReservationId;
+            existingVehicleLog.CustomerReservationId = vehicleLog.CustomerReservationId;
             _context.Entry(existingVehicleLog).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return existingVehicleLog;
