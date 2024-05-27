@@ -18,7 +18,7 @@ namespace reservation_system_be.Controllers
         {
             _invoiceService = invoiceService;
         }
-        //malith
+        //malith..
 
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Invoice>>> GetInvoices()
