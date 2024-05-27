@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using reservation_system_be.DTOs;
 using reservation_system_be.Services.AdminReservationServices;
 
 namespace reservation_system_be.Controllers
@@ -33,6 +34,13 @@ namespace reservation_system_be.Controllers
         public async Task<IActionResult> BeginReservation(int id)
         {
             await _adminReservationService.BeginReservation(id);
+            return Ok();
+        }
+
+        [HttpPost("End-Reservation/{id}")]
+        public async Task<IActionResult> EndReservation(int id, VehicleLogDto vehicleLog)
+        {
+            await _adminReservationService.EndReservation(id, vehicleLog);
             return Ok();
         }
     }

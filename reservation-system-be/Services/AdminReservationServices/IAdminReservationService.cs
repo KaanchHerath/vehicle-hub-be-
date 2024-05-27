@@ -8,5 +8,6 @@ namespace reservation_system_be.Services.AdminReservationServices
         Task AcceptReservation(int id, int eid);
         Task <IEnumerable<ViewReservationDto>> ViewReservations();
         Task BeginReservation(int id);
+        Task EndReservation(int id, VehicleLogDto vehicleLog);
     }
 }
