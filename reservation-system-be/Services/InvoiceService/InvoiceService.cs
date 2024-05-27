@@ -22,7 +22,13 @@ namespace reservation_system_be.Services.InvoiceService
 
         public async Task<Invoice> GetInvoiceById(int id)
         {
-            return await _context.Invoices.FindAsync(id);
+            var invoice = await _context.Invoices.FindAsync(id);
+            if (invoice == null)
+            {
+                throw new DataNotFoundException("Invoice not found");
+            }
+
+            return invoice;
         }
 
         public async Task<Invoice> CreateInvoice(Invoice invoice)
@@ -32,9 +38,19 @@ namespace reservation_system_be.Services.InvoiceService
             return invoice;
         }
 
-        public async Task<Invoice> UpdateInvoice(Invoice invoice)
+        public async Task<Invoice> UpdateInvoice(int id, Invoice invoice)
         {
-            _context.Entry(invoice).State = EntityState.Modified;
+            var existingInvoice = await _context.Invoices.FindAsync(id);
+
+            if (existingInvoice == null)
+            {
+                throw new DataNotFoundException("Invoice not found");
+            }
+
+            existingInvoice.Type = invoice.Type;
+            existingInvoice.Amount = invoice.Amount;
+
+            _context.Entry(existingInvoice).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return invoice;
         }

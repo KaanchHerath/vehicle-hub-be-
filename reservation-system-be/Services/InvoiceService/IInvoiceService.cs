@@ -9,7 +9,7 @@ namespace reservation_system_be.Services.InvoiceService
         Task<IEnumerable<Invoice>> GetAllInvoices();
         Task<Invoice> GetInvoiceById(int id);
         Task<Invoice> CreateInvoice(Invoice invoice);
-        Task<Invoice> UpdateInvoice(Invoice invoice);
+        Task<Invoice> UpdateInvoice(int id, Invoice invoice);
         Task<bool> DeleteInvoice(int id);
     }
 }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using reservation_system_be.Data;
 using reservation_system_be.Models;
 using reservation_system_be.Services.InvoiceService;
 
@@ -64,21 +65,16 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<Invoice>> UpdateInvoice(int id, [FromBody] Invoice invoice)
+        public async Task<ActionResult<Invoice>> UpdateInvoice(int id, Invoice invoice)
         {
-            if (id != invoice.Id)
-            {
-                return BadRequest();
-            }
-
             try
             {
-                var updatedInvoice = await _invoiceService.UpdateInvoice(invoice);
+                var updatedInvoice = await _invoiceService.UpdateInvoice(id, invoice);
                 return Ok(updatedInvoice);
             }
-            catch (Exception ex)
+            catch (DataNotFoundException)
             {
-                return StatusCode(500, ex.Message);
+                return NotFound();
             }
         }
 
