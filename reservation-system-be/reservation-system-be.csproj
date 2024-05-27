@@ -34,7 +34,5 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\FeedbackReportService\" />
-    <Folder Include="Services\EmployeeVehicleServices\" />
-    <Folder Include="Services\InvoiceService\" />
   </ItemGroup>
 </Project>
