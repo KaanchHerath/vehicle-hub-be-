@@ -23,5 +23,7 @@ namespace reservation_system_be.Models
         public Reservation? Reservation { get; set; }
         [JsonIgnore]
         public ICollection<Invoice> Invoices { get; set; } = new List<Invoice>();
+        [JsonIgnore]
+        public VehicleLog? VehicleLog { get; set; }
     }
 }

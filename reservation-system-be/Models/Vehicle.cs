@@ -12,6 +12,7 @@ namespace reservation_system_be.Models
         public string Colour { get; set; } = string.Empty;
         public int Mileage { get; set; }
         public float CostPerDay { get; set; }
+        public float ExtraCostPerKM { get; set; }
         public string Transmission { get; set; } = string.Empty;
         [ForeignKey("VehicleTypeId")]
         public int VehicleTypeId { get; set; }
