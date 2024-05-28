@@ -12,6 +12,7 @@ namespace reservation_system_be.DTOs
         float CostPerDay,
         float CostPerExtraKM,
         string Transmission,
+        bool Status,
         VehicleType VehicleType,
         VehicleModelDto VehicleModel,
         Employee Employee

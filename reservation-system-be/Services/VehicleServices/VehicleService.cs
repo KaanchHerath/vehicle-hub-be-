@@ -51,6 +51,8 @@ namespace reservation_system_be.Services.VehicleServices
                     Mileage = vehicle.Mileage,
                     CostPerDay = vehicle.CostPerDay,
                     Transmission = vehicle.Transmission,
+                    CostPerExtraKM = vehicle.CostPerExtraKM,
+                    Status = vehicle.Status,
                     VehicleType = vehicleType,
                     VehicleModel = vehicleModel,
                     Employee = employee
@@ -81,6 +83,8 @@ namespace reservation_system_be.Services.VehicleServices
                 Mileage = vehicle.Mileage,
                 CostPerDay = vehicle.CostPerDay,
                 Transmission = vehicle.Transmission,
+                CostPerExtraKM = vehicle.CostPerExtraKM,
+                Status = vehicle.Status,
                 VehicleType = await _vehicleTypeService.GetSingleVehicleType(vehicle.VehicleTypeId),
                 VehicleModel = await _vehicleModelService.GetVehicleModel(vehicle.VehicleModelId),
                 Employee = await _employeeService.GetEmployee(vehicle.EmployeeId)
@@ -107,6 +111,8 @@ namespace reservation_system_be.Services.VehicleServices
             existingVehicle.Mileage = vehicle.Mileage;
             existingVehicle.CostPerDay = vehicle.CostPerDay;
             existingVehicle.Transmission = vehicle.Transmission;
+            existingVehicle.CostPerExtraKM = vehicle.CostPerExtraKM;
+            existingVehicle.Status = vehicle.Status;
             existingVehicle.VehicleTypeId = vehicle.VehicleTypeId;
             existingVehicle.VehicleModelId = vehicle.VehicleModelId;
             existingVehicle.EmployeeId = vehicle.EmployeeId;

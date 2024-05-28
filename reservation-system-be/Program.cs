@@ -26,6 +26,7 @@ using reservation_system_be.Services.AdminReservationServices;
 
 using reservation_system_be.Services.EmployeeAuthService;
 using reservation_system_be.Services.StripeService;
+using reservation_system_be.Services.AdminVehicleServices;
 
 
 var builder = WebApplication.CreateBuilder(args);

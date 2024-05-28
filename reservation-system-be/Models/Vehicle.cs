@@ -14,7 +14,6 @@ namespace reservation_system_be.Models
         public float CostPerDay { get; set; }
         public float CostPerExtraKM { get; set; }
         public string Transmission { get; set; } = string.Empty;
-        [JsonConverter(typeof(JsonStringEnumConverter))]
         public bool Status { get; set; } = true;
         [ForeignKey("VehicleTypeId")]
         public int VehicleTypeId { get; set; }
