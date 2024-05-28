@@ -1,4 +1,5 @@
-﻿using reservation_system_be.Models;
+﻿using reservation_system_be.DTOs;
+using reservation_system_be.Models;
 
 namespace reservation_system_be.Services.VehicleLogServices
 {
@@ -7,7 +8,7 @@ namespace reservation_system_be.Services.VehicleLogServices
         Task<List<VehicleLog>> GetAllVehicleLogs();
         Task<VehicleLog> GetVehicleLog(int id);
         Task<VehicleLog> CreateVehicleLog(VehicleLog vehicleLog);
-        Task<VehicleLog> UpdateVehicleLog(int id, VehicleLog vehicleLog);
+        Task<VehicleLog> UpdateVehicleLog(int id, VehicleLogDto vehicleLog);
         Task DeleteVehicleLog(int id);
     }
 }

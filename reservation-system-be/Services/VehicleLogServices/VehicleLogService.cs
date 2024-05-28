@@ -1,16 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
+using reservation_system_be.DTOs;
 using reservation_system_be.Models;
+using reservation_system_be.Services.CustomerReservationService;
 
 namespace reservation_system_be.Services.VehicleLogServices
 {
     public class VehicleLogService : IVehicleLogService
     {
         private readonly DataContext _context;
+        private readonly ICustomerReservationService _customerReservationService;
 
-        public VehicleLogService(DataContext context)
+        public VehicleLogService(DataContext context, ICustomerReservationService customerReservationService)
         {
             _context = context;
+            _customerReservationService = customerReservationService;
         }
 
         public async Task<List<VehicleLog>> GetAllVehicleLogs()
@@ -35,17 +39,22 @@ namespace reservation_system_be.Services.VehicleLogServices
             return vehicleLog;
         }
 
-        public async Task<VehicleLog> UpdateVehicleLog(int id, VehicleLog vehicleLog)
+        public async Task<VehicleLog> UpdateVehicleLog(int id, VehicleLogDto vehicleLog)
         {
             var existingVehicleLog = await _context.VehicleLogs.FindAsync(id);
             if (existingVehicleLog == null)
             {
                 throw new DataNotFoundException("Vehicle log not found");
             }
+            var customerReservation = await _customerReservationService.GetCustomerReservation(vehicleLog.CustomerReservationId);
+
+            var KM = vehicleLog.EndMileage - customerReservation.Vehicle.Mileage;
+            var ExtraKM = KM - (customerReservation.Reservation.NoOfDays * 100);
+
             existingVehicleLog.EndMileage = vehicleLog.EndMileage;
             existingVehicleLog.Penalty = vehicleLog.Penalty;
             existingVehicleLog.Description = vehicleLog.Description;
-            existingVehicleLog.ExtraDays = vehicleLog.ExtraDays;
+            existingVehicleLog.ExtraKM = KM < 0 ? 0 : ExtraKM;
             existingVehicleLog.CustomerReservationId = vehicleLog.CustomerReservationId;
             _context.Entry(existingVehicleLog).State = EntityState.Modified;
             await _context.SaveChangesAsync();

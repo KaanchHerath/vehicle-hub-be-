@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
+using reservation_system_be.DTOs;
 using reservation_system_be.Models;
 using reservation_system_be.Services.VehicleLogServices;
 
@@ -46,7 +47,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<VehicleLog>> UpdateVehicleLog(int id, VehicleLog vehicleLog)
+        public async Task<ActionResult<VehicleLog>> UpdateVehicleLog(int id, VehicleLogDto vehicleLog)
         {
             try
             {
