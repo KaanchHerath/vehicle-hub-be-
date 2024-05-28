@@ -23,7 +23,7 @@ namespace reservation_system_be.Controllers
             return Ok(reservations);
         }
 
-        [HttpPost("{id}/{eid}")]
+        [HttpPost("{id}")]
         public async Task<IActionResult> AcceptReservation(int id, int eid)
         {
             await _adminReservationService.AcceptReservation(id, eid);

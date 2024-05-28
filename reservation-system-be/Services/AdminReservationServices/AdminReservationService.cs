@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
 using reservation_system_be.DTOs;
 using reservation_system_be.Helper;
@@ -9,6 +10,7 @@ using reservation_system_be.Services.EmployeeServices;
 using reservation_system_be.Services.InvoiceService;
 using reservation_system_be.Services.ReservationService;
 using reservation_system_be.Services.VehicleLogServices;
+using reservation_system_be.Services.VehicleServices;
 
 namespace reservation_system_be.Services.AdminReservationServices
 {
@@ -21,9 +23,11 @@ namespace reservation_system_be.Services.AdminReservationServices
         private readonly IInvoiceService _invoiceService;
         private readonly IEmailService _emailService;
         private readonly IVehicleLogService _vehicleLogService;
+        private readonly IVehicleService _vehicleService;
 
         public AdminReservationService(DataContext context, ICustomerReservationService customerReservationService, IEmployeeService employeeService, 
-            IReservationService reservationService, IInvoiceService invoiceService, IEmailService emailService, IVehicleLogService vehicleLogService)
+            IReservationService reservationService, IInvoiceService invoiceService, IEmailService emailService, IVehicleLogService vehicleLogService,
+                IVehicleService vehicleService)
         {
             _context = context;
             _customerReservationService = customerReservationService;
@@ -32,6 +36,7 @@ namespace reservation_system_be.Services.AdminReservationServices
             _invoiceService = invoiceService;
             _emailService = emailService;
             _vehicleLogService = vehicleLogService;
+            _vehicleService = vehicleService;
         }
 
         public async Task AcceptReservation(int id, int eid)
@@ -137,27 +142,46 @@ namespace reservation_system_be.Services.AdminReservationServices
         {
             var customerReservation = await _customerReservationService.GetCustomerReservation(id);
 
-            if (customerReservation.Reservation.Status != Status.Ongoing)
+            if (customerReservation.Reservation.Status == Status.Ongoing)
             {
-                throw new Exception("Not an ongoing Reservation");
+                customerReservation.Reservation.Status = Status.Ended;
+                await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
             }
+            else if (customerReservation.Reservation.Status != Status.Ended)
+            {
+                var existingVehicleLog = await _context.VehicleLogs.FirstOrDefaultAsync(vl => vl.CustomerReservationId == id);
+                if (existingVehicleLog != null)
+                {
+                    await _vehicleLogService.DeleteVehicleLog(existingVehicleLog.Id);
+                }
 
-            customerReservation.Reservation.Status = Status.Completed;
+                var existingInvoice = await _context.Invoices.FirstOrDefaultAsync(i => i.CustomerReservationId == id);
+                if (existingInvoice != null)
+                {
+                    await _invoiceService.DeleteInvoice(existingInvoice.Id);
+                }
+            }
+            else
+            {
+                throw new Exception("Reservation is in " + customerReservation.Reservation.Status + "status");
+            }
+            
 
-            await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
-
-            var currentDate = DateTime.Now;
+            // Calculate KM & Extra KM
+            var KM = vehicleLog.EndMileage - customerReservation.Vehicle.Mileage;
+            var ExtraKM = KM - (customerReservation.Reservation.NoOfDays * 100);
+            // Create vehicle log
             var vehicleLog_model = new VehicleLog
             {
                 EndMileage = vehicleLog.EndMileage,
                 Penalty = vehicleLog.Penalty,
                 Description = vehicleLog.Description,
-                ExtraDays = currentDate.Day - customerReservation.Reservation.EndDate.Day,
-                ExtraKM = vehicleLog.EndMileage - customerReservation.Vehicle.Mileage,
+                ExtraKM = KM < 0 ? 0 : ExtraKM,
                 CustomerReservationId = customerReservation.Id
             };
             var vl = await _vehicleLogService.CreateVehicleLog(vehicleLog_model);
 
+            // Create final invoice
             var invoice_model = new Invoice
             {
                 Type = "Final",
@@ -170,13 +194,12 @@ namespace reservation_system_be.Services.AdminReservationServices
         private float CalFinalAmount(CustomerReservationDto customerReservation, VehicleLog vehicleLog)
         {
             var finalAmount = 0.0f;
-            finalAmount+= customerReservation.Vehicle.CostPerDay * customerReservation.Reservation.NoOfDays;
-            finalAmount+= vehicleLog.Penalty;
-            var extraDaysCharge = customerReservation.Vehicle.CostPerDay * (120/100);
-            finalAmount += vehicleLog.ExtraDays * extraDaysCharge;
+            finalAmount+= customerReservation.Vehicle.CostPerDay * customerReservation.Reservation.NoOfDays; // Rental cost
+            finalAmount+= vehicleLog.Penalty; // Penalty
+            finalAmount+= vehicleLog.ExtraKM * customerReservation.Vehicle.CostPerExtraKM; //Extra KM cost
+            finalAmount-= customerReservation.Vehicle.VehicleType.DepositAmount; // Deducting Deposit
 
             return finalAmount;
         }
-
     }
 }
