@@ -10,6 +10,7 @@ namespace reservation_system_be.DTOs
         string Colour,
         int Mileage,
         float CostPerDay,
+        float CostPerExtraKM,
         string Transmission,
         VehicleType VehicleType,
         VehicleModelDto VehicleModel,

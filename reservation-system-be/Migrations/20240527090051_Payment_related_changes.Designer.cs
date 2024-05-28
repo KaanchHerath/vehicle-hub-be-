@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using reservation_system_be.Data;
 
@@ -11,9 +12,11 @@ using reservation_system_be.Data;
 namespace reservation_system_be.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240527090051_Payment_related_changes")]
+    partial class Payment_related_changes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -390,11 +393,11 @@ namespace reservation_system_be.Migrations
                     b.Property<float>("CostPerDay")
                         .HasColumnType("real");
 
-                    b.Property<float>("CostPerExtraKM")
-                        .HasColumnType("real");
-
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
+
+                    b.Property<float>("ExtraCostPerKM")
+                        .HasColumnType("real");
 
                     b.Property<int>("Mileage")
                         .HasColumnType("int");
@@ -402,9 +405,6 @@ namespace reservation_system_be.Migrations
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("Status")
-                        .HasColumnType("bit");
 
                     b.Property<string>("Transmission")
                         .IsRequired()
@@ -491,6 +491,9 @@ namespace reservation_system_be.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("EndMileage")
+                        .HasColumnType("int");
+
+                    b.Property<int>("ExtraDays")
                         .HasColumnType("int");
 
                     b.Property<int>("ExtraKM")
