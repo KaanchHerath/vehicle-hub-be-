@@ -96,6 +96,22 @@ namespace reservation_system_be.Services.FrontReservationServices
             return ongoingRentals;
         }
 
+        public async Task<OngoingRentalSingleDto> OngoingRentalSingle(int id) // CustomerReservation ID
+        {
+            var customerReservation = await _customerReservationService.GetCustomerReservation(id);
+            var ongoingRentalSingle = new OngoingRentalSingleDto
+            {
+                CustomerReservationId = customerReservation.Id,
+                Name = customerReservation.Customer.Name,
+                ModelName = customerReservation.Vehicle.VehicleModel.Name,
+                StartDate = customerReservation.Reservation.StartDate,
+                EndDate = customerReservation.Reservation.EndDate,
+                StartTime = customerReservation.Reservation.StartTime,
+                EndTime = customerReservation.Reservation.EndTime,
+                Status = customerReservation.Reservation.Status
+            };
 
+            return ongoingRentalSingle;
+        }
     }
 }

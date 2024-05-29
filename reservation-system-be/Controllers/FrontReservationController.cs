@@ -31,5 +31,13 @@ namespace reservation_system_be.Controllers
 
             return Ok(ongoingRentals);
         }
+
+        [HttpGet("ongoing-rental-single/{id}")]
+        public async Task<IActionResult> OngoingRentalSingle(int id)
+        {
+            var ongoingRentalSingle = await _frontReservationServices.OngoingRentalSingle(id);
+
+            return Ok(ongoingRentalSingle);
+        }
     }
 }
