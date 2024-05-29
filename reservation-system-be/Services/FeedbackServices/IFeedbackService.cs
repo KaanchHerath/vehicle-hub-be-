@@ -9,6 +9,8 @@ namespace reservation_system_be.Services.FeedbackServices
         Task<List<Feedback>> GetAllFeedbacks();
 
         Task<List<Feedback>> GetFeedbacks(String type);
+
+        Task<List<FeedbackResponse>> GetFeedbacksForVehicle(int vehicleid);
     }
 
 }
