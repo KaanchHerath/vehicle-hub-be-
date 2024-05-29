@@ -181,6 +181,13 @@ namespace reservation_system_be.Services.AdminReservationServices
             };
             var vl = await _vehicleLogService.CreateVehicleLog(vehicleLog_model);
 
+            var vehicle = await _context.Vehicles.FirstOrDefaultAsync(v => v.Id == customerReservation.Vehicle.Id);
+            if (vehicle != null)
+            {
+                vehicle.Mileage = vl.EndMileage;
+                await _vehicleService.UpdateVehicle(vehicle.Id, vehicle);
+            }
+
             // Create final invoice
             var invoice_model = new Invoice
             {

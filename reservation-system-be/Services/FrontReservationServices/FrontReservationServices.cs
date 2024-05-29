@@ -1,9 +1,11 @@
 ﻿using Azure;
+using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
 using reservation_system_be.DTOs;
 using reservation_system_be.Helper;
 using reservation_system_be.Models;
 using reservation_system_be.Services.CustomerReservationService;
+using reservation_system_be.Services.CustomerServices;
 using reservation_system_be.Services.EmailServices;
 
 namespace reservation_system_be.Services.FrontReservationServices
@@ -13,11 +15,13 @@ namespace reservation_system_be.Services.FrontReservationServices
         private readonly DataContext _context;
         private readonly ICustomerReservationService _customerReservationService;
         private readonly IEmailService _emailService;
-        public FrontReservationServices(DataContext context, ICustomerReservationService customerReservationService, IEmailService emailService)
+        private readonly ICustomerService _customerService;
+        public FrontReservationServices(DataContext context, ICustomerReservationService customerReservationService, IEmailService emailService, ICustomerService customerService)
         {
             _context = context;
             _customerReservationService = customerReservationService;
             _emailService = emailService;
+            _customerService = customerService;
         }
 
         public async Task<CustomerReservation> RequestReservations(CreateCustomerReservationDto customerReservationDto)
@@ -61,5 +65,37 @@ namespace reservation_system_be.Services.FrontReservationServices
             response += "</div>";
             return response;
         }
+
+        public async Task<IEnumerable<OngoingRentalDto>> OngoingRentals(int id) // Customer ID
+        {
+            var customer = await _customerService.GetCustomer(id);
+            var ongoingRentals = new List<OngoingRentalDto>();
+
+            var customerReservations = await _context.CustomerReservations.Where(cr => cr.CustomerId == id).ToListAsync();
+            if (customerReservations == null)
+            {
+                throw new DataNotFoundException("No ongoing rentals found");
+            }
+
+            foreach (var cr in customerReservations)
+            {
+                if (cr.Reservation.EndDate > DateTime.Now)
+                {
+                    var ongoingRental = new OngoingRentalDto
+                    {
+                        CustomerReservationId = cr.Id,
+                        ModelName = cr.Vehicle.VehicleModel.Name,
+                        StartDate = cr.Reservation.StartDate,
+                        EndDate = cr.Reservation.EndDate,
+                        Status = cr.Reservation.Status
+                    };
+                    ongoingRentals.Add(ongoingRental);
+                }
+            }
+
+            return ongoingRentals;
+        }
+
+
     }
 }
