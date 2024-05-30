@@ -33,7 +33,7 @@ namespace reservation_system_be.Services.CustomerServices
 
         public async Task<Customer> AddCustomer(Customer customer)
         {
-            _context.Customers.Add(customer);
+           await _context.Customers.AddAsync(customer);
             await _context.SaveChangesAsync();
             return customer;
         }
