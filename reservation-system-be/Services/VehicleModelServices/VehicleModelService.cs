@@ -10,6 +10,7 @@ namespace reservation_system_be.Services.VehicleModelServices
     {
         private readonly DataContext _context;
         private readonly IVehicleMakeService _vehicleMakeService;
+   
   
         public VehicleModelService(DataContext context, IVehicleMakeService vehicleMakeService)
         {
@@ -40,7 +41,9 @@ namespace reservation_system_be.Services.VehicleModelServices
                     Name = vehicleModel.Name,
                     VehicleMake = vehicleMake,
                     Year = vehicleModel.Year,
-                    EngineCapacity = vehicleModel.EngineCapacity
+                    EngineCapacity = vehicleModel.EngineCapacity,
+                    SeatingCapacity = vehicleModel.SeatingCapacity,
+                    Fuel = vehicleModel.Fuel
                 };
 
                 vehicleModelDtos.Add(vehicleModelDto);
@@ -66,7 +69,10 @@ namespace reservation_system_be.Services.VehicleModelServices
                 Name = vehicleModel.Name,
                 VehicleMake = await _vehicleMakeService.GetVehicleMake(vehicleModel.VehicleMakeId),
                 Year = vehicleModel.Year,
-                EngineCapacity = vehicleModel.EngineCapacity
+                EngineCapacity = vehicleModel.EngineCapacity,
+                SeatingCapacity = vehicleModel.SeatingCapacity,
+                Fuel = vehicleModel.Fuel
+
             };
 
             return vehicleModelDto;

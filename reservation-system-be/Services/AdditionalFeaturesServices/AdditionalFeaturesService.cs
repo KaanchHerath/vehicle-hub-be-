@@ -32,33 +32,22 @@ namespace reservation_system_be.Services.AdditionalFeaturesServices
 
             foreach (var additionalFeature in additionalFeatures)
             {
+                var vehicleModel = await _context.VehicleModels.FirstOrDefaultAsync(v => v.Id == additionalFeature.VehicleModelId);
+                if (vehicleModel == null)
+                {
+                    throw new DataNotFoundException("VehicleModel not found");
+                }
                 var additionalFeaturesDto = new AdditionalFeaturesDto
                 {
-                    Id = additionalFeature.Id,
-                    ABS = additionalFeature.ABS,
-                    AcFront = additionalFeature.AcFront,
-                    SecuritySystem = additionalFeature.SecuritySystem,
-                    Bluetooth = additionalFeature.Bluetooth,
-                    ParkingSensor = additionalFeature.ParkingSensor,
-                    AirbagDriver = additionalFeature.AirbagDriver,
-                    AirbagPassenger = additionalFeature.AirbagPassenger,
-                    AirbagSide = additionalFeature.AirbagSide,
-                    FogLights = additionalFeature.FogLights,
-                    NavigationSystem = additionalFeature.NavigationSystem,
-                    Sunroof = additionalFeature.Sunroof,
-                    TintedGlass = additionalFeature.TintedGlass,
-                    PowerWindow = additionalFeature.PowerWindow,
-                    RearWindowWiper = additionalFeature.RearWindowWiper,
-                    AlloyWheels = additionalFeature.AlloyWheels,
-                    ElectricMirrors = additionalFeature.ElectricMirrors,
-                    AutomaticHeadlights = additionalFeature.AutomaticHeadlights,
-                    KeylessEntry = additionalFeature.KeylessEntry,
-                    VehicleModel = await _vehicleModelService.GetVehicleModel(additionalFeature.VehicleModelId)
+                    additionalFeatures = additionalFeature,
+                    vehicleModel = vehicleModel
                 };
                 additionalFeaturesDtos.Add(additionalFeaturesDto);
             }
             return additionalFeaturesDtos;
         }
+
+
 
         public async Task<AdditionalFeaturesDto> GetAdditionalFeatures(int id)
         {
@@ -70,31 +59,17 @@ namespace reservation_system_be.Services.AdditionalFeaturesServices
             {
                 throw new Exception("AdditionalFeatures not found");
             }
-
+            var vehicleModel = await _context.VehicleModels.FirstOrDefaultAsync(v => v.Id == additionalFeatures.VehicleModelId);
+            if (vehicleModel == null)
+            {
+                throw new DataNotFoundException("VehicleModel not found");
+            }
+            
             var additionalFeaturesDto = new AdditionalFeaturesDto
             {
-                Id = additionalFeatures.Id,
-                ABS = additionalFeatures.ABS,
-                AcFront = additionalFeatures.AcFront,
-                SecuritySystem = additionalFeatures.SecuritySystem,
-                Bluetooth = additionalFeatures.Bluetooth,
-                ParkingSensor = additionalFeatures.ParkingSensor,
-                AirbagDriver = additionalFeatures.AirbagDriver,
-                AirbagPassenger = additionalFeatures.AirbagPassenger,
-                AirbagSide = additionalFeatures.AirbagSide,
-                FogLights = additionalFeatures.FogLights,
-                NavigationSystem = additionalFeatures.NavigationSystem,
-                Sunroof = additionalFeatures.Sunroof,
-                TintedGlass = additionalFeatures.TintedGlass,
-                PowerWindow = additionalFeatures.PowerWindow,
-                RearWindowWiper = additionalFeatures.RearWindowWiper,
-                AlloyWheels = additionalFeatures.AlloyWheels,
-                ElectricMirrors = additionalFeatures.ElectricMirrors,
-                AutomaticHeadlights = additionalFeatures.AutomaticHeadlights,
-                KeylessEntry = additionalFeatures.KeylessEntry,
-                VehicleModel = await _vehicleModelService.GetVehicleModel(additionalFeatures.VehicleModelId)
+               additionalFeatures = additionalFeatures,
+               vehicleModel = vehicleModel
             };
-
             return additionalFeaturesDto;
         }
 
@@ -108,11 +83,11 @@ namespace reservation_system_be.Services.AdditionalFeaturesServices
         public async Task<AdditionalFeatures> UpdateAdditionalFeatures(int id, AdditionalFeatures additionalFeatures)
         {
             var existingAdditionalFeatures = await _context.AdditionalFeatures.FindAsync(id);
-            if (existingAdditionalFeatures == null)
+            if(existingAdditionalFeatures == null)
             {
                 throw new DataNotFoundException("AdditionalFeatures not found");
             }
-
+            
             existingAdditionalFeatures.ABS = additionalFeatures.ABS;
             existingAdditionalFeatures.AcFront = additionalFeatures.AcFront;
             existingAdditionalFeatures.SecuritySystem = additionalFeatures.SecuritySystem;
@@ -134,8 +109,9 @@ namespace reservation_system_be.Services.AdditionalFeaturesServices
             existingAdditionalFeatures.VehicleModelId = additionalFeatures.VehicleModelId;
 
             _context.Entry(existingAdditionalFeatures).State = EntityState.Modified;
+
             await _context.SaveChangesAsync();
-            return additionalFeatures;
+            return existingAdditionalFeatures;
         }
 
         public async Task DeleteAdditionalFeatures(int id)

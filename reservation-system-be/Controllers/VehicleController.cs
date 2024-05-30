@@ -21,9 +21,12 @@ namespace reservation_system_be.Controllers
         [HttpGet]
         public async Task<ActionResult<List<VehicleDto>>> GetAllVehicles()
         {
-            var vehicles = await _vehicleService.GetAllVehicles();
-            return Ok(vehicles);
+            {
+                var vehicles = await _vehicleService.GetAllVehicles();
+                return Ok(vehicles);
+            }
         }
+        
 
         [HttpGet("{id}")]
         public async Task<ActionResult<VehicleDto>> GetVehicle(int id)
@@ -71,17 +74,51 @@ namespace reservation_system_be.Controllers
             }
         }
 
-        [HttpGet("search")]
-        public async Task<ActionResult<List<Vehicle>>> SearchVehicle(String search)
+        [HttpGet("vehicles/search")]
+        public async Task<ActionResult<List<VehicleResponse>>> SearchVehicle(String search)
         {
             try
             {
-                return await _vehicleService.SearchVehicle(search);
+                var vehicles = await _vehicleService.SearchVehicle(search);
+                return Ok(vehicles);
             }
             catch (DataNotFoundException e)
             {
                 return NotFound(e.Message);
             }
         }
+
+        [HttpGet("alldata")]
+        public async Task<ActionResult<List<VehicleResponse>>> GetAllVehiclesDetails()
+        {
+            try
+            {
+                var vehicles = await _vehicleService.GetAllVehiclesDetails();
+                return Ok(vehicles);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpGet("vehicles/filter")]
+        public async Task<ActionResult<List<VehicleResponse>>> FilterVehicles(int? vehicleTypeId, int? vehicleMakeId, int? seatingCapacity, float? depositAmount)
+        {
+            try
+            {
+                var vehicles = await _vehicleService.FilterVehicles(vehicleTypeId, vehicleMakeId, seatingCapacity, depositAmount);
+                if (vehicles == null || vehicles.Count == 0)
+                {
+                    return NotFound("No vehicles match the provided criteria.");
+                }
+                return Ok(vehicles);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

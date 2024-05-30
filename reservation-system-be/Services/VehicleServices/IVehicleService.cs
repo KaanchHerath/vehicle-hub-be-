@@ -6,9 +6,17 @@ namespace reservation_system_be.Services.VehicleServices
     {
         Task<IEnumerable<VehicleDto>> GetAllVehicles();
         Task<VehicleDto> GetVehicle(int id);
+
         Task<Vehicle> CreateVehicle(Vehicle vehicle);
+
         Task<Vehicle> UpdateVehicle(int id, Vehicle vehicle);
+
         Task DeleteVehicle(int id);
-        Task<List<Vehicle>> SearchVehicle(String search);
+
+        Task<List<VehicleResponse>> SearchVehicle(String search);
+
+        Task<List<VehicleResponse>> GetAllVehiclesDetails();
+
+        Task<List<VehicleResponse>> FilterVehicles(int? vehicleTypeId, int? vehicleMakeId, int? seatingCapacity, float? depositAmount);
     }
 }

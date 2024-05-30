@@ -25,11 +25,13 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
     <PackageReference Include="MimeKit" Version="3.6.1" />
+    <PackageReference Include="Stripe.net" Version="44.9.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.5.0" />
   </ItemGroup>
 
   <ItemGroup>
     <None Remove="Services\FeedbackReportService\" />
+    <None Remove="Services\InvoiceService\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\FeedbackReportService\" />

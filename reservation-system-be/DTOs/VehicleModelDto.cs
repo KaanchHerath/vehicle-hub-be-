@@ -7,7 +7,9 @@ namespace reservation_system_be.DTOs
         int Id,
         string Name,
         VehicleMake VehicleMake,
-        string Year,
-        string EngineCapacity
+        int Year,
+        int EngineCapacity,
+        int SeatingCapacity,
+        string Fuel
     );
 }

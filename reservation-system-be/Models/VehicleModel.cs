@@ -7,9 +7,9 @@ namespace reservation_system_be.Models
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public string Year { get; set; } = string.Empty;
-        public string EngineCapacity { get; set; } = string.Empty;
-        public string SeatingCapacity {  get; set; } = string.Empty;
+        public int Year { get; set; } 
+        public int EngineCapacity { get; set; }
+        public int SeatingCapacity {  get; set; }
         public string Fuel { get; set; } = string.Empty;
         [ForeignKey("VehicleMakeId")]
         public int VehicleMakeId { get; set; }

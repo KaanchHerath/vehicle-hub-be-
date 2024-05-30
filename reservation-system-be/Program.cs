@@ -18,12 +18,16 @@ using reservation_system_be.Services.VehicleMaintenanceServices;
 using reservation_system_be.Services.AdditionalFeaturesServices;
 using reservation_system_be.Services.VehicleModelServices;
 using reservation_system_be.Services.FeedbackReportService;
+using reservation_system_be.Services.InvoiceService;
 using reservation_system_be.Helper;
 using reservation_system_be.Services.EmailServices;
-using reservation_system_be.Services.CustomerSideServices;
-using reservation_system_be.Services.AdminPanelServices;
+using reservation_system_be.Services.FrontReservationServices;
+using reservation_system_be.Services.AdminReservationServices;
+using reservation_system_be.Services.VehicleUtilizationReportServices;
 
 using reservation_system_be.Services.EmployeeAuthService;
+using reservation_system_be.Services.StripeService;
+using reservation_system_be.Services.AdminVehicleServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -82,10 +86,15 @@ builder.Services.AddScoped<IAdditionalFeaturesService, AdditionalFeaturesService
 builder.Services.AddScoped<IVehicleModelService, VehicleModelService>();
 builder.Services.AddScoped<IFeedbackReportService, FeedbackReportService>();
 builder.Services.AddScoped<EmployeeAuthService>();
-builder.Services.AddScoped<IAdminPanelService, AdminPanelService>();
-builder.Services.AddScoped<ICustomerSideServices, CustomerSideServices>();
+builder.Services.AddScoped<IAdminReservationService, AdminReservationService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IStripeService, StripeService>();
+builder.Services.AddScoped<IAdminVehicleService, AdminVehicleService>();
+builder.Services.AddScoped<IVehicleUtilizationReportService, VehicleUtilizationReportService>();
 
+builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+
 
 
 builder.Services.AddCors(options =>

@@ -1,7 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
-using reservation_system_be.DTOs;
 using reservation_system_be.Models;
+using reservation_system_be.DTOs;
 using reservation_system_be.Services.EmployeeServices;
 using reservation_system_be.Services.VehicleModelServices;
 using reservation_system_be.Services.VehicleTypeServices;
@@ -15,7 +15,7 @@ namespace reservation_system_be.Services.VehicleServices
         private readonly IVehicleModelService _vehicleModelService;
         private readonly IEmployeeService _employeeService;
 
-        public VehicleService(DataContext context,IVehicleTypeService vehicleTypeService, IVehicleModelService vehicleModelService, IEmployeeService employeeService)
+        public VehicleService(DataContext context, IVehicleTypeService vehicleTypeService, IVehicleModelService vehicleModelService, IEmployeeService employeeService)
         {
             _context = context;
             _vehicleTypeService = vehicleTypeService;
@@ -41,7 +41,7 @@ namespace reservation_system_be.Services.VehicleServices
                 var vehicleType = await _vehicleTypeService.GetSingleVehicleType(vehicle.VehicleTypeId);
                 var vehicleModel = await _vehicleModelService.GetVehicleModel(vehicle.VehicleModelId);
                 var employee = await _employeeService.GetEmployee(vehicle.EmployeeId);
-                
+
                 var vehicleDto = new VehicleDto
                 {
                     Id = vehicle.Id,
@@ -51,6 +51,8 @@ namespace reservation_system_be.Services.VehicleServices
                     Mileage = vehicle.Mileage,
                     CostPerDay = vehicle.CostPerDay,
                     Transmission = vehicle.Transmission,
+                    CostPerExtraKM = vehicle.CostPerExtraKM,
+                    Status = vehicle.Status,
                     VehicleType = vehicleType,
                     VehicleModel = vehicleModel,
                     Employee = employee
@@ -81,6 +83,8 @@ namespace reservation_system_be.Services.VehicleServices
                 Mileage = vehicle.Mileage,
                 CostPerDay = vehicle.CostPerDay,
                 Transmission = vehicle.Transmission,
+                CostPerExtraKM = vehicle.CostPerExtraKM,
+                Status = vehicle.Status,
                 VehicleType = await _vehicleTypeService.GetSingleVehicleType(vehicle.VehicleTypeId),
                 VehicleModel = await _vehicleModelService.GetVehicleModel(vehicle.VehicleModelId),
                 Employee = await _employeeService.GetEmployee(vehicle.EmployeeId)
@@ -107,6 +111,8 @@ namespace reservation_system_be.Services.VehicleServices
             existingVehicle.Mileage = vehicle.Mileage;
             existingVehicle.CostPerDay = vehicle.CostPerDay;
             existingVehicle.Transmission = vehicle.Transmission;
+            existingVehicle.CostPerExtraKM = vehicle.CostPerExtraKM;
+            existingVehicle.Status = vehicle.Status;
             existingVehicle.VehicleTypeId = vehicle.VehicleTypeId;
             existingVehicle.VehicleModelId = vehicle.VehicleModelId;
             existingVehicle.EmployeeId = vehicle.EmployeeId;
@@ -126,31 +132,108 @@ namespace reservation_system_be.Services.VehicleServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Vehicle>> SearchVehicle(string search)
+        public async Task<List<VehicleResponse>> SearchVehicle(string search)
         {
             var vehicles = await _context.Vehicles
-                .Join(
-                    _context.VehicleTypes,
-                    vehicle => vehicle.VehicleTypeId,
-                    vehicleType => vehicleType.Id,
-                    (vehicle, vehicleType) => new { Vehicle = vehicle, VehicleType = vehicleType }
+                .Include(v => v.VehicleType)
+                .Include(v => v.VehicleModel)
+                .ThenInclude(vm => vm.VehicleMake) // Ensure VehicleMake is included
+                .Where(v =>
+                    v.VehicleModel.Name.Contains(search) ||
+                    v.VehicleType.Name.Contains(search)
                 )
-                .Join(
-                    _context.VehicleModels,
-                    vehicleWithType => vehicleWithType.Vehicle.VehicleModelId,
-                    vehicleModel => vehicleModel.Id,
-                    (vehicleWithType, vehicleModel) => new { Vehicle = vehicleWithType.Vehicle, VehicleType = vehicleWithType.VehicleType, VehicleModel = vehicleModel }
-                )
-                .Where(
-                    vehicleModelWithType => vehicleModelWithType.VehicleModel.Name.Contains(search) ||
-                                             vehicleModelWithType.VehicleType.Name.Contains(search)
-                )
-                .Select(result => result.Vehicle)
+                .Select(v => new VehicleResponse
+                {
+                    Vehicle = v,
+                    vehicleMake = v.VehicleModel.VehicleMake,
+                    vehicleModel = v.VehicleModel
+                })
                 .ToListAsync();
 
             return vehicles;
         }
 
 
+        public async Task<List<VehicleResponse>> GetAllVehiclesDetails()
+        {
+            var vehicles = await _context.Vehicles
+                .Include(v => v.VehicleType)
+                .Include(v => v.VehicleModel)
+                .ThenInclude(vm => vm.VehicleMake)
+                .Select(v => new VehicleResponse
+                {
+                    Vehicle = v,
+                    vehicleMake = v.VehicleModel.VehicleMake,
+                    vehicleModel = v.VehicleModel
+                })
+                .ToListAsync();
+
+            return vehicles;
+        }
+
+
+        public async Task<List<VehicleResponse>> FilterVehicles(int? vehicleTypeId, int? vehicleMakeId, int? seatingCapacity, float? depositAmount)
+        {
+            var query = _context.Vehicles
+                .Include(v => v.VehicleModel)
+                .ThenInclude(vm => vm.VehicleMake)
+                .Include(v => v.VehicleType)
+                .AsQueryable();
+
+            if (vehicleTypeId.HasValue)
+            {
+                query = query.Where(v => v.VehicleTypeId == vehicleTypeId.Value);
+            }
+
+            if (vehicleMakeId.HasValue)
+            {
+                var joinedQuery = query.Join(
+                    _context.VehicleModels,
+                    vehicle => vehicle.VehicleModelId,
+                    vehicleModel => vehicleModel.Id,
+                    (vehicle, vehicleModel) => new { vehicle, vehicleModel }
+                );
+
+                if (vehicleMakeId.HasValue)
+                {
+                    joinedQuery = joinedQuery.Where(vm => vm.vehicleModel.VehicleMakeId == vehicleMakeId.Value);
+                }
+
+                if (!(seatingCapacity == 0))
+                {
+                    joinedQuery = joinedQuery.Where(vm => vm.vehicleModel.SeatingCapacity < seatingCapacity);
+                }
+
+                query = joinedQuery.Select(vm => vm.vehicle);
+            }
+
+            if (depositAmount.HasValue)
+            {
+                query = query.Where(v => v.VehicleType.DepositAmount < depositAmount.Value);
+            }
+
+            var result = await query
+                .Select(v => new VehicleResponse
+                {
+                    Vehicle = v,
+                    vehicleMake = v.VehicleModel.VehicleMake,
+                    vehicleModel = v.VehicleModel
+                })
+                .ToListAsync();
+
+            return result;
+        }
+
+
     }
+
+    public class VehicleResponse
+    {
+        public Vehicle Vehicle { get; set; }
+
+        public VehicleMake vehicleMake { get; set; }
+
+        public VehicleModel vehicleModel { get; set; }
+    }
+
 }

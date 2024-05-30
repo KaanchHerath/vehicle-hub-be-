@@ -44,8 +44,15 @@ namespace reservation_system_be.Controllers
         [HttpPost]
         public async Task<ActionResult<IEnumerable<Feedback>>> AddFeedbacks(FeedbackRequest feedback)
         {
-            var newfeedback = await _feedbackService.AddFeedbacks(feedback);
-            return Ok(newfeedback);
+            try
+            {
+                var newfeedback = await _feedbackService.AddFeedbacks(feedback);
+                return Ok(newfeedback);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet("{type}")]
@@ -54,6 +61,28 @@ namespace reservation_system_be.Controllers
             try
             {
                 var feedbacks = await _feedbackService.GetFeedbacks(type);
+
+                if (feedbacks.Any())
+                {
+                    return Ok(feedbacks);
+                }
+                else
+                {
+                    return NotFound();
+                }
+            }
+            catch (DataNotFoundException)
+            {
+                return NotFound();
+            }
+        }
+
+        [HttpGet("vehicle/{vehicleid}")]
+        public async Task<ActionResult<IEnumerable<FeedbackResponse>>> GetFeedbacksForVehicle(int vehicleid)
+        {
+            try
+            {
+                var feedbacks = await _feedbackService.GetFeedbacksForVehicle(vehicleid);
 
                 if (feedbacks.Any())
                 {
