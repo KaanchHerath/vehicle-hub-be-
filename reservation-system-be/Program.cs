@@ -23,10 +23,12 @@ using reservation_system_be.Helper;
 using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Services.FrontReservationServices;
 using reservation_system_be.Services.AdminReservationServices;
+using reservation_system_be.Services.VehicleUtilizationReportServices;
 
 using reservation_system_be.Services.EmployeeAuthService;
 using reservation_system_be.Services.StripeService;
 using reservation_system_be.Services.AdminVehicleServices;
+using reservation_system_be.Services.RevenueReportServices;
 using reservation_system_be.Services.CustomerVehicleServices;
 
 
@@ -90,6 +92,9 @@ builder.Services.AddScoped<IAdminReservationService, AdminReservationService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IStripeService, StripeService>();
 builder.Services.AddScoped<IAdminVehicleService, AdminVehicleService>();
+builder.Services.AddScoped<IVehicleUtilizationReportService, VehicleUtilizationReportService>();
+builder.Services.AddScoped<IRevenueReportService, RevenueReportService>();
+
 builder.Services.AddScoped<IBookNowService, BookNowService>();
 
 builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>();

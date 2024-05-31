@@ -65,12 +65,15 @@ namespace reservation_system_be.Services.CustomerAuthServices
                 Subject = "Welcome to Vehicle Hub",
                 Body = "<h1>Welcome!</h1> <br> <p>Thank you for reistering with our service. Now you can reserve vehicles whenever you need.</p>"
             };
-            await _emailService.SendEmailAsync(mailRequest);
 
-            return "User registered successfully";
+            await _emailService.SendEmailAsync(mailRequest);
+          
+
+            return "Customer registered successfully!";
+             
         }
 
-        public async Task<string> Login(CustomerAuthDTO customer)
+        public async Task<AuthDto> Login(CustomerAuthDTO customer)
         {
             if (string.IsNullOrEmpty(customer.Email) || string.IsNullOrEmpty(customer.Password))
             {
@@ -88,8 +91,15 @@ namespace reservation_system_be.Services.CustomerAuthServices
 
             //Generate JWT token
             var token = GenerateJWTToken(customer);
+            var customerId = user.Id;
 
-            return token;
+            var authdto = new AuthDto
+            {
+                token = token,
+                id = customerId
+            };
+
+            return authdto;
             
         }
 

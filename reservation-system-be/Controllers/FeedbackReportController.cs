@@ -18,7 +18,7 @@ namespace reservation_system_be.Controllers
 
         public FeedbackReportController(IFeedbackReportService fbc)
         {
-            _fbc = fbc; 
+            _fbc = fbc;
         }
 
         [HttpGet]
@@ -36,4 +36,3 @@ namespace reservation_system_be.Controllers
 
     }
 }
-

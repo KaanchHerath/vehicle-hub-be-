@@ -1,20 +1,38 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
-
-// For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
+using reservation_system_be.Data;
+using reservation_system_be.DTOs;
+using reservation_system_be.Models;
+using reservation_system_be.Services.VehicleUtilizationReportServices;
 
 namespace reservation_system_be.Controllers
 {
-    public class VehicleUtilizationReportController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class VehicleUtilizationReportController : Controller 
     {
-        // GET: /<controller>/
-        public IActionResult Index()
+        private readonly IVehicleUtilizationReportService _vuc;
+
+        public VehicleUtilizationReportController(IVehicleUtilizationReportService vuc)
         {
-            return View();
+            _vuc = vuc; 
+        }
+
+        [HttpGet]
+        public async Task<ActionResult<List<VehicleUtilizationReportDTO>>> GetAll()
+        {
+            try
+            {
+                return Ok(await _vuc.GetAllVehicleUtilization());
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
-}
 
+}

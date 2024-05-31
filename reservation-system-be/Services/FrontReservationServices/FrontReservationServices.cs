@@ -68,23 +68,26 @@ namespace reservation_system_be.Services.FrontReservationServices
 
         public async Task<IEnumerable<OngoingRentalDto>> OngoingRentals(int id) // Customer ID
         {
-            var customer = await _customerService.GetCustomer(id);
-            var ongoingRentals = new List<OngoingRentalDto>();
-
-            var customerReservations = await _context.CustomerReservations.Where(cr => cr.CustomerId == id).ToListAsync();
+            var customerReservations = await _customerReservationService.GetAllCustomerReservations();
             if (customerReservations == null)
             {
                 throw new DataNotFoundException("No ongoing rentals found");
             }
 
+            customerReservations = customerReservations.Where(cr => cr.Customer.Id == id).ToList();
+
+            var ongoingRentals = new List<OngoingRentalDto>();
+
             foreach (var cr in customerReservations)
             {
-                if (cr.Reservation.EndDate > DateTime.Now)
+                if ((cr.Reservation.Status == Status.Waiting) || (cr.Reservation.Status == Status.Pending) || (cr.Reservation.Status == Status.Confirmed) || 
+                    (cr.Reservation.Status == Status.Ongoing) || (cr.Reservation.Status == Status.Ended))
                 {
                     var ongoingRental = new OngoingRentalDto
                     {
                         CustomerReservationId = cr.Id,
                         ModelName = cr.Vehicle.VehicleModel.Name,
+                        Make = cr.Vehicle.VehicleModel.VehicleMake.Name,
                         StartDate = cr.Reservation.StartDate,
                         EndDate = cr.Reservation.EndDate,
                         Status = cr.Reservation.Status
@@ -102,8 +105,8 @@ namespace reservation_system_be.Services.FrontReservationServices
             var ongoingRentalSingle = new OngoingRentalSingleDto
             {
                 CustomerReservationId = customerReservation.Id,
-                Name = customerReservation.Customer.Name,
                 ModelName = customerReservation.Vehicle.VehicleModel.Name,
+                Make = customerReservation.Vehicle.VehicleModel.VehicleMake.Name,
                 StartDate = customerReservation.Reservation.StartDate,
                 EndDate = customerReservation.Reservation.EndDate,
                 StartTime = customerReservation.Reservation.StartTime,

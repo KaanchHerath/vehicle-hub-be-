@@ -6,14 +6,14 @@ using reservation_system_be.DTOs;
 
 namespace reservation_system_be.Services.FeedbackReportService
 {
-	public class FeedbackReportService : IFeedbackReportService
-	{
+    public class FeedbackReportService : IFeedbackReportService
+    {
         private readonly DataContext _context;
 
         public FeedbackReportService(DataContext context)
-		{
+        {
             _context = context;
-		}
+        }
 
         public async Task<List<FeedBackReportDTO>> GetAllFeedBacks()
         {
@@ -25,12 +25,12 @@ namespace reservation_system_be.Services.FeedbackReportService
                  .ThenInclude(cr => cr.Customer)
                  .Select(f => new FeedBackReportDTO
                  {
-                     Id = f.Id,
-                     Type = f.Type,
-                     Content = f.Content,
-                     RatingNo = f.RatingNo,
-                     Feedback_Date = f.Feedback_Date,
-                     Customername = f.Reservation.CustomerReservation.Customer.Name
+                     id = f.Id,
+                     vehicle = f.Type,
+                     content = f.Content,
+                     rating = f.RatingNo,
+                     date = f.Feedback_Date,
+                     customer = f.Reservation.CustomerReservation.Customer.Name
                  })
                  .ToListAsync(); ;
             }
@@ -41,4 +41,3 @@ namespace reservation_system_be.Services.FeedbackReportService
         }
     }
 }
-
