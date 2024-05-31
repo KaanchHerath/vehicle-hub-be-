@@ -27,6 +27,7 @@ using reservation_system_be.Services.AdminReservationServices;
 using reservation_system_be.Services.EmployeeAuthService;
 using reservation_system_be.Services.StripeService;
 using reservation_system_be.Services.AdminVehicleServices;
+using reservation_system_be.Services.CustomerVehicleServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -89,9 +90,11 @@ builder.Services.AddScoped<IAdminReservationService, AdminReservationService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IStripeService, StripeService>();
 builder.Services.AddScoped<IAdminVehicleService, AdminVehicleService>();
+builder.Services.AddScoped<IBookNowService, BookNowService>();
 
 builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+
 
 
 
