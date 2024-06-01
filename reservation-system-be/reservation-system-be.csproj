@@ -32,8 +32,10 @@
   <ItemGroup>
     <None Remove="Services\FeedbackReportService\" />
     <None Remove="Services\InvoiceService\" />
+    <None Remove="Services\PaymentService\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Services\FeedbackReportService\" />
+    <Folder Include="Services\PaymentService\" />
   </ItemGroup>
 </Project>
