@@ -1,5 +1,7 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
+using reservation_system_be.Migrations;
 using reservation_system_be.Models;
 
 namespace reservation_system_be.Services.VehicleMakeServices
@@ -28,11 +30,21 @@ namespace reservation_system_be.Services.VehicleMakeServices
             return vehicleMake;
         }
 
-        public async Task<VehicleMake> CreateVehicleMake(VehicleMake vehicleMake)
+        public async Task<VehicleMake> CreateVehicleMake(string name,IFormFile logo)
         {
-            _context.VehicleMake.Add(vehicleMake);
-            await _context.SaveChangesAsync();
-            return vehicleMake;
+            using(var ms= new MemoryStream())
+            {
+                await logo.CopyToAsync(ms);
+                var vehicleMake = new VehicleMake
+                {
+                    Name = name,
+                    Logo = logo.FileName,
+                    LogoImage = ms.ToArray()
+                };
+                _context.VehicleMake.Add(vehicleMake);
+                await _context.SaveChangesAsync();
+                return vehicleMake;
+            }
         }
 
         public async Task<VehicleMake> UpdateVehicleMake(int id, VehicleMake vehicleMake)

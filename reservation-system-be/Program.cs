@@ -28,7 +28,13 @@ using reservation_system_be.Services.VehicleUtilizationReportServices;
 using reservation_system_be.Services.EmployeeAuthService;
 using reservation_system_be.Services.StripeService;
 using reservation_system_be.Services.AdminVehicleServices;
-
+using reservation_system_be.Services.RevenueReportServices;
+using reservation_system_be.Services.CustomerVehicleServices;
+using reservation_system_be.Services.CusVsFeedService;
+using reservation_system_be.Services.CusVsFeedServices;
+using reservation_system_be.Services.ReservationStatusServices;
+using reservation_system_be.Services.DashboardStatusServices;
+using reservation_system_be.Services.PaymentService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -91,9 +97,18 @@ builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IStripeService, StripeService>();
 builder.Services.AddScoped<IAdminVehicleService, AdminVehicleService>();
 builder.Services.AddScoped<IVehicleUtilizationReportService, VehicleUtilizationReportService>();
+builder.Services.AddScoped<IRevenueReportService, RevenueReportService>();
+builder.Services.AddScoped<ISalesChartService, SalesChartService>();
+builder.Services.AddScoped<IReservationStatusService, ReservationStatusService>();
+builder.Services.AddScoped<IDashboardStatusService, DashboardStatusService>();
+
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+
+builder.Services.AddScoped<IBookNowService, BookNowService>();
 
 builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>();
 builder.Services.AddTransient<IEmailService, EmailService>();
+
 
 
 
