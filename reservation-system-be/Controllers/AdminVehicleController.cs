@@ -17,10 +17,17 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<AdditionalFeaturesDto>>> ViewVehicleModels()
+        public async Task<ActionResult<IEnumerable<VehicleModelDto>>> ViewVehicleModels()
         {
-            var additionalFeaturesDto =  await _adminVehicleService.ViewVehicleModels();
-            return Ok(additionalFeaturesDto);
+            try
+            {
+                var vehicleModels = await _adminVehicleService.ViewVehicleModels();
+                return Ok(vehicleModels);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
         }
 
         [HttpGet("{id}")]
