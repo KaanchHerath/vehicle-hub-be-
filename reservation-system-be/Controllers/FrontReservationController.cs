@@ -55,5 +55,13 @@ namespace reservation_system_be.Controllers
 
             return Ok(rentalHistorySingle);
         }
+
+        [HttpGet("view-booking-confirmation/{id}")]
+        public async Task<IActionResult> ViewBookingConfirmation(int id)
+        {
+            var bookingConfirmation = await _frontReservationServices.ViewBookingConfirmation(id);
+
+            return Ok(bookingConfirmation);
+        }
     }
 }
