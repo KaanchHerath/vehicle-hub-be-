@@ -1,11 +1,14 @@
-﻿namespace reservation_system_be.Models
+﻿using System.Text.Json.Serialization;
+
+namespace reservation_system_be.Models
 {
     public class VehicleMake
     {
         public int Id { get; set; }
         public string Name { get; set; } = string.Empty;
-        public byte[]? Logo { get; set; }
-        public ICollection<VehicleModel> VehicleModels { get; set; } = new List<VehicleModel>();
+        public string Logo { get; set; } = string.Empty;
+        [JsonIgnore]
+        public ICollection<VehicleModel>? VehicleModels { get; set; } = new List<VehicleModel>();
 
     }
 }

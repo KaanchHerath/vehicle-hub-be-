@@ -1,4 +1,6 @@
-﻿namespace reservation_system_be.Models
+﻿using System.Text.Json.Serialization;
+
+namespace reservation_system_be.Models
 {
     public class Customer
     {
@@ -7,13 +9,13 @@
         public string NIC { get; set; } = string.Empty;
         public string DrivingLicenseNo { get; set; } = string.Empty;
         public string Email { get; set; } = string.Empty;
-        public string TelephoneNumber { get; set; } = string.Empty;
-        public string Status { get; set; } = string.Empty;
+        public bool Status { get; set; } = true;
+        public int ContactNo { get; set; } 
         public string Address { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public CustomerWishlist? CustomerWishlist { get; set; }
-        public int WishlistId { get; set; }
-        public Wishlist? Wishlist { get; set; }
-        public CustomerReservation? CusReservation { get; set; }
+        [JsonIgnore]
+        public ICollection<Wishlist>? Wishlist { get; set; }
+        [JsonIgnore]
+        public ICollection<CustomerReservation>? CusReservation { get; set; }
     }
 }
