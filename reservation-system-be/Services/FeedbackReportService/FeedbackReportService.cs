@@ -26,7 +26,8 @@ namespace reservation_system_be.Services.FeedbackReportService
                  {
                      id = f.Id,
                      vehicle = f.Type,
-                     content = f.Service_Review,
+                     vehicle_Review = f.Vehicle_Review,
+                     service_Review = f.Service_Review,
                      rating = f.RatingNo,
                      date = f.Feedback_Date,
                      customer = f.CustomerReservation.Customer.Name

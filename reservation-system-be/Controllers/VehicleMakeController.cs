@@ -38,17 +38,10 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VehicleMake>> CreateVehicleMake(string name,IFormFile logo)
+        public async Task<ActionResult<VehicleMake>> CreateVehicleMake(VehicleMake vehicleMake)
         {
-            try
-            {
-                var vehicleMake = await _vehicleMakeService.CreateVehicleMake(name, logo);
-                return CreatedAtAction(nameof(GetVehicleMake), new { id = vehicleMake.Id }, vehicleMake);
-            }
-            catch (DataNotFoundException)
-            {
-                return NotFound();
-            }
+            var createdVehicleMake = await _vehicleMakeService.CreateVehicleMake(vehicleMake);
+            return CreatedAtAction(nameof(GetVehicleMake), new { id = createdVehicleMake.Id }, createdVehicleMake);
         }
 
         [HttpPut("{id}")]

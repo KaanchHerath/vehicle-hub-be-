@@ -6,7 +6,8 @@ namespace reservation_system_be.DTOs
    (
         int id,
         string vehicle,
-        string content,
+        string vehicle_Review,
+        string service_Review,
         int rating,
         DateTime date,
         string customer

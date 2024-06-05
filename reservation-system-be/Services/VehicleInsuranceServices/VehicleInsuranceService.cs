@@ -49,7 +49,7 @@ namespace reservation_system_be.Services.VehicleInsuranceServices
         {
             var vehicleInsurance = await _context.VehicleInsurances
             .Include(vi => vi.Vehicle)
-            .FirstOrDefaultAsync();
+            .FirstOrDefaultAsync(vi => vi.Id == id);
 
             if (vehicleInsurance == null)
             {

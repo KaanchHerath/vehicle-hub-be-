@@ -6,7 +6,7 @@ namespace reservation_system_be.Services.VehicleMakeServices
     {
         Task<List<VehicleMake>> GetAllVehicleMakes();
         Task<VehicleMake> GetVehicleMake(int id);
-        Task<VehicleMake> CreateVehicleMake(string name,IFormFile logo);
+        Task<VehicleMake> CreateVehicleMake(VehicleMake vehicleMake);
         Task<VehicleMake> UpdateVehicleMake(int id, VehicleMake vehicleMake);
         Task DeleteVehicleMake(int id);
     }

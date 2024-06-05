@@ -35,6 +35,7 @@ using reservation_system_be.Services.CusVsFeedServices;
 using reservation_system_be.Services.ReservationStatusServices;
 using reservation_system_be.Services.DashboardStatusServices;
 using reservation_system_be.Services.PaymentService;
+using Azure.Storage.Blobs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -75,6 +76,9 @@ builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("Email
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+
+
 
 //Injection List
 builder.Services.AddScoped<IVehicleMakeService, VehicleMakeService>();
