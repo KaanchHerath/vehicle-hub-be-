@@ -27,24 +27,11 @@ namespace reservation_system_be.Services.FeedbackServices
                 {
                     Designation = feedbackRequest.Designation,
                     Type = "service",
+                    Vehicle_Review = feedbackRequest.Vehicle_Review,
                     Service_Review = feedbackRequest.Service_Review,
                     RatingNo = feedbackRequest.RatingNo,
                     Feedback_Date = DateTime.Now,
                     Feedback_Time = DateTime.Now,
-                    //VehicleId = feedbackRequest.VehicleId
-                    CustomerReservationId = feedbackRequest.CustomerReservationId,
-                    CustomerReservation = null,
-                };
-
-                var vehicleFeedback = new Feedback
-                {
-                    Designation = feedbackRequest.Designation,
-                    Type = "vehicle",
-                    Vehicle_Review = feedbackRequest.Vehicle_Review,
-                    RatingNo = feedbackRequest.RatingNo,
-                    Feedback_Date = DateTime.Now,
-                    Feedback_Time = DateTime.Now,
-                    //VehicleId = feedbackRequest.VehicleId
                     CustomerReservationId = feedbackRequest.CustomerReservationId,
                     CustomerReservation = null,
                 };
@@ -61,15 +48,12 @@ namespace reservation_system_be.Services.FeedbackServices
                     serviceFeedback.CustomerReservationId = feedbackRequest.CustomerReservationId;
                     serviceFeedback.CustomerReservation = customerReservation;
 
-                    vehicleFeedback.CustomerReservationId = feedbackRequest.CustomerReservationId;
-                    vehicleFeedback.CustomerReservation = customerReservation;
-
                 }
 
-                _context.Feedbacks.AddRange(serviceFeedback, vehicleFeedback);
+                _context.Feedbacks.AddRange(serviceFeedback);
                 await _context.SaveChangesAsync();
 
-                return new List<Feedback> { serviceFeedback, vehicleFeedback };
+                return new List<Feedback> { serviceFeedback };
             }
             catch (Exception ex)
             {
@@ -149,8 +133,6 @@ namespace reservation_system_be.Services.FeedbackServices
             }
         }
 
-
-
     }
 
     public class FeedbackResponse
@@ -165,7 +147,6 @@ namespace reservation_system_be.Services.FeedbackServices
         public int RatingNo { get; set; }
         public string Service_Review { get; set; } = string.Empty;
         public string Vehicle_Review { get; set; } = string.Empty;
-        public int VehicleId { get; set; }
         public int CustomerReservationId { get; set; }
 
     }
