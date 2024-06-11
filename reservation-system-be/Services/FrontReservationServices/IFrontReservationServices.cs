@@ -10,5 +10,6 @@ namespace reservation_system_be.Services.FrontReservationServices
         Task<OngoingRentalSingleDto> OngoingRentalSingle(int id);
         Task<IEnumerable<RentalDto>> RentalHistory(int id);
         Task <RentalHistorySingleDto> RentalHistorySingle(int id);
+        Task<BookingConfirmationDto> ViewBookingConfirmation(int id); // Invoice ID
     }
 }

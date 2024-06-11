@@ -8,6 +8,7 @@ using reservation_system_be.Models;
 using reservation_system_be.Services.CustomerReservationService;
 using reservation_system_be.Services.CustomerServices;
 using reservation_system_be.Services.EmailServices;
+using reservation_system_be.Services.InvoiceService;
 
 namespace reservation_system_be.Services.FrontReservationServices
 {
@@ -17,12 +18,15 @@ namespace reservation_system_be.Services.FrontReservationServices
         private readonly ICustomerReservationService _customerReservationService;
         private readonly IEmailService _emailService;
         private readonly ICustomerService _customerService;
-        public FrontReservationServices(DataContext context, ICustomerReservationService customerReservationService, IEmailService emailService, ICustomerService customerService)
+        private readonly IInvoiceService _invoiceService;
+        public FrontReservationServices(DataContext context, ICustomerReservationService customerReservationService, IEmailService emailService,
+            ICustomerService customerService, IInvoiceService invoiceService)
         {
             _context = context;
             _customerReservationService = customerReservationService;
             _emailService = emailService;
             _customerService = customerService;
+            _invoiceService = invoiceService;
         }
 
         public async Task<CustomerReservation> RequestReservations(CreateCustomerReservationDto customerReservationDto)
@@ -197,9 +201,44 @@ namespace reservation_system_be.Services.FrontReservationServices
                 ExtraKMCost = extraKMCost,
                 Penalty = penalty,
                 Amount = amount
-        };
+            };
 
             return rentalHistorySingle;
+        }
+
+        public async Task<BookingConfirmationDto> ViewBookingConfirmation(int id) // Invoice ID
+        {
+            var invoice = await _invoiceService.GetInvoiceById(id);
+            if (invoice == null)
+            {
+                throw new DataNotFoundException("No booking confirmation found");
+            }
+
+            var customerReservation = await _customerReservationService.GetCustomerReservation(invoice.CustomerReservationId);
+
+            var vehicleLog = await _context.VehicleLogs.FirstOrDefaultAsync(vl => vl.CustomerReservationId == invoice.CustomerReservationId);
+            if (vehicleLog == null)
+            {
+                throw new DataNotFoundException("No vehicleLog found");
+            }
+
+            var bookingConfirmation = new BookingConfirmationDto
+            {
+                CustomerReservationId = customerReservation.Id,
+                Make = customerReservation.Vehicle.VehicleModel.VehicleMake.Name,
+                ModelName = customerReservation.Vehicle.VehicleModel.Name,
+                StartDate = customerReservation.Reservation.StartDate,
+                EndDate = customerReservation.Reservation.EndDate,
+                StartTime = customerReservation.Reservation.StartTime,
+                EndTime = customerReservation.Reservation.EndTime,
+                Deposit = customerReservation.Vehicle.VehicleType.DepositAmount,
+                ExtraKMCost = vehicleLog.ExtraKM * customerReservation.Vehicle.CostPerExtraKM,
+                Penalty = vehicleLog.Penalty,
+                RentalCost = customerReservation.Vehicle.CostPerDay * customerReservation.Reservation.NoOfDays,
+                Amount = invoice.Amount
+            };
+
+            return bookingConfirmation;
         }
     }
 }
