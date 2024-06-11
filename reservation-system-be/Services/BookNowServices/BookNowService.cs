@@ -30,7 +30,12 @@ namespace reservation_system_be.Services.CustomerVehicleServices
                     Year = vehicle.VehicleModel.Year,
                     Transmission = vehicle.Transmission,
                     SeatingCapacity = vehicle.VehicleModel.SeatingCapacity,
-                    CostPerDay = vehicle.CostPerDay
+                    CostPerDay = vehicle.CostPerDay,
+                    Thumbnail = vehicle.Thumbnail,
+                    FrontImg = vehicle.FrontImg,
+                    RearImg = vehicle.RearImg,
+                    DashboardImg = vehicle.DashboardImg,
+                    InteriorImg = vehicle.InteriorImg
                 };
                 bookNowDtos.Add(bookNowDto);
             } 
