@@ -32,8 +32,8 @@ namespace reservation_system_be.Services.VehicleFilterServices
                     Vehicle = vehicle,
                     vehicleMake = vehicle.VehicleModel.VehicleMake,
                     vehicleModel = vehicle.VehicleModel,
-                    vehicleType = vehicle.VehicleType,
-                    vehiclePhotos = vehicle.VehiclePhoto
+                    //vehicleType = vehicle.VehicleType,
+                    //vehiclePhotos = vehicle.VehiclePhoto
                 })
                 .ToListAsync();
 
