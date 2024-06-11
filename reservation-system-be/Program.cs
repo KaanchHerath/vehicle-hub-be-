@@ -36,6 +36,7 @@ using reservation_system_be.Services.ReservationStatusServices;
 using reservation_system_be.Services.DashboardStatusServices;
 using reservation_system_be.Services.PaymentService;
 using Azure.Storage.Blobs;
+using reservation_system_be.Services.FileServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -73,11 +74,16 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
+
+//add connection azure blob
+builder.Services.AddScoped(_ =>
+{
+    return new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage"));
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-
 
 
 //Injection List
@@ -112,7 +118,7 @@ builder.Services.AddScoped<IBookNowService, BookNowService>();
 
 builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>();
 builder.Services.AddTransient<IEmailService, EmailService>();
-
+builder.Services.AddScoped<IFileService, FileService>();
 
 
 
