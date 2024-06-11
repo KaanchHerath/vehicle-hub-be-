@@ -38,5 +38,25 @@ namespace reservation_system_be.Services.NotificationService
             }
         }
 
+        public async Task<bool> DeleteNotification(int notificationId)
+        {
+            try
+            {
+                var notification = await _context.Notifications.FindAsync(notificationId);
+                if (notification == null)
+                {
+                    return false;
+                }
+
+                _context.Notifications.Remove(notification);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error deleting notification.", ex);
+            }
+        }
+
     }
 }

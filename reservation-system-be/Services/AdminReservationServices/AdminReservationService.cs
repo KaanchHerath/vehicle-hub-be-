@@ -234,7 +234,8 @@ namespace reservation_system_be.Services.AdminReservationServices
             if (vehicle != null)
             {
                 vehicle.Mileage = vl.EndMileage;
-                await _vehicleService.UpdateVehicle(vehicle.Id, vehicle);
+                _context.Entry(vehicle).State = EntityState.Modified;
+                await _context.SaveChangesAsync();
             }
 
             // Create final invoice
