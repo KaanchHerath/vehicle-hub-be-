@@ -11,6 +11,7 @@ using reservation_system_be.Services.InvoiceService;
 using reservation_system_be.Services.ReservationService;
 using reservation_system_be.Services.VehicleLogServices;
 using reservation_system_be.Services.VehicleServices;
+using Stripe;
 
 namespace reservation_system_be.Services.AdminReservationServices
 {
@@ -49,7 +50,7 @@ namespace reservation_system_be.Services.AdminReservationServices
 
             await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
 
-            var invoice_model = new Invoice
+            var invoice_model = new Models.Invoice
             {
                 Type = "Deposit",
                 Amount = customerReservation.Vehicle.VehicleType.DepositAmount,
@@ -70,7 +71,7 @@ namespace reservation_system_be.Services.AdminReservationServices
         private string DepositRequestMail(int id)
         {
             // Construct the payment link with the invoice ID
-            string paymentLink = "https://yourdomain.com/payment/" + id; // fix link
+            string paymentLink = "http://localhost:3000/bookingconfirmation/" + id; // fix link
 
             string response = "<div style=\"width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;\">";
             response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;\">";
@@ -88,13 +89,61 @@ namespace reservation_system_be.Services.AdminReservationServices
             response += "<p><strong>VehicleHub Team</strong></p>";
             response += "</div>";
             response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;margin-top:20px;text-align:center;\">";
-            response += "<p>Contact us: info@vehiclehub.com | (123) 456-7890</p>";
-            response += "<p>1234 Main St, Anytown, USA</p>";
+            response += "<p>Contact us: vehiclehub01@gmail.com | +94 77 123 4567</p>";
+            response += "<p>1234 Galle Road, Colombo, Sri Lanka</p>";
             response += "</div>";
             response += "</div>";
             return response;
         }
 
+
+        public async Task DeclineReservation(int id, int eid)
+        {
+            var customerReservation = await _customerReservationService.GetCustomerReservation(id);
+            var employee = await _employeeService.GetEmployee(eid);
+
+            customerReservation.Reservation.Status = Status.Cancelled;
+            customerReservation.Reservation.EmployeeId = employee.Id;
+
+            await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
+
+            MailRequest mailRequest = new MailRequest
+            {
+                ToEmail = customerReservation.Customer.Email,
+                Subject = "Reservation Declined",
+                Body = ReservationDeclinedMail(id)
+            };
+            await _emailService.SendEmailAsync(mailRequest);
+        }
+
+        private string ReservationDeclinedMail(int id)
+        {
+            // Construct the home link for redirection
+            string vehicleFleetLink = "http://localhost:3000/vehiclefleet"; // fix link
+
+            string response = "<div style=\"width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;\">";
+            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;\">";
+            response += "<h1>VehicleHub</h1>";
+            response += "</div>";
+            response += "<div style=\"margin:20px;text-align:left;\">";
+            response += "<img src=\"https://drive.google.com/uc?export=view&id=1S40qYUDb_f9YRAaQeQmPETz5ABYbI32p\" alt=\"Company Logo\" style=\"width:150px;height:auto;display:block;margin:auto;\"/>";
+            response += "<h2 style=\"text-align:center;\">Reservation Request Declined</h2>";
+            response += "<p>Dear Customer,</p>";
+            response += "<p>We regret to inform you that your vehicle reservation request with ID #" + id + " has been declined.</p>";
+            response += "<p>We apologize for any inconvenience this may have caused. If you have any questions or need further details, please feel free to contact us.</p>";
+            response += "<p>Our team is here to assist you and we hope to serve you in the future.</p>";
+            response += "<p>You can make another reservation by clicking the link below:</p>";
+            response += "<p style=\"text-align:center;\"><a href=\"" + vehicleFleetLink + "\" style=\"background-color:#283280;color:#ffffff;padding:10px 20px;text-decoration:none;border-radius:5px;\">Make Another Reservation</a></p>";
+            response += "<p>Best regards,</p>";
+            response += "<p><strong>VehicleHub Team</strong></p>";
+            response += "</div>";
+            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;margin-top:20px;text-align:center;\">";
+            response += "<p>Contact us: vehiclehub01@gmail.com | +94 77 123 4567</p>";
+            response += "<p>1234 Galle Road, Colombo, Sri Lanka</p>";
+            response += "</div>";
+            response += "</div>";
+            return response;
+        }
 
 
         public async Task<IEnumerable<ViewReservationDto>> ViewReservations()
@@ -190,7 +239,7 @@ namespace reservation_system_be.Services.AdminReservationServices
             }
 
             // Create final invoice
-            var invoice_model = new Invoice
+            var invoice_model = new Models.Invoice
             {
                 Type = "Final",
                 Amount = CalFinalAmount(customerReservation, vl),

@@ -6,6 +6,7 @@ namespace reservation_system_be.Services.AdminReservationServices
     public interface IAdminReservationService
     {
         Task AcceptReservation(int id, int eid);
+        Task DeclineReservation(int id, int eid);
         Task <IEnumerable<ViewReservationDto>> ViewReservations();
         Task BeginReservation(int id);
         Task EndReservation(int id, VehicleLogDto vehicleLog);
