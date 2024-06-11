@@ -42,17 +42,26 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Vehicle>> CreateVehicle(Vehicle vehicle)
-        {
-            return await _vehicleService.CreateVehicle(vehicle);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Vehicle>> UpdateVehicle(int id, Vehicle vehicle)
+        public async Task<ActionResult<Vehicle>> CreateVehicle([FromForm]CreateVehicleDto createVehicleDto, IFormFile formFile, IFormFile front, IFormFile rear, IFormFile dashboard, IFormFile interior)
         {
             try
             {
-                return await _vehicleService.UpdateVehicle(id, vehicle);
+                var vehicle = await _vehicleService.CreateVehicle(createVehicleDto, formFile, front, rear, dashboard, interior);
+                return Ok(vehicle);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("{id}")]
+        public async Task<ActionResult<Vehicle>> UpdateVehicle(int id, [FromForm]CreateVehicleDto createVehicleDto, IFormFile formFile, IFormFile front, IFormFile rear, IFormFile dashboard, IFormFile interior)
+        {
+            try
+            {
+                var vehicle = await _vehicleService.UpdateVehicle(id, createVehicleDto, formFile, front, rear, dashboard, interior);
+                return Ok(vehicle);
             }
             catch (DataNotFoundException e)
             {
