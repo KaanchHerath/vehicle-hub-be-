@@ -13,6 +13,7 @@
         float ExtraKMCost,
         float Penalty,
         float RentalCost,
-        float Amount
+        float Amount,
+        string Thumbnail
     );
 }

@@ -11,6 +11,7 @@ namespace reservation_system_be.DTOs
         DateTime EndDate,
         Status Status,
         TimeOnly StartTime,
-        TimeOnly EndTime
+        TimeOnly EndTime,
+        string Thumbnail
     );
 }

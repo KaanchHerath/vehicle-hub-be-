@@ -116,7 +116,8 @@ namespace reservation_system_be.Services.FrontReservationServices
                 EndDate = customerReservation.Reservation.EndDate,
                 StartTime = customerReservation.Reservation.StartTime,
                 EndTime = customerReservation.Reservation.EndTime,
-                Status = customerReservation.Reservation.Status
+                Status = customerReservation.Reservation.Status,
+                Thumbnail = customerReservation.Vehicle.Thumbnail
             };
 
             return ongoingRentalSingle;
@@ -200,7 +201,8 @@ namespace reservation_system_be.Services.FrontReservationServices
                 RentalCost = rentalCost,
                 ExtraKMCost = extraKMCost,
                 Penalty = penalty,
-                Amount = amount
+                Amount = amount,
+                Thumbnail = customerReservation.Vehicle.Thumbnail
             };
 
             return rentalHistorySingle;
@@ -235,7 +237,8 @@ namespace reservation_system_be.Services.FrontReservationServices
                 ExtraKMCost = vehicleLog.ExtraKM * customerReservation.Vehicle.CostPerExtraKM,
                 Penalty = vehicleLog.Penalty,
                 RentalCost = customerReservation.Vehicle.CostPerDay * customerReservation.Reservation.NoOfDays,
-                Amount = invoice.Amount
+                Amount = invoice.Amount,
+                Thumbnail = customerReservation.Vehicle.Thumbnail
             };
 
             return bookingConfirmation;
