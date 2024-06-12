@@ -229,9 +229,8 @@ namespace reservation_system_be.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("CustomerReservationId")
+                        .HasColumnType("int");
 
                     b.Property<string>("Designation")
                         .IsRequired()
@@ -246,18 +245,22 @@ namespace reservation_system_be.Migrations
                     b.Property<int>("RatingNo")
                         .HasColumnType("int");
 
-                    b.Property<int?>("ReservationId")
-                        .HasColumnType("int");
+                    b.Property<string>("Service_Review")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Type")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<string>("Vehicle_Review")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("ReservationId")
-                        .IsUnique()
-                        .HasFilter("[ReservationId] IS NOT NULL");
+                    b.HasIndex("CustomerReservationId")
+                        .IsUnique();
 
                     b.ToTable("Feedbacks", (string)null);
                 });
@@ -404,11 +407,27 @@ namespace reservation_system_be.Migrations
                     b.Property<float>("CostPerExtraKM")
                         .HasColumnType("real");
 
+                    b.Property<string>("DashboardImg")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("EmployeeId")
                         .HasColumnType("int");
 
+                    b.Property<string>("FrontImg")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("InteriorImg")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<int>("Mileage")
                         .HasColumnType("int");
+
+                    b.Property<string>("RearImg")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
@@ -416,6 +435,10 @@ namespace reservation_system_be.Migrations
 
                     b.Property<bool>("Status")
                         .HasColumnType("bit");
+
+                    b.Property<string>("Thumbnail")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Transmission")
                         .IsRequired()
@@ -699,11 +722,13 @@ namespace reservation_system_be.Migrations
 
             modelBuilder.Entity("reservation_system_be.Models.Feedback", b =>
                 {
-                    b.HasOne("reservation_system_be.Models.Reservation", "Reservation")
+                    b.HasOne("reservation_system_be.Models.CustomerReservation", "CustomerReservation")
                         .WithOne("Feedback")
-                        .HasForeignKey("reservation_system_be.Models.Feedback", "ReservationId");
+                        .HasForeignKey("reservation_system_be.Models.Feedback", "CustomerReservationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
-                    b.Navigation("Reservation");
+                    b.Navigation("CustomerReservation");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Invoice", b =>
@@ -871,6 +896,8 @@ namespace reservation_system_be.Migrations
 
             modelBuilder.Entity("reservation_system_be.Models.CustomerReservation", b =>
                 {
+                    b.Navigation("Feedback");
+
                     b.Navigation("Invoices");
 
                     b.Navigation("VehicleLog");
@@ -891,8 +918,6 @@ namespace reservation_system_be.Migrations
             modelBuilder.Entity("reservation_system_be.Models.Reservation", b =>
                 {
                     b.Navigation("CustomerReservation");
-
-                    b.Navigation("Feedback");
 
                     b.Navigation("Notifications");
 

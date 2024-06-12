@@ -27,49 +27,33 @@ namespace reservation_system_be.Services.FeedbackServices
                 {
                     Designation = feedbackRequest.Designation,
                     Type = "service",
-                    Content = feedbackRequest.Service_Review,
+                    Vehicle_Review = feedbackRequest.Vehicle_Review,
+                    Service_Review = feedbackRequest.Service_Review,
                     RatingNo = feedbackRequest.RatingNo,
                     Feedback_Date = DateTime.Now,
                     Feedback_Time = DateTime.Now,
-                    //VehicleId = feedbackRequest.VehicleId
-                    ReservationId = feedbackRequest.ReservationId,
-                    Reservation = null,
+                    CustomerReservationId = feedbackRequest.CustomerReservationId,
+                    CustomerReservation = null,
                 };
 
-                var vehicleFeedback = new Feedback
+                if (feedbackRequest.CustomerReservationId != null)
                 {
-                    Designation = feedbackRequest.Designation,
-                    Type = "vehicle",
-                    Content = feedbackRequest.Vehicle_Review,
-                    RatingNo = feedbackRequest.RatingNo,
-                    Feedback_Date = DateTime.Now,
-                    Feedback_Time = DateTime.Now,
-                    //VehicleId = feedbackRequest.VehicleId
-                    ReservationId = feedbackRequest.ReservationId,
-                    Reservation = null,
-                };
+                    var customerReservation = await _context.CustomerReservations.FindAsync(feedbackRequest.CustomerReservationId);
 
-                if (feedbackRequest.ReservationId != null)
-                {
-                    var reservation = await _context.Reservations.FindAsync(feedbackRequest.ReservationId);
-
-                    if (reservation == null)
+                    if (customerReservation == null)
                     {
                         throw new ArgumentException("Invalid ReservationId");
                     }
 
-                    serviceFeedback.ReservationId = feedbackRequest.ReservationId;
-                    serviceFeedback.Reservation = reservation;
-
-                    vehicleFeedback.ReservationId = feedbackRequest.ReservationId;
-                    vehicleFeedback.Reservation = reservation;
+                    serviceFeedback.CustomerReservationId = feedbackRequest.CustomerReservationId;
+                    serviceFeedback.CustomerReservation = customerReservation;
 
                 }
 
-                _context.Feedbacks.AddRange(serviceFeedback, vehicleFeedback);
+                _context.Feedbacks.AddRange(serviceFeedback);
                 await _context.SaveChangesAsync();
 
-                return new List<Feedback> { serviceFeedback, vehicleFeedback };
+                return new List<Feedback> { serviceFeedback };
             }
             catch (Exception ex)
             {
@@ -122,7 +106,7 @@ namespace reservation_system_be.Services.FeedbackServices
             {
                 var feedbackResponses = await _context.Feedbacks
                     .Join(_context.Reservations,
-                          feedback => feedback.ReservationId,
+                          feedback => feedback.CustomerReservationId,
                           reservation => reservation.Id,
                           (feedback, reservation) => new { feedback, reservation })
                     .Join(_context.CustomerReservations,
@@ -149,8 +133,6 @@ namespace reservation_system_be.Services.FeedbackServices
             }
         }
 
-
-
     }
 
     public class FeedbackResponse
@@ -165,8 +147,7 @@ namespace reservation_system_be.Services.FeedbackServices
         public int RatingNo { get; set; }
         public string Service_Review { get; set; } = string.Empty;
         public string Vehicle_Review { get; set; } = string.Empty;
-        public int VehicleId { get; set; }
-        public int ReservationId { get; set; }
+        public int CustomerReservationId { get; set; }
 
     }
 }

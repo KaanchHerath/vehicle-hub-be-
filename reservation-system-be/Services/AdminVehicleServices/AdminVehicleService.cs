@@ -48,11 +48,10 @@ namespace reservation_system_be.Services.AdminVehicleServices
             await _additionalFeaturesService.AddAdditionalFeatures(additionalFeatures);
         }
 
-        public async Task<IEnumerable<AdditionalFeaturesDto>> ViewVehicleModels()
+        public async Task<IEnumerable<VehicleModelDto>> ViewVehicleModels()
         {
-            return await _additionalFeaturesService.GetAllAdditionalFeatures();
+            return await _vehicleModelService.GetAllVehicleModels();
         }
-
         public async Task UpdateVehicleModel(int id, CreateVehicleModelDto createVehicleModelDto)
         {
             var existingAdditionalFeatures = await _context.AdditionalFeatures.FirstOrDefaultAsync(a => a.VehicleModelId == id);

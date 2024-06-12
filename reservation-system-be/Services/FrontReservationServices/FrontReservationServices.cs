@@ -3,10 +3,12 @@ using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
 using reservation_system_be.DTOs;
 using reservation_system_be.Helper;
+using reservation_system_be.Migrations;
 using reservation_system_be.Models;
 using reservation_system_be.Services.CustomerReservationService;
 using reservation_system_be.Services.CustomerServices;
 using reservation_system_be.Services.EmailServices;
+using reservation_system_be.Services.InvoiceService;
 
 namespace reservation_system_be.Services.FrontReservationServices
 {
@@ -16,12 +18,15 @@ namespace reservation_system_be.Services.FrontReservationServices
         private readonly ICustomerReservationService _customerReservationService;
         private readonly IEmailService _emailService;
         private readonly ICustomerService _customerService;
-        public FrontReservationServices(DataContext context, ICustomerReservationService customerReservationService, IEmailService emailService, ICustomerService customerService)
+        private readonly IInvoiceService _invoiceService;
+        public FrontReservationServices(DataContext context, ICustomerReservationService customerReservationService, IEmailService emailService,
+            ICustomerService customerService, IInvoiceService invoiceService)
         {
             _context = context;
             _customerReservationService = customerReservationService;
             _emailService = emailService;
             _customerService = customerService;
+            _invoiceService = invoiceService;
         }
 
         public async Task<CustomerReservation> RequestReservations(CreateCustomerReservationDto customerReservationDto)
@@ -66,25 +71,28 @@ namespace reservation_system_be.Services.FrontReservationServices
             return response;
         }
 
-        public async Task<IEnumerable<OngoingRentalDto>> OngoingRentals(int id) // Customer ID
+        public async Task<IEnumerable<RentalDto>> OngoingRentals(int id) // Customer ID
         {
-            var customer = await _customerService.GetCustomer(id);
-            var ongoingRentals = new List<OngoingRentalDto>();
-
-            var customerReservations = await _context.CustomerReservations.Where(cr => cr.CustomerId == id).ToListAsync();
+            var customerReservations = await _customerReservationService.GetAllCustomerReservations();
             if (customerReservations == null)
             {
                 throw new DataNotFoundException("No ongoing rentals found");
             }
 
+            customerReservations = customerReservations.Where(cr => cr.Customer.Id == id).ToList();
+
+            var ongoingRentals = new List<RentalDto>();
+
             foreach (var cr in customerReservations)
             {
-                if (cr.Reservation.EndDate > DateTime.Now)
+                if ((cr.Reservation.Status == Status.Waiting) || (cr.Reservation.Status == Status.Pending) || (cr.Reservation.Status == Status.Confirmed) || 
+                    (cr.Reservation.Status == Status.Ongoing) || (cr.Reservation.Status == Status.Ended))
                 {
-                    var ongoingRental = new OngoingRentalDto
+                    var ongoingRental = new RentalDto
                     {
                         CustomerReservationId = cr.Id,
                         ModelName = cr.Vehicle.VehicleModel.Name,
+                        Make = cr.Vehicle.VehicleModel.VehicleMake.Name,
                         StartDate = cr.Reservation.StartDate,
                         EndDate = cr.Reservation.EndDate,
                         Status = cr.Reservation.Status
@@ -102,16 +110,138 @@ namespace reservation_system_be.Services.FrontReservationServices
             var ongoingRentalSingle = new OngoingRentalSingleDto
             {
                 CustomerReservationId = customerReservation.Id,
-                Name = customerReservation.Customer.Name,
+                ModelName = customerReservation.Vehicle.VehicleModel.Name,
+                Make = customerReservation.Vehicle.VehicleModel.VehicleMake.Name,
+                StartDate = customerReservation.Reservation.StartDate,
+                EndDate = customerReservation.Reservation.EndDate,
+                StartTime = customerReservation.Reservation.StartTime,
+                EndTime = customerReservation.Reservation.EndTime,
+                Status = customerReservation.Reservation.Status,
+                Thumbnail = customerReservation.Vehicle.Thumbnail
+            };
+
+            return ongoingRentalSingle;
+        }
+
+        public async Task<IEnumerable<RentalDto>> RentalHistory(int id) // Customer ID
+        {
+            var customerReservations = await _customerReservationService.GetAllCustomerReservations();
+            if (customerReservations == null)
+            {
+                throw new DataNotFoundException("No ongoing rentals found");
+            }
+
+            customerReservations = customerReservations.Where(cr => cr.Customer.Id == id).ToList();
+
+            var rentalHistorys = new List<RentalDto>();
+
+            foreach (var cr in customerReservations)
+            {
+                if ((cr.Reservation.Status == Status.Completed) || (cr.Reservation.Status == Status.Cancelled))
+                {
+                    var rentalHistory = new RentalDto
+                    {
+                        CustomerReservationId = cr.Id,
+                        ModelName = cr.Vehicle.VehicleModel.Name,
+                        Make = cr.Vehicle.VehicleModel.VehicleMake.Name,
+                        StartDate = cr.Reservation.StartDate,
+                        EndDate = cr.Reservation.EndDate,
+                        Status = cr.Reservation.Status
+                    };
+                    rentalHistorys.Add(rentalHistory);
+                }
+            }
+
+            return rentalHistorys;
+        }
+
+        public async Task<RentalHistorySingleDto> RentalHistorySingle(int id) // CustomerReservation ID
+        {
+            var customerReservation = await _customerReservationService.GetCustomerReservation(id);
+            var amount = 0.0f; var extraKMCost = 0.0f; var penalty = 0.0f; var rentalCost = 0.0f;
+
+            if (customerReservation.Reservation.Status == Status.Completed)
+            {
+                rentalCost = customerReservation.Vehicle.CostPerDay * customerReservation.Reservation.NoOfDays;
+                var vehicleLog = await _context.VehicleLogs.FirstOrDefaultAsync(vl => vl.CustomerReservationId == id);
+                if (vehicleLog == null)
+                {
+                    throw new DataNotFoundException("No rental history found");
+                }
+                extraKMCost = vehicleLog.ExtraKM * customerReservation.Vehicle.CostPerExtraKM;
+                penalty = vehicleLog.Penalty;
+
+                var invoice = await _context.Invoices.Where(i => i.Type == "Final").FirstOrDefaultAsync(i => i.CustomerReservationId == id);
+                if (invoice == null)
+                {
+                    throw new DataNotFoundException("No rental history found");
+                }
+                amount = invoice.Amount;
+            }
+            else if (customerReservation.Reservation.Status == Status.Cancelled)
+            {
+                // Intentionally left blank for cancelled reservations
+            }
+            else
+            {
+                throw new DataNotFoundException("No rental history found");
+            }
+
+            var rentalHistorySingle = new RentalHistorySingleDto
+            {
+                CustomerReservationId = customerReservation.Id,
+                ModelName = customerReservation.Vehicle.VehicleModel.Name,
+                Make = customerReservation.Vehicle.VehicleModel.VehicleMake.Name,
+                StartDate = customerReservation.Reservation.StartDate,
+                EndDate = customerReservation.Reservation.EndDate,
+                StartTime = customerReservation.Reservation.StartTime,
+                EndTime = customerReservation.Reservation.EndTime,
+                Status = customerReservation.Reservation.Status,
+                Deposit = customerReservation.Vehicle.VehicleType.DepositAmount,
+                RentalCost = rentalCost,
+                ExtraKMCost = extraKMCost,
+                Penalty = penalty,
+                Amount = amount,
+                Thumbnail = customerReservation.Vehicle.Thumbnail
+            };
+
+            return rentalHistorySingle;
+        }
+
+        public async Task<BookingConfirmationDto> ViewBookingConfirmation(int id) // Invoice ID
+        {
+            var invoice = await _invoiceService.GetInvoiceById(id);
+            if (invoice == null)
+            {
+                throw new DataNotFoundException("No booking confirmation found");
+            }
+
+            var customerReservation = await _customerReservationService.GetCustomerReservation(invoice.CustomerReservationId);
+
+            var vehicleLog = await _context.VehicleLogs.FirstOrDefaultAsync(vl => vl.CustomerReservationId == invoice.CustomerReservationId);
+            if (vehicleLog == null)
+            {
+                throw new DataNotFoundException("No vehicleLog found");
+            }
+
+            var bookingConfirmation = new BookingConfirmationDto
+            {
+                CustomerReservationId = customerReservation.Id,
+                Make = customerReservation.Vehicle.VehicleModel.VehicleMake.Name,
                 ModelName = customerReservation.Vehicle.VehicleModel.Name,
                 StartDate = customerReservation.Reservation.StartDate,
                 EndDate = customerReservation.Reservation.EndDate,
                 StartTime = customerReservation.Reservation.StartTime,
                 EndTime = customerReservation.Reservation.EndTime,
-                Status = customerReservation.Reservation.Status
+                Deposit = customerReservation.Vehicle.VehicleType.DepositAmount,
+                ExtraKMCost = vehicleLog.ExtraKM * customerReservation.Vehicle.CostPerExtraKM,
+                Penalty = vehicleLog.Penalty,
+                RentalCost = customerReservation.Vehicle.CostPerDay * customerReservation.Reservation.NoOfDays,
+                Amount = invoice.Amount,
+                Thumbnail = customerReservation.Vehicle.Thumbnail
             };
 
-            return ongoingRentalSingle;
+            return bookingConfirmation;
         }
     }
 }

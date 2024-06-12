@@ -1,4 +1,6 @@
-﻿using reservation_system_be.Models;
+﻿using Microsoft.AspNetCore.Mvc;
+using reservation_system_be.DTOs;
+using reservation_system_be.Models;
 
 namespace reservation_system_be.Services.VehicleMakeServices
 {
@@ -6,8 +8,8 @@ namespace reservation_system_be.Services.VehicleMakeServices
     {
         Task<List<VehicleMake>> GetAllVehicleMakes();
         Task<VehicleMake> GetVehicleMake(int id);
-        Task<VehicleMake> CreateVehicleMake(VehicleMake vehicleMake);
-        Task<VehicleMake> UpdateVehicleMake(int id, VehicleMake vehicleMake);
+        Task<VehicleMake> CreateVehicleMake([FromForm] VehicleMakeDto vehicleMakeDto, IFormFile file);
+        Task<VehicleMake> UpdateVehicleMake(int id, [FromForm] VehicleMakeDto vehicleMakeDto, IFormFile file);
         Task DeleteVehicleMake(int id);
     }
 }

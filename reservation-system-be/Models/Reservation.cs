@@ -25,8 +25,6 @@ namespace reservation_system_be.Models
             [JsonConverter(typeof(JsonStringEnumConverter))]
             public Status Status { get; set; } = Status.Waiting;
             [JsonIgnore]
-            public Feedback? Feedback { get; set; }
-            [JsonIgnore]
             public CustomerReservation? CustomerReservation { get; set; }
             [JsonIgnore]
             public ICollection<Notification> Notifications { get; } = new List<Notification>();

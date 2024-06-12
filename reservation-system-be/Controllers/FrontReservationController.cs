@@ -39,5 +39,29 @@ namespace reservation_system_be.Controllers
 
             return Ok(ongoingRentalSingle);
         }
+
+        [HttpGet("rental-history/{id}")]
+        public async Task<IActionResult> RentalHistory(int id)
+        {
+            var rentalHistory = await _frontReservationServices.RentalHistory(id);
+
+            return Ok(rentalHistory);
+        }
+
+        [HttpGet("rental-history-single/{id}")]
+        public async Task<IActionResult> RentalHistorySingle(int id)
+        {
+            var rentalHistorySingle = await _frontReservationServices.RentalHistorySingle(id);
+
+            return Ok(rentalHistorySingle);
+        }
+
+        [HttpGet("view-booking-confirmation/{id}")]
+        public async Task<IActionResult> ViewBookingConfirmation(int id)
+        {
+            var bookingConfirmation = await _frontReservationServices.ViewBookingConfirmation(id);
+
+            return Ok(bookingConfirmation);
+        }
     }
 }

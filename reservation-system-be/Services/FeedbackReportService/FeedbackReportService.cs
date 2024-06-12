@@ -20,17 +20,17 @@ namespace reservation_system_be.Services.FeedbackReportService
             try
             {
                 return await _context.Feedbacks
-                 .Include(f => f.Reservation)
-                 .ThenInclude(r => r.CustomerReservation)
+                 .Include(f => f.CustomerReservation)
                  .ThenInclude(cr => cr.Customer)
                  .Select(f => new FeedBackReportDTO
                  {
                      id = f.Id,
                      vehicle = f.Type,
-                     content = f.Content,
+                     vehicle_Review = f.Vehicle_Review,
+                     service_Review = f.Service_Review,
                      rating = f.RatingNo,
                      date = f.Feedback_Date,
-                     customer = f.Reservation.CustomerReservation.Customer.Name
+                     customer = f.CustomerReservation.Customer.Name
                  })
                  .ToListAsync(); ;
             }

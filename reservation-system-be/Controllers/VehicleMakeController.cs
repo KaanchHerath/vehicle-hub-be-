@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
+using reservation_system_be.DTOs;
 using reservation_system_be.Models;
 using reservation_system_be.Services.VehicleMakeServices;
 
@@ -38,19 +39,26 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VehicleMake>> AddVehicleMake(VehicleMake vehicleMake)
-        {
-            var newVehicleMake = await _vehicleMakeService.CreateVehicleMake(vehicleMake);
-            return CreatedAtAction(nameof(GetVehicleMake), new { id = newVehicleMake.Id }, newVehicleMake);
+        public async Task<ActionResult<VehicleMake>> CreateVehicleMake([FromForm] VehicleMakeDto vehicleMakeDto, IFormFile formFile)
+        { 
+            try
+            {
+                var vehicleMake = await _vehicleMakeService.CreateVehicleMake(vehicleMakeDto, formFile);
+                return Ok(vehicleMake);
+            }
+            catch (DataNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<VehicleMake>> UpdateVehicleMake(int id, VehicleMake vehicleMake)
+        public async Task<ActionResult<VehicleMake>> UpdateVehicleMake(int id, [FromForm] VehicleMakeDto vehicleMakeDto, IFormFile file)
         {
             try
             {
-                var updatedVehicleMake = await _vehicleMakeService.UpdateVehicleMake(id, vehicleMake);
-                return Ok(updatedVehicleMake);
+                var vehicleMake = await _vehicleMakeService.UpdateVehicleMake(id, vehicleMakeDto, file);
+                return Ok(vehicleMake);
             }
             catch (DataNotFoundException)
             {

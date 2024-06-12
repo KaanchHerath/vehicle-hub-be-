@@ -52,7 +52,7 @@ namespace reservation_system_be.Services.VehicleMaintenanceServices
         {
             var vehicleMaintenance = await _context.VehicleMaintenances
                 .Include(v => v.Vehicle)
-                .FirstOrDefaultAsync();
+                .FirstOrDefaultAsync(v => v.Id == id);
 
             if (vehicleMaintenance == null)
             {
