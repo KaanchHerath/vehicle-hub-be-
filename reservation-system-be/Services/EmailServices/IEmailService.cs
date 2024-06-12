@@ -5,5 +5,6 @@ namespace reservation_system_be.Services.EmailServices
     public interface IEmailService
     {
         Task SendEmailAsync(MailRequest mailRequest);
+        Task SendPasswordResetOtpAsync(string toEmail, string otp);
     }
 }

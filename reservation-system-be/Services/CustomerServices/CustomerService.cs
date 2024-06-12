@@ -43,7 +43,10 @@ namespace reservation_system_be.Services.CustomerServices
             return await _context.Customers.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-
+        public async Task<Customer> GetCustomerByOtp(string otp)
+        {
+            return await _context.Customers.SingleOrDefaultAsync(c => c.PasswordResetOtp == otp);
+        }
 
         public async Task<Customer> UpdateCustomer(int id, Customer customer)
         {

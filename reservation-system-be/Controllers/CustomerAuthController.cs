@@ -64,7 +64,7 @@ namespace reservation_system_be.Controllers
                 var result = await _customerAuthService.ForgotPassword(email);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
