@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using reservation_system_be.Data;
 
@@ -11,9 +12,11 @@ using reservation_system_be.Data;
 namespace reservation_system_be.Migrations
 {
     [DbContext(typeof(DataContext))]
-    partial class DataContextModelSnapshot : ModelSnapshot
+    [Migration("20240603181219_changed the employee model")]
+    partial class changedtheemployeemodel
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -92,7 +95,7 @@ namespace reservation_system_be.Migrations
                     b.HasIndex("VehicleModelId")
                         .IsUnique();
 
-                    b.ToTable("AdditionalFeatures", (string)null);
+                    b.ToTable("AdditionalFeatures");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Customer", b =>
@@ -135,7 +138,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Customers", (string)null);
+                    b.ToTable("Customers");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.CustomerReservation", b =>
@@ -164,7 +167,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("CustomerReservations", (string)null);
+                    b.ToTable("CustomerReservations");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Employee", b =>
@@ -218,7 +221,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Employees", (string)null);
+                    b.ToTable("Employees");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Feedback", b =>
@@ -259,7 +262,7 @@ namespace reservation_system_be.Migrations
                         .IsUnique()
                         .HasFilter("[ReservationId] IS NOT NULL");
 
-                    b.ToTable("Feedbacks", (string)null);
+                    b.ToTable("Feedbacks");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Invoice", b =>
@@ -284,7 +287,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("CustomerReservationId");
 
-                    b.ToTable("Invoices", (string)null);
+                    b.ToTable("Invoices");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Notification", b =>
@@ -313,7 +316,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("ReservationId");
 
-                    b.ToTable("Notifications", (string)null);
+                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Payment", b =>
@@ -346,7 +349,7 @@ namespace reservation_system_be.Migrations
                     b.HasIndex("InvoiceId")
                         .IsUnique();
 
-                    b.ToTable("Payments", (string)null);
+                    b.ToTable("Payments");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Reservation", b =>
@@ -379,7 +382,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("EmployeeId");
 
-                    b.ToTable("Reservations", (string)null);
+                    b.ToTable("Reservations");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Vehicle", b =>
@@ -435,7 +438,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("VehicleTypeId");
 
-                    b.ToTable("Vehicles", (string)null);
+                    b.ToTable("Vehicles");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleAvailability", b =>
@@ -457,7 +460,7 @@ namespace reservation_system_be.Migrations
                     b.HasIndex("ReservationId")
                         .IsUnique();
 
-                    b.ToTable("VehicleAvailability", (string)null);
+                    b.ToTable("VehicleAvailability");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleInsurance", b =>
@@ -483,7 +486,7 @@ namespace reservation_system_be.Migrations
                     b.HasIndex("VehicleId")
                         .IsUnique();
 
-                    b.ToTable("VehicleInsurances", (string)null);
+                    b.ToTable("VehicleInsurances");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleLog", b =>
@@ -515,7 +518,7 @@ namespace reservation_system_be.Migrations
                     b.HasIndex("CustomerReservationId")
                         .IsUnique();
 
-                    b.ToTable("VehicleLogs", (string)null);
+                    b.ToTable("VehicleLogs");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleMaintenance", b =>
@@ -544,7 +547,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("VehicleMaintenances", (string)null);
+                    b.ToTable("VehicleMaintenances");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleMake", b =>
@@ -565,7 +568,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleMake", (string)null);
+                    b.ToTable("VehicleMake");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleModel", b =>
@@ -600,7 +603,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("VehicleMakeId");
 
-                    b.ToTable("VehicleModels", (string)null);
+                    b.ToTable("VehicleModels");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehiclePhoto", b =>
@@ -621,7 +624,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("VehicleId");
 
-                    b.ToTable("VehiclePhoto", (string)null);
+                    b.ToTable("VehiclePhoto");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.VehicleType", b =>
@@ -641,7 +644,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("VehicleTypes", (string)null);
+                    b.ToTable("VehicleTypes");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.Wishlist", b =>
@@ -656,7 +659,7 @@ namespace reservation_system_be.Migrations
 
                     b.HasIndex("CustomerId");
 
-                    b.ToTable("Wishlists", (string)null);
+                    b.ToTable("Wishlists");
                 });
 
             modelBuilder.Entity("reservation_system_be.Models.AdditionalFeatures", b =>
