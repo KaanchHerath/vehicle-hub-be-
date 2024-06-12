@@ -53,10 +53,7 @@ namespace reservation_system_be.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployee(int id, Employee employee)
         {
-            if (id != employee.Id)
-            {
-                return BadRequest("Employee ID mismatch");
-            }
+            
 
             try
             {
