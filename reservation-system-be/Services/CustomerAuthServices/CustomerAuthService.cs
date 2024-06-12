@@ -137,7 +137,7 @@ namespace reservation_system_be.Services.CustomerAuthServices
             var otp = GenerateOtp();
 
             customer.PasswordResetOtp = otp;
-            customer.OtpExpires = DateTime.UtcNow.AddMinutes(10); // OTP expires in 10 minutes
+            customer.OtpExpires = DateTime.UtcNow.AddMinutes(5); // OTP expires in 10 minutes
 
 
             await _customerService.UpdateCustomer(customer.Id, customer);

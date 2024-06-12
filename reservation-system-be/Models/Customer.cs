@@ -13,7 +13,7 @@ namespace reservation_system_be.Models
         public int ContactNo { get; set; } 
         public string Address { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public string PasswordResetOtp { get; set; } = string.Empty;
+        public string? PasswordResetOtp { get; set; }
         public DateTime? OtpExpires { get; set; } 
         [JsonIgnore]
         public ICollection<Wishlist>? Wishlist { get; set; }
