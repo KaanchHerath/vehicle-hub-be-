@@ -13,7 +13,7 @@ namespace reservation_system_be.Services.NotificationService
         {
             _context = context;
         }
-        public async Task<List<Notification>> GetAllNotifications(int uid)
+        /*public async Task<List<Notification>> GetAllNotifications(int uid)
         {
             try
             {
@@ -36,7 +36,7 @@ namespace reservation_system_be.Services.NotificationService
             {
                 throw new Exception("Error getting notifications for user.", ex);
             }
-        }
+        }*/
 
         public async Task<bool> DeleteNotification(int notificationId)
         {
@@ -55,6 +55,20 @@ namespace reservation_system_be.Services.NotificationService
             catch (Exception ex)
             {
                 throw new Exception("Error deleting notification.", ex);
+            }
+        }
+
+        public async Task<Notification> AddNotification(Notification notification)
+        {
+            try
+            {
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+                return notification;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error adding notification.", ex);
             }
         }
 

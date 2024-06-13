@@ -59,11 +59,11 @@ namespace reservation_system_be.Services.CustomerAuthServices
             await _customerService.AddCustomer(newCustomer);
 
             //send welcome email
-            var mailRequest = new MailRequest
+            MailRequest mailRequest = new MailRequest
             {
                 ToEmail = customer.Email,
                 Subject = "Welcome to Vehicle Hub",
-                Body = "<h1>Welcome!</h1> <br> <p>Thank you for reistering with our service. Now you can reserve vehicles whenever you need.</p>"
+                Body = "<h1>Welcome!</h1> <br> <p>Thank you for registering with our service. Now you can reserve vehicles whenever you need.</p>"
             };
 
             await _emailService.SendEmailAsync(mailRequest);
@@ -128,20 +128,55 @@ namespace reservation_system_be.Services.CustomerAuthServices
 
         public async Task<string> ForgotPassword(string email)
         {
-            var user = await _customerService.GetCustomerByEmail(email);
+            var customer = await _customerService.GetCustomerByEmail(email);
 
-            if (user == null)
+            if (customer == null)
             {
-                throw new KeyNotFoundException("User not found.");
+                throw new KeyNotFoundException("Customer not found.");
+            }
+            var otp = GenerateOtp();
+
+            customer.PasswordResetOtp = otp;
+            customer.OtpExpires = DateTime.UtcNow.AddMinutes(5); // OTP expires in 10 minutes
+
+
+            await _customerService.UpdateCustomer(customer.Id, customer);
+
+            await _emailService.SendPasswordResetOtpAsync(customer.Email, otp);
+
+            return "Password reset OTP sent.";
+
+        }
+
+        private string GenerateOtp()
+        {
+            var rng = new Random();
+            var otp = rng.Next(100000, 999999).ToString(); // Generate a 6-digit OTP
+            return otp;
+        }
+
+        public async Task<string> VerifyOtpAndResetPassword(string otp, string newPassword)
+        {
+            var customer = await _customerService.GetCustomerByOtp(otp);
+
+            if (customer == null || customer.OtpExpires < DateTime.UtcNow)
+            {
+                throw new ArgumentException("Invalid or expired OTP.");
             }
 
-            // Implement password recovery logic here
+            customer.Password = HashPassword(newPassword); // Assume you have a method to hash passwords
+            customer.PasswordResetOtp = null;
+            customer.OtpExpires = null;
 
-            // user.PasswordResetToken = CreateRandomToken();
-            // user.ResetTokenExpires = DateTime.Now.AddDays(1);
-            await _customerService.UpdateCustomer(user.Id, user);
+            await _customerService.UpdateCustomer(customer.Id, customer);
 
-            return "You may now reset your password.";
+            return "Password reset successfully.";
+        }
+
+        private string HashPassword(string password)
+        {
+            // Implement password hashing here, e.g., using BCrypt
+            return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
     }

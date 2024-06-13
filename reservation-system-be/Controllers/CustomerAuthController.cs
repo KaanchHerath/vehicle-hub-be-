@@ -64,11 +64,27 @@ namespace reservation_system_be.Controllers
                 var result = await _customerAuthService.ForgotPassword(email);
                 return Ok(result);
             }
-            catch (Exception ex)
+            catch (KeyNotFoundException ex)
             {
                 return NotFound(ex.Message);
             }
         }
+
+        [HttpPost("Reset password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            try
+            {
+                var result = await _customerAuthService.VerifyOtpAndResetPassword(request.Otp, request.NewPassword);
+                return Ok(result);
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
+
+
 }
 

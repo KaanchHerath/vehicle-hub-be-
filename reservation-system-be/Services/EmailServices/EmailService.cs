@@ -31,5 +31,22 @@ namespace reservation_system_be.Services.EmailServices
             await smtp.SendAsync(email);
             smtp.Disconnect(true);
         }
+
+        public async Task SendPasswordResetOtpAsync(string toEmail, string otp)
+        {
+            var email = new MimeMessage();
+            email.Sender = MailboxAddress.Parse(mailSettings.Email);
+            email.To.Add(MailboxAddress.Parse(toEmail));
+            email.Subject = "Password Reset OTP";
+            var builder = new BodyBuilder();
+            builder.HtmlBody = $"<p>Your OTP for password reset is: <strong>{otp}</strong></p>";
+            email.Body = builder.ToMessageBody();
+
+            using var smtp = new SmtpClient();
+            smtp.Connect(mailSettings.Host, mailSettings.Port, SecureSocketOptions.StartTls);
+            smtp.Authenticate(mailSettings.Email, mailSettings.Password);
+            await smtp.SendAsync(email);
+            smtp.Disconnect(true);
+        }
     }
 }
