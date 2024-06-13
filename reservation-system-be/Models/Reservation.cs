@@ -26,8 +26,7 @@ namespace reservation_system_be.Models
             public Status Status { get; set; } = Status.Waiting;
             [JsonIgnore]
             public CustomerReservation? CustomerReservation { get; set; }
-            [JsonIgnore]
-            public ICollection<Notification> Notifications { get; } = new List<Notification>();
+            
             [JsonIgnore]
             public VehicleAvailability? VehicleAvailability { get; set; }
             public int NoOfDays

@@ -7,12 +7,13 @@ namespace reservation_system_be.Models
     {
         public int Id { get; set; }
         public string Type { get; set; } = string.Empty;
+        public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public DateTime Generated_DateTime { get; set; }
-        [ForeignKey("ReservationId")]
-        public int ReservationId { get; set; }
+        [ForeignKey("CustomerReservationId")]
+        public int CustomerReservationId { get; set; }
         [JsonIgnore]
-        public Reservation? Reservation { get; set; }
+        public CustomerReservation? CustomerReservation { get; set; }
 
     }
 }
