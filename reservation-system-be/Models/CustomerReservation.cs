@@ -27,5 +27,7 @@ namespace reservation_system_be.Models
         public VehicleLog? VehicleLog { get; set; }
         [JsonIgnore]
         public Feedback? Feedback { get; set; }
+        [JsonIgnore]
+        public ICollection<Notification> Notifications { get; } = new List<Notification>();
     }
 }

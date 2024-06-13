@@ -9,9 +9,12 @@ namespace reservation_system_be.Services.VehicleServices
         Task<VehicleDto> GetVehicle(int id);
 
         Task<Vehicle> CreateVehicle([FromForm]CreateVehicleDto createVehicleDto, IFormFile formFile, IFormFile front, IFormFile rear, IFormFile dashboard, IFormFile interior);
-
-        Task<Vehicle> UpdateVehicle(int id, [FromForm]CreateVehicleDto createVehicleDto, IFormFile formFile, IFormFile front, IFormFile rear, IFormFile dashboard, IFormFile interior);
-
+        Task<Vehicle> UpdateVehicle(int id, UpdateVehicleDetailsDto createVehicleDto);
+        Task UpdateThumbnail(int id,IFormFile formFile);
+        Task UpdateFrontImg(int id, IFormFile front);
+        Task UpdateRearImg(int id,IFormFile rear);
+        Task UpdateDashboardImg(int id,IFormFile dashboard);
+        Task UpdateInteriorImg(int id, IFormFile interior);
         Task DeleteVehicle(int id);
 
         Task<List<VehicleResponse>> SearchVehicle(String search);

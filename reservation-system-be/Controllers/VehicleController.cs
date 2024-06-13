@@ -55,13 +55,83 @@ namespace reservation_system_be.Controllers
             }
         }
 
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Vehicle>> UpdateVehicle(int id, [FromForm]CreateVehicleDto createVehicleDto, IFormFile formFile, IFormFile front, IFormFile rear, IFormFile dashboard, IFormFile interior)
+        [HttpPut("Details/{id}")]
+        public async Task<ActionResult<Vehicle>> UpdateVehicle(int id,UpdateVehicleDetailsDto createVehicleDto)
         {
             try
             {
-                var vehicle = await _vehicleService.UpdateVehicle(id, createVehicleDto, formFile, front, rear, dashboard, interior);
+                var vehicle = await _vehicleService.UpdateVehicle(id, createVehicleDto);
                 return Ok(vehicle);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("Thumbnail/{id}")]
+        public async Task<ActionResult> UpdateThumbnail(int id, IFormFile formFile)
+        { 
+            try
+            {
+                await _vehicleService.UpdateThumbnail(id, formFile);
+                return Ok();
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("FrontImg/{id}")]
+        public async Task<ActionResult> UpdateFrontImg(int id,IFormFile front)
+        {
+            try
+            {
+                await _vehicleService.UpdateFrontImg(id, front);
+                return Ok();
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("RearImg/{id}")]
+        public async Task<ActionResult> UpdateRearImg(int id, IFormFile rear)
+        {
+            try
+            {
+                await _vehicleService.UpdateRearImg(id, rear);
+                return Ok();
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("DashboardImg/{id}")]
+        public async Task<ActionResult> UpdateDashboardImg(int id, IFormFile dashboard)
+        {
+            try
+            {
+                await _vehicleService.UpdateDashboardImg(id, dashboard);
+                return Ok();
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("InteriorImg/{id}")]
+        public async Task<ActionResult> UpdateInteriorImg(int id, IFormFile interior)
+        {
+            try
+            {
+                await _vehicleService.UpdateInteriorImg(id, interior);
+                return Ok();
             }
             catch (DataNotFoundException e)
             {

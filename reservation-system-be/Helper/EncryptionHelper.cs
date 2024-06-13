@@ -3,7 +3,7 @@ using System.IO;
 using System.Security.Cryptography;
 using System.Text;
 
-namespace reservation_system_be.Services.Encryption
+namespace reservation_system_be.Helper
 {
     public static class EncryptionHelper
     {
