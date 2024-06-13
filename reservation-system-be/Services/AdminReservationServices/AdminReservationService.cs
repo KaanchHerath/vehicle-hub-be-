@@ -258,7 +258,7 @@ namespace reservation_system_be.Services.AdminReservationServices
                 EndMileage = vehicleLog.EndMileage,
                 Penalty = vehicleLog.Penalty,
                 Description = vehicleLog.Description,
-                ExtraKM = KM < 0 ? 0 : ExtraKM,
+                ExtraKM = ExtraKM < 0 ? 0 : ExtraKM,
                 CustomerReservationId = customerReservation.Id
             };
             var vl = await _vehicleLogService.CreateVehicleLog(vehicleLog_model);

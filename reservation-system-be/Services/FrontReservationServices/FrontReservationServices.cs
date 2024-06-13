@@ -218,8 +218,9 @@ namespace reservation_system_be.Services.FrontReservationServices
 
             var customerReservation = await _customerReservationService.GetCustomerReservation(invoice.CustomerReservationId);
 
+
             var vehicleLog = await _context.VehicleLogs.FirstOrDefaultAsync(vl => vl.CustomerReservationId == invoice.CustomerReservationId);
-            if (vehicleLog == null)
+            if (invoice.Type == "Final" && vehicleLog == null)
             {
                 throw new DataNotFoundException("No vehicleLog found");
             }
@@ -234,9 +235,9 @@ namespace reservation_system_be.Services.FrontReservationServices
                 StartTime = customerReservation.Reservation.StartTime,
                 EndTime = customerReservation.Reservation.EndTime,
                 Deposit = customerReservation.Vehicle.VehicleType.DepositAmount,
-                ExtraKMCost = vehicleLog.ExtraKM * customerReservation.Vehicle.CostPerExtraKM,
-                Penalty = vehicleLog.Penalty,
-                RentalCost = customerReservation.Vehicle.CostPerDay * customerReservation.Reservation.NoOfDays,
+                ExtraKMCost = vehicleLog == null? 0 : vehicleLog.ExtraKM * customerReservation.Vehicle.CostPerExtraKM,
+                Penalty = vehicleLog == null? 0 : vehicleLog.Penalty,
+                RentalCost = vehicleLog == null? 0 : customerReservation.Vehicle.CostPerDay * customerReservation.Reservation.NoOfDays,
                 Amount = invoice.Amount,
                 Thumbnail = customerReservation.Vehicle.Thumbnail,
                 InvoiceType = invoice.Type
