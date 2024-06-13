@@ -1,6 +1,6 @@
 using reservation_system_be.Models;
 
-namespace reservation_system_be.Services.FeedbackServices
+namespace reservation_system_be.Services.NotificationServices
 {
     public interface INotificationService
     {
