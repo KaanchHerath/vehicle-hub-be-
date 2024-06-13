@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using reservation_system_be.Data;
+﻿using reservation_system_be.DTOs;
 using reservation_system_be.Models;
+using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using reservation_system_be.Data;
 
 namespace reservation_system_be.Services.PaymentService
 {
@@ -15,34 +17,53 @@ namespace reservation_system_be.Services.PaymentService
             _context = context;
         }
 
-        public async Task<Payment> AddPayment(Payment payment)
+        public async Task<PaymentServiceDTO?> AddPayment(Payment payment)
         {
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
+
+            return await GetPaymentDTOById(payment.Id); // Return DTO
+        }
+
+        public async Task<List<PaymentServiceDTO>> GetAllPayments()
+        {
+            return await _context.Payments
+                .Include(p => p.Invoice)
+                .ThenInclude(i => i.CustomerReservation)
+                .Select(p => new PaymentServiceDTO(
+                    p.Id,
+                    p.PaymentStatus,
+                    p.PaymentMethod,
+                    p.PaymentDate,
+                    p.PaymentTime,
+                    p.InvoiceId,
+                    p.Invoice.CustomerReservation != null ? p.Invoice.CustomerReservation.Reservation.Status : Status.Waiting
+                )).ToListAsync();
+        }
+
+        public async Task<PaymentServiceDTO?> GetPaymentById(int id)
+        {
+            return await GetPaymentDTOById(id);
+        }
+
+        private async Task<PaymentServiceDTO?> GetPaymentDTOById(int id)
+        {
+            var payment = await _context.Payments
+                .Include(p => p.Invoice)
+                .ThenInclude(i => i.CustomerReservation)
+                .Where(p => p.Id == id)
+                .Select(p => new PaymentServiceDTO(
+                    p.Id,
+                    p.PaymentStatus,
+                    p.PaymentMethod,
+                    p.PaymentDate,
+                    p.PaymentTime,
+                    p.InvoiceId,
+                    p.Invoice.CustomerReservation != null ? p.Invoice.CustomerReservation.Reservation.Status : Status.Waiting
+                )).FirstOrDefaultAsync();
+
             return payment;
         }
-
-        public async Task<List<Payment>> GetAllPayments()
-        {
-            return await _context.Payments.ToListAsync();
-        }
-
-        public async Task<Payment> GetPaymentById(int id)
-        {
-            return await _context.Payments.FindAsync(id);
-        }
-
-        //public async Task<Payment> UpdatePayment(Payment payment)
-        //{
-        //    var existingPayment = await _context.Payments.FindAsync(payment.Id);
-        //    if (existingPayment == null)
-        //        return null;
-
-        //    _context.Entry(existingPayment).CurrentValues.SetValues(payment);
-        //    await _context.SaveChangesAsync();
-
-        //    return existingPayment;
-        //}
 
         public async Task<bool> DeletePayment(int id)
         {

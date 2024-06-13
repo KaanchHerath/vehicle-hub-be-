@@ -1,8 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using reservation_system_be.DTOs;
 using reservation_system_be.Models;
 using reservation_system_be.Services.PaymentService;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace reservation_system_be.Controllers
 {
@@ -18,21 +19,25 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Payment>> CreatePayment(Payment payment)
+        public async Task<ActionResult<PaymentServiceDTO>> CreatePayment(Payment payment)
         {
             var createdPayment = await _paymentService.AddPayment(payment);
-            return CreatedAtAction(nameof(CreatePayment), new { id = createdPayment.Id }, createdPayment);
+            if (createdPayment == null)
+                return BadRequest("Error creating payment");
+
+            // Use the Id from the created payment to generate the URI
+            return CreatedAtAction(nameof(GetPaymentById), new { id = createdPayment?.Id }, createdPayment);
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<Payment>>> GetAllPayments()
+        public async Task<ActionResult<List<PaymentServiceDTO>>> GetAllPayments()
         {
             var payments = await _paymentService.GetAllPayments();
             return Ok(payments);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Payment>> GetPaymentById(int id)
+        public async Task<ActionResult<PaymentServiceDTO>> GetPaymentById(int id)
         {
             var payment = await _paymentService.GetPaymentById(id);
             if (payment == null)
@@ -40,19 +45,6 @@ namespace reservation_system_be.Controllers
 
             return Ok(payment);
         }
-
-        //[HttpPut("{id}")]
-        //public async Task<ActionResult<Payment>> UpdatePayment(int id, Payment payment)
-        //{
-        //    if (id != payment.Id)
-        //        return BadRequest("Payment ID mismatch.");
-
-        //    var updatedPayment = await _paymentService.UpdatePayment(payment);
-        //    if (updatedPayment == null)
-        //        return NotFound();
-
-        //    return Ok(updatedPayment);
-        //}
 
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeletePayment(int id)
