@@ -18,7 +18,7 @@ namespace reservation_system_be.Controllers
         }
 
 
-        [HttpGet("Notifications/{uid}")]
+        /*[HttpGet("Notifications/{uid}")]
         public async Task<ActionResult<List<Notification>>> GetNotifications(int uid)
         {
             try
@@ -34,8 +34,20 @@ namespace reservation_system_be.Controllers
             {
                 return BadRequest(ex.Message);
             }
+        }*/
+
+        [HttpPost("AddNotification")]
+        public async Task<ActionResult<Notification>> AddNotification(Notification notification)
+        {
+            try
+            {
+                var newNotification = await _notificationService.AddNotification(notification);
+                return Ok(newNotification);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
-
-
     }
 }
