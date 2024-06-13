@@ -8,6 +8,7 @@ using reservation_system_be.Services.CustomerReservationService;
 using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Services.EmployeeServices;
 using reservation_system_be.Services.InvoiceService;
+using reservation_system_be.Services.NotificationServices;
 using reservation_system_be.Services.ReservationService;
 using reservation_system_be.Services.VehicleLogServices;
 using reservation_system_be.Services.VehicleServices;
@@ -25,10 +26,11 @@ namespace reservation_system_be.Services.AdminReservationServices
         private readonly IEmailService _emailService;
         private readonly IVehicleLogService _vehicleLogService;
         private readonly IVehicleService _vehicleService;
+        private readonly INotificationService _notificationService;
 
         public AdminReservationService(DataContext context, ICustomerReservationService customerReservationService, IEmployeeService employeeService, 
             IReservationService reservationService, IInvoiceService invoiceService, IEmailService emailService, IVehicleLogService vehicleLogService,
-                IVehicleService vehicleService)
+                IVehicleService vehicleService, INotificationService notificationService)
         {
             _context = context;
             _customerReservationService = customerReservationService;
@@ -38,6 +40,7 @@ namespace reservation_system_be.Services.AdminReservationServices
             _emailService = emailService;
             _vehicleLogService = vehicleLogService;
             _vehicleService = vehicleService;
+            _notificationService = notificationService;
         }
 
         public async Task AcceptReservation(int id, int eid)
@@ -65,6 +68,16 @@ namespace reservation_system_be.Services.AdminReservationServices
                 Body = DepositRequestMail(invoice.Id)
             };
             await _emailService.SendEmailAsync(mailRequest);
+
+            var notification = new Notification
+            {
+                Type = "Reservation",
+                Title = "Reservation Accepted",
+                Description = "Your reservation request has been accepted. Please make a deposit payment to confirm your reservation.",
+                Generated_DateTime = DateTime.Now,
+                CustomerReservationId = customerReservation.Id
+            };
+            await _notificationService.AddNotification(notification);
 
         }
 
@@ -114,6 +127,16 @@ namespace reservation_system_be.Services.AdminReservationServices
                 Body = ReservationDeclinedMail(id)
             };
             await _emailService.SendEmailAsync(mailRequest);
+
+            var notification = new Notification
+            {
+                Type = "Reservation",
+                Title = "Reservation Declined",
+                Description = "Your reservation request has been declined. Please contact us for further details.",
+                Generated_DateTime = DateTime.Now,
+                CustomerReservationId = customerReservation.Id
+            };
+            await _notificationService.AddNotification(notification);
         }
 
         private string ReservationDeclinedMail(int id)
@@ -185,6 +208,16 @@ namespace reservation_system_be.Services.AdminReservationServices
             customerReservation.Reservation.Status = Status.Ongoing;
 
             await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
+
+            var notification = new Notification
+            {
+                Type = "Reservation",
+                Title = "Reservation Started",
+                Description = "Your reservation has started. Enjoy your ride!",
+                Generated_DateTime = DateTime.Now,
+                CustomerReservationId = customerReservation.Id
+            };
+            await _notificationService.AddNotification(notification);
         }
 
         public async Task EndReservation(int id, VehicleLogDto vehicleLog)
@@ -246,6 +279,15 @@ namespace reservation_system_be.Services.AdminReservationServices
                 CustomerReservationId = customerReservation.Id
             };
             await _invoiceService.CreateInvoice(invoice_model);
+
+            var notification = new Notification
+            {
+                Type = "Reservation",
+                Title = "Reservation Ended",
+                Description = "Your reservation has ended. Please make the final payment to the complete the reservation. Thank you for choosing VehicleHub!",
+                Generated_DateTime = DateTime.Now,
+                CustomerReservationId = customerReservation.Id
+            };
         }
 
         private float CalFinalAmount(CustomerReservationDto customerReservation, VehicleLog vehicleLog)
