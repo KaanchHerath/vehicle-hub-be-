@@ -19,15 +19,15 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PaymentServiceDTO>> CreatePayment(Payment payment)
+        public async Task<ActionResult<PaymentServiceDTO>> CreatePayment(PaymentServiceDTO paymentDto)
         {
-            var createdPayment = await _paymentService.AddPayment(payment);
+            var createdPayment = await _paymentService.AddPayment(paymentDto);
             if (createdPayment == null)
                 return BadRequest("Error creating payment");
 
-            // Use the Id from the created payment to generate the URI
-            return CreatedAtAction(nameof(GetPaymentById), new { id = createdPayment?.Id }, createdPayment);
+            return CreatedAtAction(nameof(GetPaymentById), new { id = createdPayment.Id }, createdPayment);
         }
+
 
         [HttpGet]
         public async Task<ActionResult<List<PaymentServiceDTO>>> GetAllPayments()

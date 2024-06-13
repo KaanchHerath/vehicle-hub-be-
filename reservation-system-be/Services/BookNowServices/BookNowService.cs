@@ -35,7 +35,8 @@ namespace reservation_system_be.Services.CustomerVehicleServices
                     FrontImg = vehicle.FrontImg,
                     RearImg = vehicle.RearImg,
                     DashboardImg = vehicle.DashboardImg,
-                    InteriorImg = vehicle.InteriorImg
+                    InteriorImg = vehicle.InteriorImg,
+                    Logo = vehicle.VehicleModel.VehicleMake.Logo
                 };
                 bookNowDtos.Add(bookNowDto);
             } 

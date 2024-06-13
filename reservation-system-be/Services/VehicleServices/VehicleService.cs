@@ -163,60 +163,13 @@ namespace reservation_system_be.Services.VehicleServices
             return vehicle;
         }
 
-        public async Task<Vehicle> UpdateVehicle(int id, [FromForm]CreateVehicleDto createVehicleDto,IFormFile formFile, IFormFile front, IFormFile rear, IFormFile dashboard, IFormFile interior)
+        public async Task<Vehicle> UpdateVehicle(int id,UpdateVehicleDetailsDto createVehicleDto)
         {
             var existingVehicle = await _context.Vehicles.FindAsync(id);
             if (existingVehicle == null)
             {
                 throw new DataNotFoundException("Vehicle not found");
             }
-
-            if (formFile != null && formFile.Length > 0)
-            {
-                if (!string.IsNullOrEmpty(existingVehicle.Thumbnail))
-                {
-                    await _fileServices.Delete(existingVehicle.Thumbnail, AzureContainerName);
-                }
-                var fileUrl = await _fileServices.Upload(formFile, AzureContainerName);
-                existingVehicle.Thumbnail = fileUrl;
-            }
-            if(front != null && front.Length > 0)
-            {
-                if (!string.IsNullOrEmpty(existingVehicle.FrontImg))
-                {
-                    await _fileServices.Delete(existingVehicle.FrontImg, AzureContainerName2);
-                }
-                var frontUrl = await _fileServices.Upload(front, AzureContainerName2);
-                existingVehicle.FrontImg = frontUrl;
-            }
-            if (rear != null && rear.Length > 0)
-            {
-                if (!string.IsNullOrEmpty(existingVehicle.RearImg))
-                {
-                    await _fileServices.Delete(existingVehicle.RearImg, AzureContainerName3);
-                }
-                var rearUrl = await _fileServices.Upload(rear, AzureContainerName3);
-                existingVehicle.RearImg = rearUrl;
-            }
-            if (dashboard != null && dashboard.Length > 0)
-            {
-                if (!string.IsNullOrEmpty(existingVehicle.DashboardImg))
-                {
-                    await _fileServices.Delete(existingVehicle.DashboardImg, AzureContainerName4);
-                }
-                var dashboardUrl = await _fileServices.Upload(dashboard, AzureContainerName4);
-                existingVehicle.DashboardImg = dashboardUrl;
-            }
-            if (interior != null && interior.Length > 0)
-            {
-                if (!string.IsNullOrEmpty(existingVehicle.InteriorImg))
-                {
-                    await _fileServices.Delete(existingVehicle.InteriorImg, AzureContainerName5);
-                }
-                var interiorUrl = await _fileServices.Upload(interior, AzureContainerName5);
-                existingVehicle.InteriorImg = interiorUrl;
-            }
-
             existingVehicle.RegistrationNumber = createVehicleDto.RegistrationNumber;
             existingVehicle.ChassisNo = createVehicleDto.ChassisNo;
             existingVehicle.Colour = createVehicleDto.Colour;
@@ -231,6 +184,106 @@ namespace reservation_system_be.Services.VehicleServices
             _context.Entry(existingVehicle).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return existingVehicle;
+        }
+
+        public async Task UpdateThumbnail(int id, IFormFile formFile)
+        {
+            var existingVehicle = await _context.Vehicles.FindAsync(id);
+            if (existingVehicle == null)
+            {
+                throw new DataNotFoundException("Vehicle not found");
+            }
+            if (formFile != null && formFile.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(existingVehicle.Thumbnail))
+                {
+                    await _fileServices.Delete(existingVehicle.Thumbnail, AzureContainerName);
+                }
+                var fileUrl = await _fileServices.Upload(formFile, AzureContainerName);
+                existingVehicle.Thumbnail = fileUrl;
+            }
+            _context.Entry(existingVehicle).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateFrontImg(int id, IFormFile front)
+        {
+            var existingVehicle = await _context.Vehicles.FindAsync(id);
+            if (existingVehicle == null)
+            {
+                throw new DataNotFoundException("Vehicle not found");
+            }
+            if (front != null && front.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(existingVehicle.FrontImg))
+                {
+                    await _fileServices.Delete(existingVehicle.FrontImg, AzureContainerName2);
+                }
+                var frontUrl = await _fileServices.Upload(front, AzureContainerName2);
+                existingVehicle.FrontImg = frontUrl;
+            }
+            _context.Entry(existingVehicle).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRearImg(int id, IFormFile rear)
+        {
+            var existingVehicle = await _context.Vehicles.FindAsync(id);
+            if (existingVehicle == null)
+            {
+                throw new DataNotFoundException("Vehicle not found");
+            }
+            if (rear != null && rear.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(existingVehicle.RearImg))
+                {
+                    await _fileServices.Delete(existingVehicle.RearImg, AzureContainerName3);
+                }
+                var rearUrl = await _fileServices.Upload(rear, AzureContainerName3);
+                existingVehicle.RearImg = rearUrl;
+            }
+            _context.Entry(existingVehicle).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateDashboardImg(int id, IFormFile dashboard)
+        {
+            var existingVehicle = await _context.Vehicles.FindAsync(id);
+            if (existingVehicle == null)
+            {
+                throw new DataNotFoundException("Vehicle not found");
+            }
+            if (dashboard != null && dashboard.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(existingVehicle.DashboardImg))
+                {
+                    await _fileServices.Delete(existingVehicle.DashboardImg, AzureContainerName4);
+                }
+                var dashboardUrl = await _fileServices.Upload(dashboard, AzureContainerName4);
+                existingVehicle.DashboardImg = dashboardUrl;
+            }
+            _context.Entry(existingVehicle).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateInteriorImg(int id, IFormFile interior)
+        {
+            var existingVehicle = await _context.Vehicles.FindAsync(id);
+            if (existingVehicle == null)
+            {
+                throw new DataNotFoundException("Vehicle not found");
+            }
+            if (interior != null && interior.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(existingVehicle.InteriorImg))
+                {
+                    await _fileServices.Delete(existingVehicle.InteriorImg, AzureContainerName5);
+                }
+                var interiorUrl = await _fileServices.Upload(interior, AzureContainerName5);
+                existingVehicle.InteriorImg = interiorUrl;
+            }
+            _context.Entry(existingVehicle).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
         public async Task DeleteVehicle(int id)
         {
