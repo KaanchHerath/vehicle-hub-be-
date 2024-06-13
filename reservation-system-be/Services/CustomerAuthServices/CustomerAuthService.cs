@@ -96,7 +96,7 @@ namespace reservation_system_be.Services.CustomerAuthServices
             var authdto = new AuthDto
             {
                 token = token,
-                id = customerId
+                id = EncryptionHelper.Encrypt(customerId)
             };
 
             return authdto;
