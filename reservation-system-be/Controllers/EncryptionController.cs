@@ -8,12 +8,12 @@ namespace reservation_system_be.Controllers
     [ApiController]
     public class EncryptionController : ControllerBase
     {
-        [HttpGet("encrypt/{userId}")]
-        public IActionResult Encrypt(int userId)
+        [HttpGet("encrypt/{Id}")]
+        public IActionResult Encrypt(int Id)
         {
             try
             {
-                string encryptedText = EncryptionHelper.Encrypt(userId);
+                string encryptedText = EncryptionHelper.Encrypt(Id);
                 return Ok(new { EncryptedText = encryptedText });
             }
             catch (Exception ex)
@@ -22,7 +22,7 @@ namespace reservation_system_be.Controllers
             }
         }
 
-        [HttpGet("decrypt")]
+        [HttpGet("decrypt/{cipherText}")]
         public IActionResult Decrypt([FromQuery] string cipherText)
         {
             try

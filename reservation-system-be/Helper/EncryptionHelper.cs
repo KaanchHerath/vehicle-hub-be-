@@ -9,9 +9,9 @@ namespace reservation_system_be.Helper
     {
         private static readonly string EncryptionKey = "vehicle-hub"; // Use a secure key
 
-        public static string Encrypt(int userId)
+        public static string Encrypt(int Id)
         {
-            string clearText = userId.ToString();
+            string clearText = Id.ToString();
             byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);
             using (Aes encryptor = Aes.Create())
             {
