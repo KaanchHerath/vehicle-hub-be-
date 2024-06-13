@@ -238,7 +238,8 @@ namespace reservation_system_be.Services.FrontReservationServices
                 Penalty = vehicleLog.Penalty,
                 RentalCost = customerReservation.Vehicle.CostPerDay * customerReservation.Reservation.NoOfDays,
                 Amount = invoice.Amount,
-                Thumbnail = customerReservation.Vehicle.Thumbnail
+                Thumbnail = customerReservation.Vehicle.Thumbnail,
+                InvoiceType = invoice.Type
             };
 
             return bookingConfirmation;
