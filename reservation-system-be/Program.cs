@@ -37,6 +37,7 @@ using reservation_system_be.Services.DashboardStatusServices;
 using reservation_system_be.Services.PaymentService;
 using Azure.Storage.Blobs;
 using reservation_system_be.Services.FileServices;
+using reservation_system_be.Services.NotificationServices;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -111,7 +112,7 @@ builder.Services.AddScoped<IRevenueReportService, RevenueReportService>();
 builder.Services.AddScoped<ISalesChartService, SalesChartService>();
 builder.Services.AddScoped<IReservationStatusService, ReservationStatusService>();
 builder.Services.AddScoped<IDashboardStatusService, DashboardStatusService>();
-
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 
 builder.Services.AddScoped<IFrontVehicleService, FrontVehicleService>();

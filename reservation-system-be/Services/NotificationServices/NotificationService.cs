@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
 using reservation_system_be.Models;
-using reservation_system_be.Services.FeedbackServices;
 
-namespace reservation_system_be.Services.NotificationService
+namespace reservation_system_be.Services.NotificationServices
 {
     public class NotificationService : INotificationService
     {

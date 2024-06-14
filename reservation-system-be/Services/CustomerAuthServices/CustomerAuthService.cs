@@ -91,12 +91,13 @@ namespace reservation_system_be.Services.CustomerAuthServices
 
             //Generate JWT token
             var token = GenerateJWTToken(customer);
-            var customerId = user.Id;
+            var encryptedCustomerId = EncryptionHelper.Encrypt(user.Id);
+
 
             var authdto = new AuthDto
             {
                 token = token,
-                id = customerId
+                id = encryptedCustomerId
             };
 
             return authdto;
@@ -137,7 +138,7 @@ namespace reservation_system_be.Services.CustomerAuthServices
             var otp = GenerateOtp();
 
             customer.PasswordResetOtp = otp;
-            customer.OtpExpires = DateTime.UtcNow.AddMinutes(5); // OTP expires in 10 minutes
+            customer.OtpExpires = DateTime.UtcNow.AddMinutes(5); // OTP expires in 5 minutes
 
 
             await _customerService.UpdateCustomer(customer.Id, customer);
@@ -155,7 +156,7 @@ namespace reservation_system_be.Services.CustomerAuthServices
             return otp;
         }
 
-        public async Task<string> VerifyOtpAndResetPassword(string otp, string newPassword)
+        public async Task<string> VerifyOtp(string otp)
         {
             var customer = await _customerService.GetCustomerByOtp(otp);
 
@@ -163,6 +164,22 @@ namespace reservation_system_be.Services.CustomerAuthServices
             {
                 throw new ArgumentException("Invalid or expired OTP.");
             }
+
+            customer.PasswordResetOtp = otp;
+            await _customerService.UpdateCustomer(customer.Id, customer);
+
+            return "OTP verified successfully";
+            
+        }
+
+        public async Task<string> ResetPassword(string otp, string newPassword)
+        {
+            var customer = await _customerService.GetCustomerByOtp(otp);
+
+            if (customer == null || customer.OtpExpires < DateTime.UtcNow)
+            {
+                throw new ArgumentException("Invalid or expired OTP.");
+            }       
 
             customer.Password = HashPassword(newPassword); // Assume you have a method to hash passwords
             customer.PasswordResetOtp = null;

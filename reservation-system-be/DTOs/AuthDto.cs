@@ -3,7 +3,7 @@
     public record struct AuthDto
     (
         string token,
-        int id
+        string id
     );
     
 }

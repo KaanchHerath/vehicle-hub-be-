@@ -10,6 +10,7 @@ using System.Security.Claims;
 using System.Text;
 using reservation_system_be.Services.CustomerAuthServices;
 using reservation_system_be.DTOs;
+using Org.BouncyCastle.Asn1.Ocsp;
 
 namespace reservation_system_be.Controllers
 {
@@ -56,7 +57,7 @@ namespace reservation_system_be.Controllers
 
         
         
-        [HttpPost("Forgot password")]
+        [HttpPost("ForgotPassword")]
         public async Task<IActionResult> ForgotPassword(string email)
         {
             try
@@ -70,12 +71,27 @@ namespace reservation_system_be.Controllers
             }
         }
 
-        [HttpPost("Reset password")]
-        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        [HttpPost("VerifyOtp")]
+        public async Task<IActionResult> VerifyOtp(string otp)
         {
             try
             {
-                var result = await _customerAuthService.VerifyOtpAndResetPassword(request.Otp, request.NewPassword);
+                await _customerAuthService.VerifyOtp(otp);
+                return Ok("OTP verified successfully.");
+            }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword(string otp, string password)
+        {
+            try
+            {
+                var result = await _customerAuthService.ResetPassword(otp, password);
                 return Ok(result);
             }
             catch (ArgumentException ex)

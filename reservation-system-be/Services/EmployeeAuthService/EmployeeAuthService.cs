@@ -63,7 +63,7 @@ namespace reservation_system_be.Services.EmployeeAuthService
             return "Employee registered successfully";
         }
 
-        public async Task<string> Login(Employee employee)
+        public async Task<AuthDto> Login(Employee employee)
         {
             if (string.IsNullOrEmpty(employee.Email) || string.IsNullOrEmpty(employee.Password))
             {
@@ -80,9 +80,16 @@ namespace reservation_system_be.Services.EmployeeAuthService
             }
 
             //Generate JWT token
-            var token = GenerateJWTToken(employee);
+            var token = GenerateJWTToken(user);
+            var employeeId = user.Id;
 
-            return token;
+            var authdto = new AuthDto
+            {
+                token = token,
+                id = EncryptionHelper.Encrypt(employeeId)
+            };
+
+            return authdto;
 
         }
 

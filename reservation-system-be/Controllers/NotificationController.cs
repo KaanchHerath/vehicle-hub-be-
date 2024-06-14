@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Models;
-using reservation_system_be.Services.FeedbackServices;
-using reservation_system_be.Services.NotificationService;
+using reservation_system_be.Services.NotificationServices;
 
 namespace reservation_system_be.Controllers
 {

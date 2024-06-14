@@ -9,9 +9,9 @@ namespace reservation_system_be.Helper
     {
         private static readonly string EncryptionKey = "vehicle-hub"; // Use a secure key
 
-        public static string Encrypt(int userId)
+        public static string Encrypt(int Id)
         {
-            string clearText = userId.ToString();
+            string clearText = Id.ToString();
             byte[] clearBytes = Encoding.Unicode.GetBytes(clearText);
             using (Aes encryptor = Aes.Create())
             {
@@ -30,7 +30,11 @@ namespace reservation_system_be.Helper
                         cs.Write(clearBytes, 0, clearBytes.Length);
                         cs.Close();
                     }
-                    clearText = Convert.ToBase64String(ms.ToArray());
+                    byte[] encryptedBytes = ms.ToArray();
+                    string base64 = Convert.ToBase64String(encryptedBytes);
+
+                    base64 = base64.Replace('+', '-').Replace('/', '_').Replace("=", "");
+                    clearText = base64;
                 }
             }
             return clearText;
@@ -38,7 +42,14 @@ namespace reservation_system_be.Helper
 
         public static int Decrypt(string cipherText)
         {
-            cipherText = cipherText.Replace(" ", "+");
+            // Adjust the Base64 URL-safe format
+            cipherText = cipherText.Replace("-", "+").Replace('_', '/');
+            int mod4 = cipherText.Length % 4;
+            if (mod4 > 0)
+            {
+                cipherText += new string('=', 4 - mod4);
+            }
+
             byte[] cipherBytes = Convert.FromBase64String(cipherText);
             using (var ms = new MemoryStream(cipherBytes))
             {
