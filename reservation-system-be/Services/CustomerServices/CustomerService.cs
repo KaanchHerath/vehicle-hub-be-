@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
+using reservation_system_be.Helper;
 using reservation_system_be.Models;
 
 namespace reservation_system_be.Services.CustomerServices
@@ -50,6 +51,8 @@ namespace reservation_system_be.Services.CustomerServices
 
         public async Task<Customer> UpdateCustomer(int id, Customer customer)
         {
+            
+
             var existingCustomer = await _context.Customers.FindAsync(id);
             if (existingCustomer == null)
             {

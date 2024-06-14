@@ -91,12 +91,13 @@ namespace reservation_system_be.Services.CustomerAuthServices
 
             //Generate JWT token
             var token = GenerateJWTToken(customer);
-            var customerId = user.Id;
+            var encryptedCustomerId = EncryptionHelper.Encrypt(user.Id);
+
 
             var authdto = new AuthDto
             {
                 token = token,
-                id = EncryptionHelper.Encrypt(customerId)
+                id = encryptedCustomerId
             };
 
             return authdto;
