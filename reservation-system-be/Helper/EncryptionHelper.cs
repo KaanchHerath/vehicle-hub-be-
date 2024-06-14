@@ -42,7 +42,13 @@ namespace reservation_system_be.Helper
 
         public static int Decrypt(string cipherText)
         {
-            cipherText = cipherText.Replace("-", "+").Replace('_', '/').Replace("", "=");
+            // Adjust the Base64 URL-safe format
+            cipherText = cipherText.Replace("-", "+").Replace('_', '/');
+            int mod4 = cipherText.Length % 4;
+            if (mod4 > 0)
+            {
+                cipherText += new string('=', 4 - mod4);
+            }
 
             byte[] cipherBytes = Convert.FromBase64String(cipherText);
             using (var ms = new MemoryStream(cipherBytes))
