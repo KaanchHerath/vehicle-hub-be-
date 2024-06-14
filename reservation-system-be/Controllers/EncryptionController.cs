@@ -23,7 +23,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet("decrypt/{cipherText}")]
-        public IActionResult Decrypt([FromQuery] string cipherText)
+        public IActionResult Decrypt(string cipherText)
         {
             try
             {

@@ -30,7 +30,11 @@ namespace reservation_system_be.Helper
                         cs.Write(clearBytes, 0, clearBytes.Length);
                         cs.Close();
                     }
-                    clearText = Convert.ToBase64String(ms.ToArray());
+                    byte[] encryptedBytes = ms.ToArray();
+                    string base64 = Convert.ToBase64String(encryptedBytes);
+
+                    base64 = base64.Replace('+', '-').Replace('/', '_').Replace("=", "");
+                    clearText = base64;
                 }
             }
             return clearText;
@@ -38,7 +42,8 @@ namespace reservation_system_be.Helper
 
         public static int Decrypt(string cipherText)
         {
-            cipherText = cipherText.Replace(" ", "+");
+            cipherText = cipherText.Replace("-", "+").Replace('_', '/').Replace("", "=");
+
             byte[] cipherBytes = Convert.FromBase64String(cipherText);
             using (var ms = new MemoryStream(cipherBytes))
             {
