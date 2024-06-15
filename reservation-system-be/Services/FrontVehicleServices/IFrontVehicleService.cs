@@ -2,8 +2,10 @@
 
 namespace reservation_system_be.Services.CustomerVehicleServices
 {
-    public interface IBookNowService
+    public interface IFrontVehicleService
     {
         Task<IEnumerable<BookNowDto>> GetAllCards();
+        Task<VehicleImagesDto> GetImages(int id);
+        Task<CreateAdditionalFeaturesDto> GetAdditionalFeatures(int id);
     }
 }

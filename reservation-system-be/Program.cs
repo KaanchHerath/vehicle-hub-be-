@@ -115,7 +115,7 @@ builder.Services.AddScoped<IDashboardStatusService, DashboardStatusService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 
-builder.Services.AddScoped<IBookNowService, BookNowService>();
+builder.Services.AddScoped<IFrontVehicleService, FrontVehicleService>();
 
 builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>();
 builder.Services.AddTransient<IEmailService, EmailService>();

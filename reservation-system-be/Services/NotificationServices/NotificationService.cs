@@ -12,19 +12,15 @@ namespace reservation_system_be.Services.NotificationServices
         {
             _context = context;
         }
-        /*public async Task<List<Notification>> GetAllNotifications(int uid)
+        public async Task<List<Notification>> GetAllNotifications(int uid)
         {
             try
             {
                 var notifications = await _context.Notifications
-                    .Join(_context.Reservations,
-                          notification => notification.ReservationId,
-                          reservation => reservation.Id,
-                          (notification, reservation) => new { notification, reservation })
                     .Join(_context.CustomerReservations,
-                          nr => nr.reservation.Id,
-                          customerReservation => customerReservation.ReservationId,
-                          (nr, customerReservation) => new { nr.notification, nr.reservation, customerReservation })
+                          notification => notification.CustomerReservationId,
+                          customerReservation => customerReservation.Id,
+                          (notification, customerReservation) => new { notification, customerReservation })
                     .Where(nrc => nrc.customerReservation.CustomerId == uid)
                     .Select(nrc => nrc.notification)
                     .ToListAsync();
@@ -35,7 +31,7 @@ namespace reservation_system_be.Services.NotificationServices
             {
                 throw new Exception("Error getting notifications for user.", ex);
             }
-        }*/
+        }
 
         public async Task<bool> DeleteNotification(int notificationId)
         {

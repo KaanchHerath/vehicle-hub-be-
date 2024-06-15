@@ -105,14 +105,10 @@ namespace reservation_system_be.Services.FeedbackServices
             try
             {
                 var feedbackResponses = await _context.Feedbacks
-                    .Join(_context.Reservations,
-                          feedback => feedback.CustomerReservationId,
-                          reservation => reservation.Id,
-                          (feedback, reservation) => new { feedback, reservation })
                     .Join(_context.CustomerReservations,
-                          fr => fr.reservation.Id,
-                          customerReservation => customerReservation.ReservationId,
-                          (fr, customerReservation) => new { fr.feedback, fr.reservation, customerReservation })
+                          feedback => feedback.CustomerReservationId,
+                          customerReservation => customerReservation.Id,
+                          (feedback, customerReservation) => new { feedback, customerReservation })
                     .Join(_context.Customers,
                            frc => frc.customerReservation.CustomerId,
                            customer => customer.Id,
