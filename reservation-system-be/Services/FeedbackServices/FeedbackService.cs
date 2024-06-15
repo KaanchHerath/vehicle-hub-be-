@@ -13,7 +13,7 @@ namespace reservation_system_be.Services.FeedbackServices
             _context = context;
         }
 
-        public async Task<List<Feedback>> AddFeedbacks(FeedbackRequest feedbackRequest)
+        public async Task<Feedback> AddFeedbacks(FeedbackRequest feedbackRequest)
         {
 
             if (feedbackRequest == null)
@@ -23,7 +23,7 @@ namespace reservation_system_be.Services.FeedbackServices
 
             try
             {
-                var serviceFeedback = new Feedback
+                var feedback = new Feedback
                 {
                     Designation = feedbackRequest.Designation,
                     Type = "service",
@@ -45,22 +45,20 @@ namespace reservation_system_be.Services.FeedbackServices
                         throw new ArgumentException("Invalid ReservationId");
                     }
 
-                    serviceFeedback.CustomerReservationId = feedbackRequest.CustomerReservationId;
-                    serviceFeedback.CustomerReservation = customerReservation;
+                    feedback.CustomerReservation = customerReservation;
 
                 }
 
-                _context.Feedbacks.AddRange(serviceFeedback);
+                _context.Feedbacks.AddRange(feedback);
                 await _context.SaveChangesAsync();
 
-                return new List<Feedback> { serviceFeedback };
+                return feedback ;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("An error occurred while adding feedbacks:");
                 Console.WriteLine(ex.ToString());
 
-                // Print inner exception details if available
                 if (ex.InnerException != null)
                 {
                     Console.WriteLine("Inner Exception:");

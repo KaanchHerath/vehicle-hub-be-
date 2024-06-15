@@ -24,7 +24,6 @@ using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Services.FrontReservationServices;
 using reservation_system_be.Services.AdminReservationServices;
 using reservation_system_be.Services.VehicleUtilizationReportServices;
-
 using reservation_system_be.Services.EmployeeAuthService;
 using reservation_system_be.Services.StripeService;
 using reservation_system_be.Services.AdminVehicleServices;
@@ -38,7 +37,10 @@ using reservation_system_be.Services.PaymentService;
 using Azure.Storage.Blobs;
 using reservation_system_be.Services.FileServices;
 using reservation_system_be.Services.NotificationServices;
+using reservation_system_be.Services.VehicleFilterServices;
+using reservation_system_be.Services.FeedbackServices;
 using reservation_system_be.Services.InsuranceExpiryCheckService;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -115,12 +117,15 @@ builder.Services.AddScoped<IReservationStatusService, ReservationStatusService>(
 builder.Services.AddScoped<IDashboardStatusService, DashboardStatusService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
-
 builder.Services.AddScoped<IFrontVehicleService, FrontVehicleService>();
-
 builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>();
-builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IVehicleFilterService, VehicleFilterService>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+
+
+builder.Services.AddTransient<IEmailService, EmailService>();
+
 
 // The insurance expiry check service
 builder.Services.AddHostedService<InsuranceExpiryCheckService>();
