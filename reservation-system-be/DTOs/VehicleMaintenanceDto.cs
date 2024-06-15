@@ -8,6 +8,7 @@ namespace reservation_system_be.DTOs
         DateTime Date,
         String Description,
         String Type,
+        int CurrentMileage,
         VehicleDto Vehicle
     );
 }

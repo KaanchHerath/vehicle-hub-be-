@@ -300,5 +300,57 @@ namespace reservation_system_be.Services.AdminReservationServices
 
             return finalAmount;
         }
+
+        public async Task <IEnumerable<VehicleCardDto>> AvailableVehicles(int id) // customerReservationId
+        {
+            var customerReservation = await _customerReservationService.GetCustomerReservation(id);
+
+            var reservation = customerReservation.Reservation;
+
+            // Get the list of vehicles that are not reserved during the given period
+            var reservedVehicleIds = await _context.CustomerReservations
+                .Where(cr => cr.Reservation.StartDate <= reservation.EndDate && cr.Reservation.EndDate >= reservation.StartDate)
+                .Select(cr => cr.VehicleId)
+                .ToListAsync();
+
+            var availableVehicles = await _context.Vehicles
+                .Where(v => !reservedVehicleIds.Contains(v.Id) && v.Status && v.VehicleTypeId == customerReservation.Vehicle.VehicleType.Id)
+                .ToListAsync();
+
+            var vehicleCardDtos = new List<VehicleCardDto>();
+
+            foreach (var vehicle in availableVehicles)
+            {
+                var vehicleDto = await _vehicleService.GetVehicle(vehicle.Id);
+                var vehicleCardDto = new VehicleCardDto
+                {
+                    Id = vehicleDto.Id,
+                    Name = vehicleDto.VehicleModel.Name,
+                    Make = vehicleDto.VehicleModel.VehicleMake.Name,
+                    Type = vehicleDto.VehicleType.Name,
+                    Year = vehicleDto.VehicleModel.Year,
+                    Transmission = vehicleDto.Transmission,
+                    SeatingCapacity = vehicleDto.VehicleModel.SeatingCapacity,
+                    CostPerDay = vehicleDto.CostPerDay,
+                    Thumbnail = vehicleDto.Thumbnail
+                };
+                vehicleCardDtos.Add(vehicleCardDto);
+            }
+
+            return vehicleCardDtos;
+        }
+
+        public async Task ReservationChangeVehicle(int id, int vid) // customerReservationId, vehicleId
+        {
+            var customerReservation = await _context.CustomerReservations.FirstOrDefaultAsync(cr => cr.Id == id);
+            if (customerReservation == null)
+            {
+                throw new DataNotFoundException("Customer Reservation not found");
+            }
+
+            customerReservation.VehicleId = vid;
+
+            await _customerReservationService.UpdateCustomerReservation(id, customerReservation);
+        }
     }
 }

@@ -45,11 +45,11 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<CustomerReservation>> UpdateCustomerReservation(int id, CreateCustomerReservationDto customerReservationDto)
+        public async Task<ActionResult<CustomerReservation>> UpdateCustomerReservation(int id, CustomerReservation customerReservation)
         {
             try
             {
-                return await _customerReservationService.UpdateCustomerReservation(id, customerReservationDto);
+                return await _customerReservationService.UpdateCustomerReservation(id, customerReservation);
             }
             catch (DataNotFoundException e)
             {

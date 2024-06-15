@@ -107,15 +107,15 @@ namespace reservation_system_be.Services.CustomerReservationService
             return customerReservation;
         }
 
-        public async Task<CustomerReservation> UpdateCustomerReservation(int id, CreateCustomerReservationDto customerReservationDto)
+        public async Task<CustomerReservation> UpdateCustomerReservation(int id, CustomerReservation customerReservation)
         {
             var existingCustomerReservation = await _context.CustomerReservations.FindAsync(id);
             if (existingCustomerReservation == null)
             {
                 throw new DataNotFoundException("Customer Reservation not found");
             }
-            existingCustomerReservation.VehicleId = customerReservationDto.VehicleId;
-            _context.Entry(existingCustomerReservation.VehicleId).State = EntityState.Modified;
+            existingCustomerReservation.VehicleId = customerReservation.VehicleId;
+            _context.Entry(existingCustomerReservation).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return existingCustomerReservation;
         }
