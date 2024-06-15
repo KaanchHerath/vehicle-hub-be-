@@ -42,12 +42,19 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<IEnumerable<Feedback>>> AddFeedbacks(FeedbackRequest feedback)
+        public async Task<ActionResult> AddFeedbacks(FeedbackRequest feedback)
         {
             try
             {
-                var newfeedback = await _feedbackService.AddFeedbacks(feedback);
-                return Ok(newfeedback);
+                var newFeedback = await _feedbackService.AddFeedbacks(feedback);
+
+                var response = new
+                {
+                    Message = "Feedback added successfully.",
+                    Feedback = newFeedback
+                };
+
+                return Ok(response);
             }
             catch (Exception ex)
             {

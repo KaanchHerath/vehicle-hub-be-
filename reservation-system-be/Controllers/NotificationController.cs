@@ -17,8 +17,8 @@ namespace reservation_system_be.Controllers
         }
 
 
-        /*[HttpGet("Notifications/{uid}")]
-        public async Task<ActionResult<List<Notification>>> GetNotifications(int uid)
+        [HttpGet("Notifications/{uid}")]
+        public async Task<ActionResult<List<Notification>>> GetAllNotifications(int uid)
         {
             try
             {
@@ -33,7 +33,21 @@ namespace reservation_system_be.Controllers
             {
                 return BadRequest(ex.Message);
             }
-        }*/
+        }
+
+        [HttpGet("allnotifications")]
+        public async Task<ActionResult<List<Notification>>> GetNotifications()
+        {
+            try
+            {
+                var notifications = await _notificationService.GetNotifications();
+                return Ok(notifications);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
         [HttpPost("AddNotification")]
         public async Task<ActionResult<Notification>> AddNotification(Notification notification)
