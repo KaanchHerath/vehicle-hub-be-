@@ -18,22 +18,26 @@ namespace reservation_system_be.Services.VehicleFilterServices
             _context = context;
         }
 
-        public async Task<List<VehicleResponse>> GetvailableVehiclesDetails(DateTime startDate, TimeOnly startTime, DateTime endDate, TimeOnly endTime)
+        public async Task<List<VehicleResponse>> GetAvailableVehiclesDetails(DateTime startDate, TimeOnly startTime, DateTime endDate, TimeOnly endTime)
         {
             DateTime startDateTime = startDate.Date + startTime.ToTimeSpan();
             DateTime endDateTime = endDate.Date + endTime.ToTimeSpan();
 
             var availableVehicles = await _context.Vehicles
                 .Where(vehicle => !vehicle.CusReservation
-                    .Any(reservation => !(reservation.Reservation.StartDate >= endDateTime ||
-                                          reservation.Reservation.EndDate <= startDateTime)))
+                    .Any(reservation =>
+                        !(reservation.Reservation.StartDate > endDate ||
+                          reservation.Reservation.EndDate < startDate ||
+                          (reservation.Reservation.StartDate == endDate && reservation.Reservation.StartTime >= endTime) ||
+                          (reservation.Reservation.EndDate == startDate && reservation.Reservation.EndTime <= startTime)
+                        )
+                    ))
                 .Select(vehicle => new VehicleResponse
                 {
                     Vehicle = vehicle,
                     vehicleMake = vehicle.VehicleModel.VehicleMake,
                     vehicleModel = vehicle.VehicleModel,
-                    //vehicleType = vehicle.VehicleType,
-                    //vehiclePhotos = vehicle.VehiclePhoto
+                    vehicleType = vehicle.VehicleType
                 })
                 .ToListAsync();
 

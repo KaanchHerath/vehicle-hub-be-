@@ -21,7 +21,7 @@ namespace reservation_system_be.Controllers
 		{
 			try
 			{
-				var availableVehicles = await _vehicleFilterService.GetvailableVehiclesDetails(startDate, startTime, endDate, endTime);
+				var availableVehicles = await _vehicleFilterService.GetAvailableVehiclesDetails(startDate, startTime, endDate, endTime);
 
 				return Ok(availableVehicles);
 			}

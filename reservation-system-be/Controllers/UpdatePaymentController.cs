@@ -7,8 +7,8 @@ using System.Threading.Tasks;
 
 namespace reservation_system_be.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
@@ -19,15 +19,14 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PaymentServiceDTO>> CreatePayment(PaymentServiceDTO paymentDto)
+        public async Task<ActionResult<PaymentServiceDTO>> CreatePayment(Payment payment)
         {
-            var createdPayment = await _paymentService.AddPayment(paymentDto);
+            var createdPayment = await _paymentService.AddPayment(payment);
             if (createdPayment == null)
                 return BadRequest("Error creating payment");
 
-            return CreatedAtAction(nameof(GetPaymentById), new { id = createdPayment.Id }, createdPayment);
+            return CreatedAtAction(nameof(GetPaymentById), new { id = createdPayment?.Id }, createdPayment);
         }
-
 
         [HttpGet]
         public async Task<ActionResult<List<PaymentServiceDTO>>> GetAllPayments()
@@ -42,7 +41,6 @@ namespace reservation_system_be.Controllers
             var payment = await _paymentService.GetPaymentById(id);
             if (payment == null)
                 return NotFound();
-
             return Ok(payment);
         }
 
@@ -52,8 +50,19 @@ namespace reservation_system_be.Controllers
             var success = await _paymentService.DeletePayment(id);
             if (!success)
                 return NotFound();
+            return NoContent();
+        }
+
+        [HttpPut("UpdateReservationStatus")]
+        public async Task<ActionResult> UpdateReservationStatus([FromBody] UpdateReservationStatusRequest request)
+        {
+            var success = await _paymentService.UpdateReservationStatusByInvoiceId(request.InvoiceId, request.NewStatus);
+            if (!success)
+                return NotFound("Invoice not found or unable to update reservation status.");
 
             return NoContent();
         }
     }
+
+    public record UpdateReservationStatusRequest(int InvoiceId, Status NewStatus);
 }

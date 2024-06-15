@@ -50,5 +50,19 @@ namespace reservation_system_be.Controllers
             await _adminReservationService.EndReservation(id, vehicleLog);
             return Ok();
         }
+
+        [HttpGet("Available-Vehicles/{id}")]
+        public async Task<IActionResult> AvailableVehicles(int id)
+        {
+            var vehicles = await _adminReservationService.AvailableVehicles(id);
+            return Ok(vehicles);
+        }
+
+        [HttpPost("Change-Vehicle/{id}")]
+        public async Task<IActionResult> ReservationChangeVehicle(int id, int vid)
+        {
+            await _adminReservationService.ReservationChangeVehicle(id, vid);
+            return Ok();
+        }
     }
 }
