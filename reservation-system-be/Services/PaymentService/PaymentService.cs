@@ -17,25 +17,10 @@ namespace reservation_system_be.Services.PaymentService
             _context = context;
         }
 
-        
-public async Task<PaymentServiceDTO?> AddPayment(PaymentServiceDTO paymentDto)
+        public async Task<PaymentServiceDTO?> AddPayment(Payment payment)
         {
-            var payment = new Payment
-            {
-                // Map properties from DTO to Payment entity
-                PaymentStatus = paymentDto.PaymentStatus,
-                PaymentMethod = paymentDto.PaymentMethod,
-                PaymentDate = paymentDto.PaymentDate,
-                PaymentTime = paymentDto.PaymentTime,
-                InvoiceId = paymentDto.InvoiceId,
-                // Assuming you have a way to set ReservationStatus in Payment entity
-            };
-
             _context.Payments.Add(payment);
             await _context.SaveChangesAsync();
-
-            // Update the ReservationStatus in related entities if necessary
-
             return await GetPaymentDTOById(payment.Id); // Return DTO
         }
 
@@ -75,7 +60,6 @@ public async Task<PaymentServiceDTO?> AddPayment(PaymentServiceDTO paymentDto)
                     p.InvoiceId,
                     p.Invoice.CustomerReservation != null ? p.Invoice.CustomerReservation.Reservation.Status : Status.Waiting
                 )).FirstOrDefaultAsync();
-
             return payment;
         }
 
@@ -84,7 +68,6 @@ public async Task<PaymentServiceDTO?> AddPayment(PaymentServiceDTO paymentDto)
             var payment = await _context.Payments.FindAsync(id);
             if (payment == null)
                 return false;
-
             _context.Payments.Remove(payment);
             await _context.SaveChangesAsync();
             return true;

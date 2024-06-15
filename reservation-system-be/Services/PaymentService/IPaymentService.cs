@@ -7,8 +7,7 @@ namespace reservation_system_be.Services.PaymentService
 {
     public interface IPaymentService
     {
-        Task<PaymentServiceDTO?> AddPayment(PaymentServiceDTO paymentDto);
-
+        Task<PaymentServiceDTO?> AddPayment(Payment payment);
         Task<List<PaymentServiceDTO>> GetAllPayments();
         Task<PaymentServiceDTO?> GetPaymentById(int id);
         Task<bool> DeletePayment(int id);

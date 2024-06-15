@@ -1,14 +1,14 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.DTOs;
 using reservation_system_be.Models;
 using reservation_system_be.Services.PaymentService;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace reservation_system_be.Controllers
 {
-    [Route("api/[controller]")]
     [ApiController]
+    [Route("api/[controller]")]
     public class PaymentController : ControllerBase
     {
         private readonly IPaymentService _paymentService;
@@ -19,15 +19,15 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<PaymentServiceDTO>> CreatePayment(PaymentServiceDTO paymentDto)
+        public async Task<ActionResult<PaymentServiceDTO>> CreatePayment(Payment payment)
         {
-            var createdPayment = await _paymentService.AddPayment(paymentDto);
+            var createdPayment = await _paymentService.AddPayment(payment);
             if (createdPayment == null)
                 return BadRequest("Error creating payment");
 
-            return CreatedAtAction(nameof(GetPaymentById), new { id = createdPayment.Id }, createdPayment);
+            // Use the Id from the created payment to generate the URI
+            return CreatedAtAction(nameof(GetPaymentById), new { id = createdPayment?.Id }, createdPayment);
         }
-
 
         [HttpGet]
         public async Task<ActionResult<List<PaymentServiceDTO>>> GetAllPayments()
@@ -42,7 +42,6 @@ namespace reservation_system_be.Controllers
             var payment = await _paymentService.GetPaymentById(id);
             if (payment == null)
                 return NotFound();
-
             return Ok(payment);
         }
 
@@ -52,7 +51,6 @@ namespace reservation_system_be.Controllers
             var success = await _paymentService.DeletePayment(id);
             if (!success)
                 return NotFound();
-
             return NoContent();
         }
     }
