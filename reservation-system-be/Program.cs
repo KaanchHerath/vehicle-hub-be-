@@ -38,6 +38,7 @@ using reservation_system_be.Services.PaymentService;
 using Azure.Storage.Blobs;
 using reservation_system_be.Services.FileServices;
 using reservation_system_be.Services.NotificationServices;
+using reservation_system_be.Services.InsuranceExpiryCheckService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -121,7 +122,8 @@ builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>(
 builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddScoped<IFileService, FileService>();
 
-
+// The insurance expiry check service
+builder.Services.AddHostedService<InsuranceExpiryCheckService>();
 
 builder.Services.AddCors(options =>
 {
