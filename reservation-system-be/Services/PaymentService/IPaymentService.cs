@@ -11,5 +11,6 @@ namespace reservation_system_be.Services.PaymentService
         Task<List<PaymentServiceDTO>> GetAllPayments();
         Task<PaymentServiceDTO?> GetPaymentById(int id);
         Task<bool> DeletePayment(int id);
+        Task<bool> UpdateReservationStatusByInvoiceId(int invoiceId, Status newStatus);
     }
 }

@@ -9,6 +9,6 @@ namespace reservation_system_be.DTOs
         DateTime PaymentDate,
         DateTime PaymentTime,
         int InvoiceId,
-        Status ReservationStatus // From CustomerReservation related to Invoice
+        Status ReservationStatus // Assuming Status is an enum defined elsewhere
     );
 }

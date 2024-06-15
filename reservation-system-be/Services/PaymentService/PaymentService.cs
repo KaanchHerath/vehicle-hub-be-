@@ -72,5 +72,24 @@ namespace reservation_system_be.Services.PaymentService
             await _context.SaveChangesAsync();
             return true;
         }
+
+        public async Task<bool> UpdateReservationStatusByInvoiceId(int invoiceId, Status newStatus)
+        {
+            var invoice = await _context.Invoices
+                                        .Include(i => i.CustomerReservation)
+                                        .ThenInclude(cr => cr.Reservation)
+                                        .FirstOrDefaultAsync(i => i.Id == invoiceId);
+
+            if (invoice == null || invoice.CustomerReservation == null || invoice.CustomerReservation.Reservation == null)
+            {
+                return false; // Invoice not found or no reservation associated with this invoice
+            }
+
+            // Update the reservation status
+            invoice.CustomerReservation.Reservation.Status = newStatus;
+            await _context.SaveChangesAsync();
+            return true;
+        }
+
     }
 }

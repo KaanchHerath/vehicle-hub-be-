@@ -1,9 +1,9 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.DTOs;
 using reservation_system_be.Models;
 using reservation_system_be.Services.PaymentService;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace reservation_system_be.Controllers
 {
@@ -25,7 +25,6 @@ namespace reservation_system_be.Controllers
             if (createdPayment == null)
                 return BadRequest("Error creating payment");
 
-            // Use the Id from the created payment to generate the URI
             return CreatedAtAction(nameof(GetPaymentById), new { id = createdPayment?.Id }, createdPayment);
         }
 
@@ -53,5 +52,17 @@ namespace reservation_system_be.Controllers
                 return NotFound();
             return NoContent();
         }
+
+        [HttpPut("UpdateReservationStatus")]
+        public async Task<ActionResult> UpdateReservationStatus([FromBody] UpdateReservationStatusRequest request)
+        {
+            var success = await _paymentService.UpdateReservationStatusByInvoiceId(request.InvoiceId, request.NewStatus);
+            if (!success)
+                return NotFound("Invoice not found or unable to update reservation status.");
+
+            return NoContent();
+        }
     }
+
+    public record UpdateReservationStatusRequest(int InvoiceId, Status NewStatus);
 }
