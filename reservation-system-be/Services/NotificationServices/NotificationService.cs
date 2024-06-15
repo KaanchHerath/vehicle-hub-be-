@@ -33,6 +33,21 @@ namespace reservation_system_be.Services.NotificationServices
             }
         }
 
+        public async Task<List<Notification>> GetNotifications()
+        {
+            try
+            {
+                var notifications = await _context.Notifications
+                                                  .OrderByDescending(n => n.Generated_DateTime)
+                                                  .ToListAsync();
+                return notifications;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error getting notifications for user.", ex);
+            }
+        }
+
         public async Task<bool> DeleteNotification(int notificationId)
         {
             try
