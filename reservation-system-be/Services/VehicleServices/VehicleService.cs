@@ -318,96 +318,22 @@ namespace reservation_system_be.Services.VehicleServices
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<VehicleResponse>> SearchVehicle(string search)
-        {
-            var vehicles = await _context.Vehicles
-                .Include(v => v.VehicleType)
-                .Include(v => v.VehicleModel)
-                .ThenInclude(vm => vm.VehicleMake) // Ensure VehicleMake is included
-                .Where(v =>
-                    v.VehicleModel.Name.Contains(search) ||
-                    v.VehicleType.Name.Contains(search)
-                )
-                .Select(v => new VehicleResponse
-                {
-                    Vehicle = v,
-                    vehicleMake = v.VehicleModel.VehicleMake,
-                    vehicleModel = v.VehicleModel
-                })
-                .ToListAsync();
-
-            return vehicles;
-        }
-
-
         public async Task<List<VehicleResponse>> GetAllVehiclesDetails()
         {
             var vehicles = await _context.Vehicles
                 .Include(v => v.VehicleType)
                 .Include(v => v.VehicleModel)
-                .ThenInclude(vm => vm.VehicleMake)
+                    .ThenInclude(vm => vm.VehicleMake)
                 .Select(v => new VehicleResponse
                 {
                     Vehicle = v,
                     vehicleMake = v.VehicleModel.VehicleMake,
-                    vehicleModel = v.VehicleModel
+                    vehicleModel = v.VehicleModel,
+                    vehicleType = v.VehicleType
                 })
                 .ToListAsync();
 
             return vehicles;
-        }
-
-
-        public async Task<List<VehicleResponse>> FilterVehicles(int? vehicleTypeId, int? vehicleMakeId, int? seatingCapacity, float? depositAmount)
-        {
-            var query = _context.Vehicles
-                .Include(v => v.VehicleModel)
-                .ThenInclude(vm => vm.VehicleMake)
-                .Include(v => v.VehicleType)
-                .AsQueryable();
-
-            if (vehicleTypeId.HasValue)
-            {
-                query = query.Where(v => v.VehicleTypeId == vehicleTypeId.Value);
-            }
-
-            if (vehicleMakeId.HasValue)
-            {
-                var joinedQuery = query.Join(
-                    _context.VehicleModels,
-                    vehicle => vehicle.VehicleModelId,
-                    vehicleModel => vehicleModel.Id,
-                    (vehicle, vehicleModel) => new { vehicle, vehicleModel }
-                );
-
-                if (vehicleMakeId.HasValue)
-                {
-                    joinedQuery = joinedQuery.Where(vm => vm.vehicleModel.VehicleMakeId == vehicleMakeId.Value);
-                }
-
-                if (!(seatingCapacity == 0))
-                {
-                    joinedQuery = joinedQuery.Where(vm => vm.vehicleModel.SeatingCapacity < seatingCapacity);
-                }
-
-                query = joinedQuery.Select(vm => vm.vehicle);
-            }
-
-            if (depositAmount.HasValue)
-            {
-                query = query.Where(v => v.VehicleType.DepositAmount < depositAmount.Value);
-            }
-
-            var result = await query
-                .Select(v => new VehicleResponse
-                {
-                    Vehicle = v,
-                    vehicleMake = v.VehicleModel.VehicleMake,
-                    vehicleModel = v.VehicleModel
-                })
-                .ToListAsync();
-
-            return result;
         }
 
 
@@ -416,10 +342,9 @@ namespace reservation_system_be.Services.VehicleServices
     public class VehicleResponse
     {
         public Vehicle Vehicle { get; set; }
-
         public VehicleMake vehicleMake { get; set; }
-
         public VehicleModel vehicleModel { get; set; }
+        public VehicleType vehicleType { get; set; }
     }
 
 }

@@ -153,20 +153,6 @@ namespace reservation_system_be.Controllers
             }
         }
 
-        [HttpGet("vehicles/search")]
-        public async Task<ActionResult<List<VehicleResponse>>> SearchVehicle(String search)
-        {
-            try
-            {
-                var vehicles = await _vehicleService.SearchVehicle(search);
-                return Ok(vehicles);
-            }
-            catch (DataNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-        }
-
         [HttpGet("alldata")]
         public async Task<ActionResult<List<VehicleResponse>>> GetAllVehiclesDetails()
         {
@@ -181,23 +167,7 @@ namespace reservation_system_be.Controllers
             }
         }
 
-        [HttpGet("vehicles/filter")]
-        public async Task<ActionResult<List<VehicleResponse>>> FilterVehicles(int? vehicleTypeId, int? vehicleMakeId, int? seatingCapacity, float? depositAmount)
-        {
-            try
-            {
-                var vehicles = await _vehicleService.FilterVehicles(vehicleTypeId, vehicleMakeId, seatingCapacity, depositAmount);
-                if (vehicles == null || vehicles.Count == 0)
-                {
-                    return NotFound("No vehicles match the provided criteria.");
-                }
-                return Ok(vehicles);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        
 
     }
 }

@@ -17,10 +17,7 @@ namespace reservation_system_be.Services.VehicleServices
         Task UpdateInteriorImg(int id, IFormFile interior);
         Task DeleteVehicle(int id);
 
-        Task<List<VehicleResponse>> SearchVehicle(String search);
-
         Task<List<VehicleResponse>> GetAllVehiclesDetails();
 
-        Task<List<VehicleResponse>> FilterVehicles(int? vehicleTypeId, int? vehicleMakeId, int? seatingCapacity, float? depositAmount);
     }
 }
