@@ -24,7 +24,6 @@ using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Services.FrontReservationServices;
 using reservation_system_be.Services.AdminReservationServices;
 using reservation_system_be.Services.VehicleUtilizationReportServices;
-
 using reservation_system_be.Services.EmployeeAuthService;
 using reservation_system_be.Services.StripeService;
 using reservation_system_be.Services.AdminVehicleServices;
@@ -39,6 +38,7 @@ using Azure.Storage.Blobs;
 using reservation_system_be.Services.FileServices;
 using reservation_system_be.Services.NotificationServices;
 using reservation_system_be.Services.InsuranceExpiryCheckService;
+using reservation_system_be.Services.VehicleMaintenanceDueService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -124,6 +124,9 @@ builder.Services.AddScoped<IFileService, FileService>();
 
 // The insurance expiry check service
 builder.Services.AddHostedService<InsuranceExpiryCheckService>();
+
+// The maintenance due check service
+builder.Services.AddHostedService<VehicleMaintenanceDueService>();
 
 builder.Services.AddCors(options =>
 {
