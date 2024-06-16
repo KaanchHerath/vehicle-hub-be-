@@ -309,7 +309,7 @@ namespace reservation_system_be.Services.AdminReservationServices
 
             // Get the list of vehicles that are not reserved during the given period
             var reservedVehicleIds = await _context.CustomerReservations
-                .Where(cr => cr.Reservation.StartDate <= reservation.EndDate && cr.Reservation.EndDate >= reservation.StartDate)
+                .Where(cr => cr.Reservation.StartDate <= reservation.EndDate && cr.Reservation.EndDate >= reservation.StartDate && cr.Reservation.Status != Status.Cancelled)
                 .Select(cr => cr.VehicleId)
                 .ToListAsync();
 
