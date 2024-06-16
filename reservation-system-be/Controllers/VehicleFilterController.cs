@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using reservation_system_be.DTOs;
 using reservation_system_be.Services.VehicleFilterServices;
 using System;
 using System.Threading.Tasks;
@@ -17,7 +18,7 @@ namespace reservation_system_be.Controllers
 		}
 
 		[HttpGet("available")]
-		public async Task<IActionResult> GetAvailableVehicles(DateTime startDate, TimeOnly startTime, DateTime endDate, TimeOnly endTime)
+		public async Task<ActionResult<List<VehicleDto>>> GetAvailableVehicles(DateTime startDate, TimeOnly startTime, DateTime endDate, TimeOnly endTime)
 		{
 			try
 			{
