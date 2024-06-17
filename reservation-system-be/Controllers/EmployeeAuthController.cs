@@ -51,6 +51,23 @@ namespace reservation_system_be.Controllers
             }
 
         }
-       
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] EmployeePasswordDTO resetPasswordDto)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _employeeAuthService.ResetPassword(resetPasswordDto);
+            if (result == "Password has been reset successfully")
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+
+        }
+
     }
 }
