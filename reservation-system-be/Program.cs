@@ -41,6 +41,7 @@ using reservation_system_be.Services.VehicleFilterServices;
 using reservation_system_be.Services.FeedbackServices;
 using reservation_system_be.Services.InsuranceExpiryCheckService;
 using reservation_system_be.Services.VehicleMaintenanceDueService;
+using reservation_system_be.Services.CheckCustomerReservationConflictsServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -133,6 +134,9 @@ builder.Services.AddHostedService<InsuranceExpiryCheckService>();
 
 // The maintenance due check service
 builder.Services.AddHostedService<VehicleMaintenanceDueService>();
+
+// The customer reservation conflict service
+builder.Services.AddHostedService<CheckCustomerReservationConflictsService>();
 
 builder.Services.AddCors(options =>
 {
