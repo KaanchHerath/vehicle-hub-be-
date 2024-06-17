@@ -42,7 +42,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Vehicle>> CreateVehicle([FromForm]CreateVehicleDto createVehicleDto, IFormFile formFile, IFormFile front, IFormFile rear, IFormFile dashboard, IFormFile interior)
+        public async Task<ActionResult<Vehicle>> CreateVehicle([FromForm] CreateVehicleDto createVehicleDto, IFormFile formFile, IFormFile front, IFormFile rear, IFormFile dashboard, IFormFile interior)
         {
             try
             {
@@ -51,7 +51,15 @@ namespace reservation_system_be.Controllers
             }
             catch (DataNotFoundException e)
             {
-                return NotFound(e.Message);
+                return NotFound(new { message = e.Message });
+            }
+            catch (Exception e) when (e.Message.Contains("Vehicle with the same registration number already exists"))
+            {
+                return BadRequest(new { error = e.Message, field = "regNo" });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = e.Message });
             }
         }
 

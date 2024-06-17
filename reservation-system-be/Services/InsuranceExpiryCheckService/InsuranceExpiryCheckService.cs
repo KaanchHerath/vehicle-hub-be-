@@ -55,7 +55,7 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
                     {
                         Type = "Insurance",
                         Title = "Insurance Expiry",
-                        Description = $"Insurance for vehicle {vehicle.RegistrationNumber} is expiring on {insurance.ExpiryDate}.",
+                        Description = $"Insurance for vehicle {vehicle.RegistrationNumber} is expiring on {insurance.ExpiryDate.ToString("yyyy-MM-dd")}",
                         Generated_DateTime = DateTime.Now,
                         VehicleInsuranceID = insurance.Id
                     };
@@ -77,7 +77,7 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
                     {
                         Type = "Insurance",
                         Title = "No Insurance",
-                        Description = $"Vehicle {vehicle.RegistrationNumber} has no insurance for the rest of {DateTime.Now.Year}.",
+                        Description = $"Vehicle {vehicle.RegistrationNumber} currently does not have insurance coverage for the rest of {DateTime.Now.Year}.",
                         Generated_DateTime = DateTime.Now,
                         VehicleInsuranceID = null
                     };
