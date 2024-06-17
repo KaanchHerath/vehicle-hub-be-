@@ -5,6 +5,6 @@ namespace reservation_system_be.Services.VehicleFilterServices
 {
 	public interface IVehicleFilterService
 	{
-        Task<IEnumerable<VehicleDto>> GetAvailableVehiclesDetails(DateTime startDate, TimeOnly startTime, DateTime endDate, TimeOnly endTime);
+        Task<IEnumerable<BookNowDto>> GetAvailableVehiclesDetails(DateTime startDate, TimeOnly startTime, DateTime endDate, TimeOnly endTime);
 	}
 }

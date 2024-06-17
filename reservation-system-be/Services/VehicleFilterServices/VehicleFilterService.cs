@@ -36,7 +36,7 @@ namespace reservation_system_be.Services.VehicleFilterServices
             _fileServices = fileService;
         }
 
-        public async Task<IEnumerable<VehicleDto>> GetAvailableVehiclesDetails(DateTime startDate, TimeOnly startTime, DateTime endDate, TimeOnly endTime)
+        public async Task<IEnumerable<BookNowDto>> GetAvailableVehiclesDetails(DateTime startDate, TimeOnly startTime, DateTime endDate, TimeOnly endTime)
         {
             var availableVehicles = await _context.Vehicles
                 .Include(v => v.VehicleType)
@@ -57,36 +57,32 @@ namespace reservation_system_be.Services.VehicleFilterServices
                 throw new DataNotFoundException("No available vehicles found");
             }
 
-            var vehicleDtos = new List<VehicleDto>();
+            var bookNowDtos = new List<BookNowDto>();
             foreach (var vehicle in availableVehicles)
             {
                 var vehicleType = await _vehicleTypeService.GetSingleVehicleType(vehicle.VehicleTypeId);
                 var vehicleModel = await _vehicleModelService.GetVehicleModel(vehicle.VehicleModelId);
-                var employee = await _employeeService.GetEmployee(vehicle.EmployeeId);
 
-                var vehicleDto = new VehicleDto
+                var bookNowDto = new BookNowDto
                 {
-                    Id = vehicle.Id,
-                    RegistrationNumber = vehicle.RegistrationNumber,
-                    ChassisNo = vehicle.ChassisNo,
-                    Colour = vehicle.Colour,
-                    Mileage = vehicle.Mileage,
-                    CostPerDay = vehicle.CostPerDay,
+                    VehicleId = vehicle.Id,
+                    Name = vehicleModel.Name,
+                    Make = vehicleModel.VehicleMake.Name,
+                    Type = vehicleType.Name,
+                    Year = vehicleModel.Year,
                     Transmission = vehicle.Transmission,
-                    CostPerExtraKM = vehicle.CostPerExtraKM,
+                    SeatingCapacity = vehicleModel.SeatingCapacity,
+                    CostPerDay = vehicle.CostPerDay,
                     Thumbnail = vehicle.Thumbnail,
                     FrontImg = vehicle.FrontImg,
                     RearImg = vehicle.RearImg,
                     DashboardImg = vehicle.DashboardImg,
                     InteriorImg = vehicle.InteriorImg,
-                    Status = vehicle.Status,
-                    VehicleType = vehicleType,
-                    VehicleModel = vehicleModel,
-                    Employee = employee
+                    Logo = vehicleModel.VehicleMake.Logo
                 };
-                vehicleDtos.Add(vehicleDto);
+                bookNowDtos.Add(bookNowDto);
             }
-            return vehicleDtos;
+            return bookNowDtos;
         }
 
     }
