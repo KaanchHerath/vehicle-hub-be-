@@ -42,6 +42,7 @@ using reservation_system_be.Services.FeedbackServices;
 using reservation_system_be.Services.InsuranceExpiryCheckService;
 using reservation_system_be.Services.VehicleMaintenanceDueService;
 using reservation_system_be.Services.CheckCustomerReservationConflictsServices;
+using reservation_system_be.Services.NewFolder;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -137,6 +138,9 @@ builder.Services.AddHostedService<VehicleMaintenanceDueService>();
 
 // The customer reservation conflict service
 builder.Services.AddHostedService<CheckCustomerReservationConflictsService>();
+
+// The reservation automatic cancellation service
+builder.Services.AddHostedService<ReservationPendingService>();
 
 builder.Services.AddCors(options =>
 {
