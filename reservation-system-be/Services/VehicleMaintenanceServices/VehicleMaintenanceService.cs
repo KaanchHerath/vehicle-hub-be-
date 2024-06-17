@@ -40,6 +40,7 @@ namespace reservation_system_be.Services.VehicleMaintenanceServices
                     Date = vehicleMaintenance.Date,
                     Description = vehicleMaintenance.Description,
                     Type = vehicleMaintenance.Type,
+                    CurrentMileage = vehicleMaintenance.CurrentMileage,
                     Vehicle = vehicle
                 };
 
@@ -64,6 +65,7 @@ namespace reservation_system_be.Services.VehicleMaintenanceServices
                 Date = vehicleMaintenance.Date,
                 Description = vehicleMaintenance.Description,
                 Type = vehicleMaintenance.Type,
+                CurrentMileage = vehicleMaintenance.CurrentMileage,
                 Vehicle = await _vehicleService.GetVehicle(vehicleMaintenance.VehicleId)
             };
             return vehicleMaintenanceDto;
@@ -86,6 +88,7 @@ namespace reservation_system_be.Services.VehicleMaintenanceServices
             existingVehicleMaintenance.Date = vehicleMaintenance.Date;
             existingVehicleMaintenance.Description = vehicleMaintenance.Description;
             existingVehicleMaintenance.Type = vehicleMaintenance.Type;
+            existingVehicleMaintenance.CurrentMileage = vehicleMaintenance.CurrentMileage;
             existingVehicleMaintenance.VehicleId = vehicleMaintenance.VehicleId;
             _context.Entry(existingVehicleMaintenance).State = EntityState.Modified;
             await _context.SaveChangesAsync();

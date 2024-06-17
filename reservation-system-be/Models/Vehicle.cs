@@ -25,7 +25,7 @@ namespace reservation_system_be.Models
         [JsonIgnore]
         public VehicleType? VehicleType { get; set; }
         [JsonIgnore]
-        public VehicleInsurance? VehicleInsurance { get; set; }
+        public ICollection<VehicleInsurance>? VehicleInsurance { get; set; }
         [JsonIgnore]
         public ICollection<VehicleMaintenance>? VehicleMaintenance { get; set; }
 
@@ -41,7 +41,5 @@ namespace reservation_system_be.Models
         public ICollection <Wishlist>? Wishlist { get; set; }
         [JsonIgnore]
         public ICollection<CustomerReservation>? CusReservation { get; set; }
-        [JsonIgnore]
-        public ICollection<VehiclePhoto>? VehiclePhoto { get; set; }
     }
 }

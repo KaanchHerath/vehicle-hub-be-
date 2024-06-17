@@ -10,6 +10,7 @@ namespace reservation_system_be.Models
         public DateTime Date { get; set; }
         public string Description { get; set; } = string.Empty;
         public string Type { get; set; } = string.Empty;
+        public int CurrentMileage { get; set; }
         [ForeignKey("VehicleId")]
         public int VehicleId { get; set; }
         [JsonIgnore]
