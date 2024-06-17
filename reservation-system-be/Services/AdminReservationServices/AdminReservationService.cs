@@ -288,6 +288,7 @@ namespace reservation_system_be.Services.AdminReservationServices
                 Generated_DateTime = DateTime.Now,
                 CustomerReservationId = customerReservation.Id
             };
+            await _notificationService.AddNotification(notification);
         }
 
         private float CalFinalAmount(CustomerReservationDto customerReservation, VehicleLog vehicleLog)
