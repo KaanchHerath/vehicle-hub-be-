@@ -93,6 +93,9 @@ namespace reservation_system_be.Services.CustomerServices
 
         }
 
-
+        public async Task<Customer> GetCustomerById(int id)
+        {
+            return await _context.Customers.FindAsync(id);
+        }
     }
 }

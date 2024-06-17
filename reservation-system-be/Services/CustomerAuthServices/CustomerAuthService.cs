@@ -196,5 +196,25 @@ namespace reservation_system_be.Services.CustomerAuthServices
             return BCrypt.Net.BCrypt.HashPassword(password);
         }
 
+        public async Task<string> ResetPasswordProfile(ProfilePasswordDTO customer)
+        {
+            var user = await _customerService.GetCustomerById(customer.Id);
+            if (user == null)
+            {
+                throw new InvalidOperationException("Customer not found");
+            }
+
+            // Verify current password
+            if (!BCrypt.Net.BCrypt.Verify(customer.CurrentPassword, user.Password))
+            {
+                throw new InvalidOperationException("Current password is incorrect");
+            }
+
+            // Update the password
+            user.Password = BCrypt.Net.BCrypt.HashPassword(customer.NewPassword);
+            await _customerService.UpdateCustomer(user.Id, user);
+
+            return "Password has been reset successfully";
+        }
     }
 }
