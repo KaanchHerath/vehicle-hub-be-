@@ -41,6 +41,8 @@ using reservation_system_be.Services.VehicleFilterServices;
 using reservation_system_be.Services.FeedbackServices;
 using reservation_system_be.Services.InsuranceExpiryCheckService;
 using reservation_system_be.Services.VehicleMaintenanceDueService;
+using reservation_system_be.Services.CheckCustomerReservationConflictsServices;
+using Microsoft.OpenApi.Models;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -56,11 +58,49 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "Jwt:Issuer", // Specify the issuer
-            ValidAudience = "Jwt:audience", // Specify the audience
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Jwt:Key")) // Specify the secret key
+            ValidIssuer = builder.Configuration["Jwt:Issuer"], // Specify the issuer
+            ValidAudience = builder.Configuration["Jwt:Audience"], // Specify the audience
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Specify the secret key
         };
     });
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+
+    // Define the JWT Bearer security scheme
+    c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+    {
+        Description = "API Key Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Name = "Authorization",
+        In = ParameterLocation.Header
+    });
+
+    // Make sure Swagger UI requires a Bearer token to access endpoints
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "ApiKey"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("admin"));
+});
+
+
 
 
 builder.Services.AddDbContext<DataContext>(options =>
@@ -134,6 +174,9 @@ builder.Services.AddHostedService<InsuranceExpiryCheckService>();
 // The maintenance due check service
 builder.Services.AddHostedService<VehicleMaintenanceDueService>();
 
+// The customer reservation conflict service
+builder.Services.AddHostedService<CheckCustomerReservationConflictsService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
@@ -150,7 +193,11 @@ var app = builder.Build();
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API V1");
+        c.RoutePrefix = "swagger"; // Set the UI at the app's /swagger URL
+    });
 }
 
 
@@ -158,9 +205,11 @@ if (app.Environment.IsDevelopment())
 // Use CORS policy
 app.UseCors("AllowSpecificOrigin");
 
-app.UseAuthorization();
 app.UseAuthentication();
 
+app.UseAuthorization();
+
 app.MapControllers();
+    //.RequireAuthorization(); // Require authorization for all controllers and actions
 
 app.Run();

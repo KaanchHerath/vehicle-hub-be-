@@ -11,5 +11,6 @@ namespace reservation_system_be.Services.CustomerServices
         Task DeleteCustomer(int id);
         Task<Customer> GetCustomerByEmail(string email);
         Task<Customer> GetCustomerByOtp(string otp);
+        Task<Customer> GetCustomerById(int id);
     }
 }
