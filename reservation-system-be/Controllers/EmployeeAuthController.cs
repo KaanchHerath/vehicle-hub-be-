@@ -8,6 +8,7 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using reservation_system_be.Services.EmployeeAuthService;
+using Microsoft.AspNetCore.Authorization;
 
 namespace reservation_system_be.Controllers
 {
@@ -23,6 +24,7 @@ namespace reservation_system_be.Controllers
             _employeeAuthService = employeeAuthService;
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("register")]
         public async Task<IActionResult> Register(Employee employee)
         {

@@ -108,8 +108,10 @@ namespace reservation_system_be.Services.EmployeeAuthService
                 throw new UnauthorizedAccessException("Invalid email or password");
             }
 
+            var roles = DetermineUserRoles(user);
+
             //Generate JWT token
-            var token = GenerateJWTToken(user);
+            var token = GenerateJWTToken(user, roles);
             var employeeId = user.Id;
 
             var authdto = new AuthDto
@@ -122,18 +124,38 @@ namespace reservation_system_be.Services.EmployeeAuthService
 
         }
 
-        private string GenerateJWTToken(Employee employee)
+        private List<string> DetermineUserRoles(Employee user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _config.GetSection("Jwt:Key").Value!.PadRight(128, '\0')));
-            //var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            // Example: Determine roles based on user properties or database lookup
+            var roles = new List<string>();
+            if (user.Role == "Admin")
+            {
+                roles.Add("admin");
+            }
+            // Add more roles as needed based on your application's logic
+
+            return roles;
+        }
+
+        private string GenerateJWTToken(Employee employee, List<string>roles)
+        {
+
+            //var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                //_config.GetSection("Jwt:Key").Value!.PadRight(256, '\0')));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, employee.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
+
+            // Add roles to claims if roles are provided
+            if (roles != null)
+            {
+                claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+            }
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
