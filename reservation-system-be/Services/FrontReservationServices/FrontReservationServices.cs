@@ -79,7 +79,9 @@ namespace reservation_system_be.Services.FrontReservationServices
                 throw new DataNotFoundException("No ongoing rentals found");
             }
 
-            customerReservations = customerReservations.Where(cr => cr.Customer.Id == id).ToList();
+            customerReservations = customerReservations.Where(cr => cr.Customer.Id == id)
+                .OrderByDescending(cr => cr.Reservation.StartDate)
+                .ToList();
 
             var ongoingRentals = new List<RentalDto>();
 
@@ -131,7 +133,9 @@ namespace reservation_system_be.Services.FrontReservationServices
                 throw new DataNotFoundException("No ongoing rentals found");
             }
 
-            customerReservations = customerReservations.Where(cr => cr.Customer.Id == id).ToList();
+            customerReservations = customerReservations.Where(cr => cr.Customer.Id == id)
+                .OrderByDescending(cr => cr.Reservation.EndDate)
+                .ToList();
 
             var rentalHistorys = new List<RentalDto>();
 
