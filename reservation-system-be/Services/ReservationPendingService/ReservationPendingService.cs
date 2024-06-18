@@ -52,11 +52,13 @@ namespace reservation_system_be.Services.NewFolder
                     var invoice = context.Invoices
                         .FirstOrDefault(i => i.CustomerReservationId == pendingCustomerReservation.Id);
 
+                    var customerReservation = customerReservationService.GetCustomerReservation(pendingCustomerReservation.Id);
+
                     if (invoice != null && (DateTime.UtcNow - invoice.DateCreated).TotalDays > 3)
                     {
                         MailRequest mailRequest = new MailRequest
                         {
-                            ToEmail = pendingCustomerReservation.Customer.Email,
+                            ToEmail = customerReservation.Result.Customer.Email,
                             Subject = "Pending Reservation has been cancelled",
                             Body = $"Your reservation is pending for more than 3 days. Please pay the invoice to confirm the reservation."
                         };
