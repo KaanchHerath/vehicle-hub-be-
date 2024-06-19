@@ -4,7 +4,7 @@ using reservation_system_be.Models;
 using reservation_system_be.Services.NotificationServices;
 using reservation_system_be.Services.VehicleServices;
 
-/*namespace reservation_system_be.Services.VehicleMaintenanceDueService
+namespace reservation_system_be.Services.VehicleMaintenanceDueService
 {
     public class VehicleMaintenanceDueService: IHostedService, IDisposable
     {
@@ -47,8 +47,8 @@ using reservation_system_be.Services.VehicleServices;
                         .Where(vm => vm.VehicleId == vehicle.Id && vm.Type == "service")
                         .OrderByDescending(vm => vm.Date)
                         .FirstOrDefault();
-                    
-                    if(lastService != null && lastService.CurrentMileage + 5000 >= vehicle.Mileage)
+
+                    if (lastService != null && lastService.CurrentMileage + 5000 <= vehicle.Mileage)
                     {
                         var notification = new Notification
                         {
@@ -56,43 +56,40 @@ using reservation_system_be.Services.VehicleServices;
                             Title = "Vehicle Service Maintenance Due",
                             Description = $"Vehicle {vehicle.RegistrationNumber} is due for Service.",
                             Generated_DateTime = DateTime.Now,
-                            VehicleMaintenanceId = dueMaintenance.Id
+                            VehicleMaintenanceId = lastService.Id
                         };
+
+                        if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastService.Id))
+                        {
+                            continue;
+                        }
                         await notificationService.AddNotification(notification);
                     }
                 }
-
-  
-
-                foreach (var dueMaintenance in dueMaintenances)
+                foreach (var vehicle in vehicles)
                 {
-                    var vehicle = await vehicleService.GetVehicle(dueMaintenance.VehicleId);
-                    var mileageSinceLastMaintenance = vehicle.Mileage - dueMaintenance.CurrentMileage;
+                    var lastBrakePadReplacement = context.VehicleMaintenances
+                        .Where(vm => vm.VehicleId == vehicle.Id && vm.Type == "brakePadReplacement")
+                        .OrderByDescending(vm => vm.Date)
+                        .FirstOrDefault();
 
-                    if (mileageSinceLastMaintenance >= 5000)
+                    if (lastBrakePadReplacement != null && lastBrakePadReplacement.CurrentMileage + 15000 <= vehicle.Mileage)
                     {
                         var notification = new Notification
                         {
                             Type = "Maintenance",
-                            Title = "Vehicle Maintenance Due",
-                            Description = $"Vehicle {vehicle.RegistrationNumber} is due for Service.",
+                            Title = "Vehicle Break Pad Replacement Maintenance Due",
+                            Description = $"Vehicle {vehicle.RegistrationNumber} is due for Brake Pad Replacement Maintenance.",
                             Generated_DateTime = DateTime.Now,
-                            VehicleMaintenanceId = dueMaintenance.Id
+                            VehicleMaintenanceId = lastBrakePadReplacement.Id
                         };
-                        await notificationService.AddNotification(notification);
-                    }
-                    if (mileageSinceLastMaintenance >= 15000)
-                    {
-                        var notification = new Notification
+
+                        if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastBrakePadReplacement.Id))
                         {
-                            Type = "Maintenance",
-                            Title = "Vehicle Maintenance Due",
-                            Description = $"Vehicle {vehicle.RegistrationNumber} is due for Break Pad Replacement Maintenance.",
-                            Generated_DateTime = DateTime.Now,
-                            VehicleMaintenanceId = dueMaintenance.Id
-                        };
+                            continue;
+                        }
                         await notificationService.AddNotification(notification);
-                    }
+                    }    
                 }
             }
         }
@@ -107,4 +104,4 @@ using reservation_system_be.Services.VehicleServices;
             _timer?.Change(Timeout.Infinite, 0);
         }
     }
-}*/
+}

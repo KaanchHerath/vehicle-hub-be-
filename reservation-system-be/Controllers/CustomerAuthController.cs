@@ -99,6 +99,21 @@ namespace reservation_system_be.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpPost("ResetPasswordProfile")]
+        public async Task<IActionResult> ResetPasswordProfile( ProfilePasswordDTO customer)
+        {
+            try
+            {
+                var result = await _customerAuthService.ResetPasswordProfile(customer);
+                return Ok(result);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+           
+        }
     }
 
 

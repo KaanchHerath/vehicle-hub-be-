@@ -25,7 +25,7 @@ namespace reservation_system_be.Models
         [JsonIgnore]
         public VehicleType? VehicleType { get; set; }
         [JsonIgnore]
-        public VehicleInsurance? VehicleInsurance { get; set; }
+        public ICollection<VehicleInsurance>? VehicleInsurance { get; set; }
         [JsonIgnore]
         public ICollection<VehicleMaintenance>? VehicleMaintenance { get; set; }
 

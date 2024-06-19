@@ -7,6 +7,9 @@ using reservation_system_be.Services.VehicleModelServices;
 using reservation_system_be.Services.VehicleTypeServices;
 using reservation_system_be.Services.FileServices;
 using Microsoft.AspNetCore.Mvc;
+using reservation_system_be.Services.NotificationServices;
+using System;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace reservation_system_be.Services.VehicleServices
 {
@@ -22,14 +25,16 @@ namespace reservation_system_be.Services.VehicleServices
         private const string AzureContainerName4 = "dashboard";
         private const string AzureContainerName5 = "interior";
         private readonly IFileService _fileServices;
+        private readonly INotificationService _notificationService;
 
-        public VehicleService(DataContext context, IVehicleTypeService vehicleTypeService, IVehicleModelService vehicleModelService, IEmployeeService employeeService, IFileService fileService)
+        public VehicleService(DataContext context, IVehicleTypeService vehicleTypeService, IVehicleModelService vehicleModelService, IEmployeeService employeeService, IFileService fileService, INotificationService notificationService)
         {
             _context = context;
             _vehicleTypeService = vehicleTypeService;
             _vehicleModelService = vehicleModelService;
             _employeeService = employeeService;
             _fileServices = fileService;
+            _notificationService = notificationService;
         }
         public async Task<IEnumerable<VehicleDto>> GetAllVehicles()
         {
@@ -158,8 +163,27 @@ namespace reservation_system_be.Services.VehicleServices
                 VehicleModelId = createVehicleDto.VehicleModelId,
                 EmployeeId = createVehicleDto.EmployeeId
             };
+
+            var existingVehicles = await _context.Vehicles.ToListAsync();
+            if (existingVehicles.Any(v => v.RegistrationNumber == vehicle.RegistrationNumber))
+            {
+                throw new Exception("Vehicle with the same registration number already exists");
+            }
+
             _context.Vehicles.Add(vehicle);
             await _context.SaveChangesAsync();
+
+            // Trigger notification creation
+            var notification = new Notification
+            {
+                Type = "Insurance",
+                Title = "New Vehicle Created",
+                Description = $"Vehicle {vehicle.RegistrationNumber} currently does not have insurance coverage for the rest of {DateTime.Now.Year}.",
+                Generated_DateTime = DateTime.Now,
+                VehicleInsuranceID = null
+            };
+            await _notificationService.AddNotification(notification);
+
             return vehicle;
         }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
 using reservation_system_be.Models;
@@ -8,6 +9,7 @@ namespace reservation_system_be.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Authorize(Policy = "AdminOnly")]
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;

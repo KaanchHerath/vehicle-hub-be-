@@ -38,13 +38,15 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
                 var vehicleService = scope.ServiceProvider.GetRequiredService<IVehicleService>();
 
                 var expiringInsurances = await context.VehicleInsurances
-                .Where(v => v.ExpiryDate <= DateTime.Now.AddDays(7))
+                .Where(vi => vi.ExpiryDate <= DateTime.Now.AddDays(7))
                 .ToListAsync(); // Fetch the data first with ToListAsync
 
-                // Perform the filtering on the client-side
                 expiringInsurances = expiringInsurances
-                    .Where(v => v.Status == true)
+                    .Where(e => e.Status)
                     .ToList();
+ 
+                var vehicles = await context.Vehicles.ToListAsync(); // Fetch the data first with ToListAsync
+                var vehiclesWithInsurance = expiringInsurances.Select(e => e.VehicleId).Distinct().ToList();
 
                 foreach (var insurance in expiringInsurances)
                 {
@@ -53,11 +55,38 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
                     {
                         Type = "Insurance",
                         Title = "Insurance Expiry",
-                        Description = $"Insurance for vehicle {vehicle.RegistrationNumber} is expiring on {insurance.ExpiryDate}.",
+                        Description = $"Insurance for vehicle {vehicle.RegistrationNumber} is expiring on {insurance.ExpiryDate.ToString("yyyy-MM-dd")}",
                         Generated_DateTime = DateTime.Now,
                         VehicleInsuranceID = insurance.Id
                     };
-                    //await notificationService.AddNotification(notification);
+
+                    if(context.Notifications.Any(n => n.VehicleInsuranceID == insurance.Id))
+                    {
+                        continue;
+                    }
+                    await notificationService.AddNotification(notification);
+                }
+
+                var vehiclesWithoutInsurance = vehicles
+                    .Where(v => !vehiclesWithInsurance.Contains(v.Id))
+                    .ToList();
+
+                foreach (var vehicle in vehiclesWithoutInsurance)
+                {
+                    var notification = new Notification
+                    {
+                        Type = "Insurance",
+                        Title = "No Insurance",
+                        Description = $"Vehicle {vehicle.RegistrationNumber} currently does not have insurance coverage for the rest of {DateTime.Now.Year}.",
+                        Generated_DateTime = DateTime.Now,
+                        VehicleInsuranceID = null
+                    };
+
+                    if (context.Notifications.Any(n => n.Description == notification.Description))
+                    {
+                        continue;
+                    }
+                    await notificationService.AddNotification(notification);
                 }
             }
         }

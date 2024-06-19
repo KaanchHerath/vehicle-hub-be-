@@ -32,10 +32,11 @@ namespace reservation_system_be.Services.EmployeeAuthService
         }
         public async Task<string> Register(Employee employee)
         {
+            const string defaultPassword = "NavodhVehicleHub789"; // Define a default password
             //Validate user input
-            if (string.IsNullOrEmpty(employee.Email) || string.IsNullOrEmpty(employee.Password))
+            if (string.IsNullOrEmpty(employee.Email))
             {
-                throw new ArgumentException("Email and password are required");
+                throw new ArgumentException("Email is required");
             }
 
 
@@ -46,21 +47,49 @@ namespace reservation_system_be.Services.EmployeeAuthService
             }
 
             //Hash the password
-            employee.Password = BCrypt.Net.BCrypt.HashPassword(employee.Password);
+            employee.Password = BCrypt.Net.BCrypt.HashPassword(defaultPassword);
+
+            //Add user to database
+            await _employeeService.AddEmployee(employee);
+
+            // Generate password reset token
+            var token = GeneratePasswordResetToken(employee);
+            var resetLink = $"http://localhost:3000/reset-password?userId={employee.Id}&token={token}";
+
 
             MailRequest mailRequest = new MailRequest
             {
                 ToEmail = employee.Email,
                 Subject = "Welcome to Vehicle Hub",
-                Body = "<h1>Welcome!</h1> <br> <p>Thank you for registering with our service. Now you can reserve vehicles whenever you need.</p>"
+                Body = "<h1>Welcome!</h1> <br> <p>Thank you for registering with our service. " +
+                "You are now an employee of Vehicle Hub. " +
+                "Your default password is: <strong>{NavodhVehicleHub789}</strong>. " +
+                $"Please <a href='{resetLink}'>click here</a> to reset your password immediately.</p>"
             };
 
             await _emailService.SendEmailAsync(mailRequest);
 
-            //Add user to database
-            await _employeeService.AddEmployee(employee);
-
             return "Employee registered successfully";
+        }
+
+        private string GeneratePasswordResetToken(Employee employee)
+        {
+            // Generate a unique token for the password reset link
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var key = Encoding.UTF8.GetBytes(_config["Jwt:Key"]);
+
+            var tokenDescriptor = new SecurityTokenDescriptor
+            {
+                Subject = new ClaimsIdentity(new Claim[]
+                {
+            new Claim(ClaimTypes.Name, employee.Id.ToString())
+                }),
+                Expires = DateTime.UtcNow.AddHours(1),
+                SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+            };
+
+            var token = tokenHandler.CreateToken(tokenDescriptor);
+            return tokenHandler.WriteToken(token);
         }
 
         public async Task<AuthDto> Login(Employee employee)
@@ -79,8 +108,10 @@ namespace reservation_system_be.Services.EmployeeAuthService
                 throw new UnauthorizedAccessException("Invalid email or password");
             }
 
+            var roles = DetermineUserRoles(user);
+
             //Generate JWT token
-            var token = GenerateJWTToken(user);
+            var token = GenerateJWTToken(user, roles);
             var employeeId = user.Id;
 
             var authdto = new AuthDto
@@ -93,18 +124,38 @@ namespace reservation_system_be.Services.EmployeeAuthService
 
         }
 
-        private string GenerateJWTToken(Employee employee)
+        private List<string> DetermineUserRoles(Employee user)
         {
-            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
-                _config.GetSection("Jwt:Key").Value!.PadRight(128, '\0')));
-            //var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
+            // Example: Determine roles based on user properties or database lookup
+            var roles = new List<string>();
+            if (user.Role == "Admin")
+            {
+                roles.Add("admin");
+            }
+            // Add more roles as needed based on your application's logic
+
+            return roles;
+        }
+
+        private string GenerateJWTToken(Employee employee, List<string>roles)
+        {
+
+            //var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(
+                //_config.GetSection("Jwt:Key").Value!.PadRight(256, '\0')));
+            var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["Jwt:Key"]));
             var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
                 new Claim(JwtRegisteredClaimNames.Sub, employee.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
             };
+
+            // Add roles to claims if roles are provided
+            if (roles != null)
+            {
+                claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+            }
 
             var token = new JwtSecurityToken(
                 issuer: _config["Jwt:Issuer"],
@@ -115,5 +166,28 @@ namespace reservation_system_be.Services.EmployeeAuthService
                 );
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
+        public async Task<string> ResetPassword(EmployeePasswordDTO employee)
+        {
+            var user = await _context.Employees.FirstOrDefaultAsync(u => u.Email == employee.Email);
+            if (user == null)
+            {
+                throw new InvalidOperationException("User with the provided email not found");
+            }
+
+            // Verify current password
+            if (!BCrypt.Net.BCrypt.Verify(employee.CurrentPassword, user.Password))
+            {
+                throw new InvalidOperationException("Current password is incorrect");
+            }
+
+            // Update the password
+            user.Password = BCrypt.Net.BCrypt.HashPassword(employee.NewPassword);
+            _context.Employees.Update(user);
+            await _context.SaveChangesAsync();
+
+            return "Password has been reset successfully";
+        }
+
     }
 }
