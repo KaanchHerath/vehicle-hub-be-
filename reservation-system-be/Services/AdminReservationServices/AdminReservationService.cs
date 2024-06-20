@@ -83,8 +83,9 @@ namespace reservation_system_be.Services.AdminReservationServices
 
         private string DepositRequestMail(int id)
         {
+            string encryptedId = EncryptionHelper.Encrypt(id);
             // Construct the payment link with the invoice ID
-            string paymentLink = "http://localhost:3000/bookingconfirmation/" + id; // fix link
+            string paymentLink = "http://localhost:3000/bookingconfirmation/" + encryptedId; // fix link
 
             string response = "<div style=\"width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;\">";
             response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;\">";
@@ -289,6 +290,42 @@ namespace reservation_system_be.Services.AdminReservationServices
                 CustomerReservationId = customerReservation.Id
             };
             await _notificationService.AddNotification(notification);
+
+            MailRequest mailRequest = new MailRequest
+            {
+                ToEmail = customerReservation.Customer.Email,
+                Subject = "Reservation Ended",
+                Body = ReservationEndedMail(customerReservation.Id)
+            };
+        }
+
+        private string ReservationEndedMail(int id)
+        {
+            string encryptedId = EncryptionHelper.Encrypt(id);
+            // Construct the home link for redirection
+            string paymentLink = "http://localhost:3000/bookingconfirmation/" + encryptedId; // fix link
+
+            string response = "<div style=\"width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;\">";
+            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;\">";
+            response += "<h1>VehicleHub</h1>";
+            response += "</div>";
+            response += "<div style=\"margin:20px;text-align:left;\">";
+            response += "<img src=\"https://drive.google.com/uc?export=view&id=1S40qYUDb_f9YRAaQeQmPETz5ABYbI32p\" alt=\"Company Logo\" style=\"width:150px;height:auto;display:block;margin:auto;\"/>";
+            response += "<h2 style=\"text-align:center;\">Reservation Ended</h2>";
+            response += "<p>Dear Customer,</p>";
+            response += "<p>Your reservation with ID #" + id + " has ended. We hope you enjoyed your ride with us.</p>";
+            response += "<p>Please make the final payment to complete the reservation. You can make your payment by clicking the link below:</p>";
+            response += "<p style=\"text-align:center;\"><a href=\"" + paymentLink + "\" style=\"background-color:#283280;color:#ffffff;padding:10px 20px;text-decoration:none;border-radius:5px;\">Make Final Payment</a></p>";
+            response += "<p>Thank you for choosing VehicleHub. We look forward to serving you again.</p>";
+            response += "<p>Best regards,</p>";
+            response += "<p><strong>VehicleHub Team</strong></p>";
+            response += "</div>";
+            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;margin-top:20px;text-align:center;\">";
+            response += "<p>Contact us: vehiclehub01@gmail.com | +94 77 123 4567</p>";
+            response += "<p>1234 Galle Road, Colombo, Sri Lanka</p>";
+            response += "</div>";
+            response += "</div>";
+            return response;
         }
 
         private float CalFinalAmount(CustomerReservationDto customerReservation, VehicleLog vehicleLog)

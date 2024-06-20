@@ -18,7 +18,7 @@ namespace reservation_system_be.Controllers
 		}
 
 		[HttpGet("available")]
-		public async Task<ActionResult<List<VehicleDto>>> GetAvailableVehicles(DateTime startDate, TimeOnly startTime, DateTime endDate, TimeOnly endTime)
+		public async Task<ActionResult<List<BookNowDto>>> GetAvailableVehicles(DateTime startDate, TimeOnly startTime, DateTime endDate, TimeOnly endTime)
 		{
 			try
 			{

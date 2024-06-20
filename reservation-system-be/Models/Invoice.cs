@@ -8,6 +8,8 @@ namespace reservation_system_be.Models
         public int Id { get; set; }
         public string Type { get; set; } = string.Empty;
         public float Amount { get; set; }
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public DateTime DateCreated { get; set; } = DateTime.UtcNow;
         [JsonIgnore]
         public Payment? Payment { get; set; }
         [ForeignKey("CustomerReservationId")]

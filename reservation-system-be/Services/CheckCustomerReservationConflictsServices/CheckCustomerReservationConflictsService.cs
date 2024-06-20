@@ -44,7 +44,7 @@ namespace reservation_system_be.Services.CheckCustomerReservationConflictsServic
                 foreach (var vehicle in inactiveVehicles)
                 {
                     var customerReservations = context.CustomerReservations
-                        .Where(cr => cr.VehicleId == vehicle.Id)
+                        .Where(cr => cr.VehicleId == vehicle.Id && cr.Reservation.Status != Status.Cancelled)
                         .ToList();
 
                     foreach (var customerReservation in customerReservations)
