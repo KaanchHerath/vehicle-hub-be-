@@ -98,6 +98,8 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("admin"));
+    options.AddPolicy("CustomerOnly", policy => policy.RequireRole("customer"));
+    options.AddPolicy("AdminAndStaffOnly", policy => policy.RequireRole("admin", "staff"));
 });
 
 
@@ -129,6 +131,16 @@ builder.Services.AddScoped(_ =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add session services
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 
 //Injection List
@@ -163,6 +175,8 @@ builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>(
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IVehicleFilterService, VehicleFilterService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddHttpContextAccessor();
+
 
 
 builder.Services.AddTransient<IEmailService, EmailService>();
@@ -189,6 +203,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -200,13 +215,12 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
+app.UseSession();
 
 // Use CORS policy
 app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();
