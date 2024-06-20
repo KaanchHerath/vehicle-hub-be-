@@ -9,7 +9,7 @@ namespace reservation_system_be.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "AdminOnly")]
+    
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
@@ -70,6 +70,7 @@ namespace reservation_system_be.Controllers
 
         
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
             try
