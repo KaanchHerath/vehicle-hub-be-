@@ -72,6 +72,7 @@ namespace reservation_system_be.Services.CustomerServices
             {
                 // Hash the new password
                 existingCustomer.Password = BCrypt.Net.BCrypt.HashPassword(customer.Password);
+               
             }
 
             _context.Entry(existingCustomer).State = EntityState.Modified;
