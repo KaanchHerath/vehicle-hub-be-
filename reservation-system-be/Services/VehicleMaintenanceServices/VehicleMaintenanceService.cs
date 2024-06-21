@@ -46,6 +46,7 @@ namespace reservation_system_be.Services.VehicleMaintenanceServices
 
                 vehicleMaintenanceDtos.Add(vehicleMaintenanceDto);
             }
+            vehicleMaintenanceDtos = vehicleMaintenanceDtos.OrderByDescending(v => v.Id).ToList();
             return vehicleMaintenanceDtos;
         }
 
@@ -73,7 +74,14 @@ namespace reservation_system_be.Services.VehicleMaintenanceServices
 
         public async Task<VehicleMaintenance> CreateVehicleMaintenance(VehicleMaintenance vehicleMaintenance)
         {
-            _context.VehicleMaintenances.Add(vehicleMaintenance);
+            var vehicle = await _context.Vehicles.FindAsync(vehicleMaintenance.VehicleId);
+            if(vehicle == null)
+            {
+                throw new DataNotFoundException();
+            }
+            vehicle.Mileage = vehicleMaintenance.CurrentMileage;
+            vehicle.Mileage = vehicleMaintenance.CurrentMileage;
+            _context.Entry(vehicle).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return vehicleMaintenance;
         }

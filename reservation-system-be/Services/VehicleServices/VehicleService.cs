@@ -78,6 +78,7 @@ namespace reservation_system_be.Services.VehicleServices
                 };
                 vehicleDtos.Add(vehicleDto);
             }
+            vehicleDtos = vehicleDtos.OrderByDescending(v => v.Id).ToList();
             return vehicleDtos;
         }
 
