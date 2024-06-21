@@ -7,7 +7,7 @@ namespace reservation_system_be.Services.VehicleInsuranceServices
     {
         Task<IEnumerable<VehicleInsuranceDto>> GetAllVehicleInsurances();
         Task<VehicleInsuranceDto> GetSingleVehicleInsurance(int id);
-        Task<VehicleInsurance> CreateVehicleInsurance(VehicleInsurance vehicleInsurance);
+        Task<CreateVehicleInsuranceDto> CreateVehicleInsurance(CreateVehicleInsuranceDto vehicleInsurance);
         Task<VehicleInsurance> UpdateVehicleInsurance(int id, VehicleInsurance vehicleInsurance);
         Task DeleteVehicleInsurance(int id);
     }
