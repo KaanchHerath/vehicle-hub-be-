@@ -43,6 +43,7 @@ namespace reservation_system_be.Services.VehicleInsuranceServices
 
                 vehicleInsuranceDtos.Add(vehicleInsuranceDto);
             }
+            vehicleInsuranceDtos = vehicleInsuranceDtos.OrderByDescending(v => v.ExpiryDate).ToList();
             return vehicleInsuranceDtos;
         }
         public async Task<VehicleInsuranceDto> GetSingleVehicleInsurance(int id)
