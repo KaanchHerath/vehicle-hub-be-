@@ -62,6 +62,8 @@ namespace reservation_system_be.Services.CustomerReservationService
                 customerReservationDtos.Add(customerReservationDto);
             }
 
+            customerReservationDtos = customerReservationDtos.OrderByDescending(cr => cr.Reservation.StartDate).ToList();
+
             return customerReservationDtos;
         }
 
