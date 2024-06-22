@@ -9,6 +9,7 @@ namespace reservation_system_be.DTOs
         String Description,
         String Type,
         int CurrentMileage,
-        VehicleDto Vehicle
+        int VehicleId,
+        string RegistrationNumber
     );
 }

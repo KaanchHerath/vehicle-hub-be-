@@ -8,7 +8,7 @@ namespace reservation_system_be.Services.CustomerReservationService
         Task<IEnumerable<CustomerReservationDto>> GetAllCustomerReservations();
         Task<CustomerReservationDto> GetCustomerReservation(int id);
         Task<CustomerReservation> CreateCustomerReservation(CreateCustomerReservationDto customerReservationDto);
-        Task<CustomerReservation> UpdateCustomerReservation(int id, CustomerReservation customerReservation);
+        Task<CustomerReservation> UpdateCustomerReservation(int id, CreateCustomerReservationDto customerReservation);
         Task DeleteCustomerReservation(int id);
     }
 }

@@ -19,7 +19,7 @@ namespace reservation_system_be.DTOs
         string InteriorImg,
         bool Status,
         VehicleType VehicleType,
-        VehicleModelDto VehicleModel,
+        VehicleModelMakeDto VehicleModel,
         Employee Employee
     );
 }

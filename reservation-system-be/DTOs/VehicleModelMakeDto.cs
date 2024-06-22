@@ -2,14 +2,14 @@
 
 namespace reservation_system_be.DTOs
 {
-    public record struct CreateVehicleModelDto
+    public record struct VehicleModelMakeDto
     (
         int Id,
         string Name,
-        int VehicleMakeId,
         int Year,
         int EngineCapacity,
         int SeatingCapacity,
-        string Fuel
+        string Fuel,
+        VehicleMake VehicleMake
     );
 }

@@ -45,7 +45,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<CustomerReservation>> UpdateCustomerReservation(int id, CustomerReservation customerReservation)
+        public async Task<ActionResult<CustomerReservation>> UpdateCustomerReservation(int id, CreateCustomerReservationDto customerReservation)
         {
             try
             {

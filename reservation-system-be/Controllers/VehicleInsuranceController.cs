@@ -37,14 +37,14 @@ namespace reservation_system_be.Controllers
             }
         }
         [HttpPost]
-        public async Task<ActionResult<VehicleInsurance>> AddVehicleInsurance(VehicleInsurance vehicleInsurance)
+        public async Task<ActionResult<CreateVehicleInsuranceDto>> AddVehicleInsurance(CreateVehicleInsuranceDto vehicleInsurance)
         {
             var newVehicleInsurance = await _vehicleInsuranceService.CreateVehicleInsurance(vehicleInsurance);
             return CreatedAtAction(nameof(GetSingleVehicleInsurance), new { id = newVehicleInsurance.Id }, newVehicleInsurance);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<VehicleInsurance>> UpdateVehicleInsurance(int id, VehicleInsurance vehicleInsurance)
+        public async Task<ActionResult<VehicleInsurance>> UpdateVehicleInsurance(int id, CreateVehicleInsuranceDto vehicleInsurance)
         {
             try
             {

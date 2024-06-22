@@ -20,67 +20,72 @@ namespace reservation_system_be.Services.AdminVehicleServices
             _vehicleModelService = vehicleModelService;
             _additionalFeaturesService = additionalFeaturesService;
         }
-        public async Task CreateVehicleModel(CreateVehicleModelDto createVehicleModelDto)
+        public async Task CreateVehicleModel(VehicleModelDto vehicleModelDto)
         {
-            var vehicleModel = await _vehicleModelService.CreateVehicleModel(createVehicleModelDto.vehicleModel);
+            var vehicleModel = await _vehicleModelService.CreateVehicleModel(vehicleModelDto.vehicleModel);
             var additionalFeatures = new AdditionalFeatures
             {
-                ABS = createVehicleModelDto.additionalFeatures.ABS,
-                AcFront = createVehicleModelDto.additionalFeatures.AcFront,
-                SecuritySystem = createVehicleModelDto.additionalFeatures.SecuritySystem,
-                Bluetooth = createVehicleModelDto.additionalFeatures.Bluetooth,
-                ParkingSensor = createVehicleModelDto.additionalFeatures.ParkingSensor,
-                AirbagDriver = createVehicleModelDto.additionalFeatures.AirbagDriver,
-                AirbagPassenger = createVehicleModelDto.additionalFeatures.AirbagPassenger,
-                AirbagSide = createVehicleModelDto.additionalFeatures.AirbagSide,
-                FogLights = createVehicleModelDto.additionalFeatures.FogLights,
-                NavigationSystem = createVehicleModelDto.additionalFeatures.NavigationSystem,
-                Sunroof = createVehicleModelDto.additionalFeatures.Sunroof,
-                TintedGlass = createVehicleModelDto.additionalFeatures.TintedGlass,
-                PowerWindow = createVehicleModelDto.additionalFeatures.PowerWindow,
-                RearWindowWiper = createVehicleModelDto.additionalFeatures.RearWindowWiper,
-                AlloyWheels = createVehicleModelDto.additionalFeatures.AlloyWheels,
-                ElectricMirrors = createVehicleModelDto.additionalFeatures.ElectricMirrors,
-                AutomaticHeadlights = createVehicleModelDto.additionalFeatures.AutomaticHeadlights,
-                KeylessEntry = createVehicleModelDto.additionalFeatures.KeylessEntry,
+                ABS = vehicleModelDto.additionalFeatures.ABS,
+                AcFront = vehicleModelDto.additionalFeatures.AcFront,
+                SecuritySystem = vehicleModelDto.additionalFeatures.SecuritySystem,
+                Bluetooth = vehicleModelDto.additionalFeatures.Bluetooth,
+                ParkingSensor = vehicleModelDto.additionalFeatures.ParkingSensor,
+                AirbagDriver = vehicleModelDto.additionalFeatures.AirbagDriver,
+                AirbagPassenger = vehicleModelDto.additionalFeatures.AirbagPassenger,
+                AirbagSide = vehicleModelDto.additionalFeatures.AirbagSide,
+                FogLights = vehicleModelDto.additionalFeatures.FogLights,
+                NavigationSystem = vehicleModelDto.additionalFeatures.NavigationSystem,
+                Sunroof = vehicleModelDto.additionalFeatures.Sunroof,
+                TintedGlass = vehicleModelDto.additionalFeatures.TintedGlass,
+                PowerWindow = vehicleModelDto.additionalFeatures.PowerWindow,
+                RearWindowWiper = vehicleModelDto.additionalFeatures.RearWindowWiper,
+                AlloyWheels = vehicleModelDto.additionalFeatures.AlloyWheels,
+                ElectricMirrors = vehicleModelDto.additionalFeatures.ElectricMirrors,
+                AutomaticHeadlights = vehicleModelDto.additionalFeatures.AutomaticHeadlights,
+                KeylessEntry = vehicleModelDto.additionalFeatures.KeylessEntry,
                 VehicleModelId = vehicleModel.Id
             };
             await _additionalFeaturesService.AddAdditionalFeatures(additionalFeatures);
         }
 
-        public async Task<IEnumerable<VehicleModelDto>> ViewVehicleModels()
+        public async Task<IEnumerable<VehicleModelMakeDto>> ViewVehicleModels()
         {
-            return await _vehicleModelService.GetAllVehicleModels();
+            var vehicleModels = await _vehicleModelService.GetAllVehicleModels();
+            if(vehicleModels == null)
+            {
+                throw new Exception("Vehicle Models not found");
+            }
+            return vehicleModels;
         }
-        public async Task UpdateVehicleModel(int id, CreateVehicleModelDto createVehicleModelDto)
+        public async Task UpdateVehicleModel(int id, VehicleModelDto vehicleModelDto)
         {
             var existingAdditionalFeatures = await _context.AdditionalFeatures.FirstOrDefaultAsync(a => a.VehicleModelId == id);
             if (existingAdditionalFeatures == null)
             {
                 throw new Exception("Additional Features not found");
             }
-            await _vehicleModelService.UpdateVehicleModel(id, createVehicleModelDto.vehicleModel);
+            await _vehicleModelService.UpdateVehicleModel(id, vehicleModelDto.vehicleModel);
             var additionalFeatures = new AdditionalFeatures
             {
                 Id = existingAdditionalFeatures.Id,
-                ABS = createVehicleModelDto.additionalFeatures.ABS,
-                AcFront = createVehicleModelDto.additionalFeatures.AcFront,
-                SecuritySystem = createVehicleModelDto.additionalFeatures.SecuritySystem,
-                Bluetooth = createVehicleModelDto.additionalFeatures.Bluetooth,
-                ParkingSensor = createVehicleModelDto.additionalFeatures.ParkingSensor,
-                AirbagDriver = createVehicleModelDto.additionalFeatures.AirbagDriver,
-                AirbagPassenger = createVehicleModelDto.additionalFeatures.AirbagPassenger,
-                AirbagSide = createVehicleModelDto.additionalFeatures.AirbagSide,
-                FogLights = createVehicleModelDto.additionalFeatures.FogLights,
-                NavigationSystem = createVehicleModelDto.additionalFeatures.NavigationSystem,
-                Sunroof = createVehicleModelDto.additionalFeatures.Sunroof,
-                TintedGlass = createVehicleModelDto.additionalFeatures.TintedGlass,
-                PowerWindow = createVehicleModelDto.additionalFeatures.PowerWindow,
-                RearWindowWiper = createVehicleModelDto.additionalFeatures.RearWindowWiper,
-                AlloyWheels = createVehicleModelDto.additionalFeatures.AlloyWheels,
-                ElectricMirrors = createVehicleModelDto.additionalFeatures.ElectricMirrors,
-                AutomaticHeadlights = createVehicleModelDto.additionalFeatures.AutomaticHeadlights,
-                KeylessEntry = createVehicleModelDto.additionalFeatures.KeylessEntry,
+                ABS = vehicleModelDto.additionalFeatures.ABS,
+                AcFront = vehicleModelDto.additionalFeatures.AcFront,
+                SecuritySystem = vehicleModelDto.additionalFeatures.SecuritySystem,
+                Bluetooth = vehicleModelDto.additionalFeatures.Bluetooth,
+                ParkingSensor = vehicleModelDto.additionalFeatures.ParkingSensor,
+                AirbagDriver = vehicleModelDto.additionalFeatures.AirbagDriver,
+                AirbagPassenger = vehicleModelDto.additionalFeatures.AirbagPassenger,
+                AirbagSide = vehicleModelDto.additionalFeatures.AirbagSide,
+                FogLights = vehicleModelDto.additionalFeatures.FogLights,
+                NavigationSystem = vehicleModelDto.additionalFeatures.NavigationSystem,
+                Sunroof = vehicleModelDto.additionalFeatures.Sunroof,
+                TintedGlass = vehicleModelDto.additionalFeatures.TintedGlass,
+                PowerWindow = vehicleModelDto.additionalFeatures.PowerWindow,
+                RearWindowWiper = vehicleModelDto.additionalFeatures.RearWindowWiper,
+                AlloyWheels = vehicleModelDto.additionalFeatures.AlloyWheels,
+                ElectricMirrors = vehicleModelDto.additionalFeatures.ElectricMirrors,
+                AutomaticHeadlights = vehicleModelDto.additionalFeatures.AutomaticHeadlights,
+                KeylessEntry = vehicleModelDto.additionalFeatures.KeylessEntry,
                 VehicleModelId = id
             };
             await _additionalFeaturesService.UpdateAdditionalFeatures(existingAdditionalFeatures.Id, additionalFeatures);
