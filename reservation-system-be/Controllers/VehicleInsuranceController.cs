@@ -44,7 +44,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<VehicleInsurance>> UpdateVehicleInsurance(int id, VehicleInsurance vehicleInsurance)
+        public async Task<ActionResult<VehicleInsurance>> UpdateVehicleInsurance(int id, CreateVehicleInsuranceDto vehicleInsurance)
         {
             try
             {

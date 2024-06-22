@@ -29,8 +29,9 @@ namespace reservation_system_be.Services.VehicleInsuranceServices
                 RegistrationNo = vi.Vehicle.RegistrationNumber,
                 Status = vi.Status
             })
+            .OrderByDescending(vi => vi.ExpiryDate)
             .ToListAsync();
-
+ 
             return vehicleInsurances;
         }
         public async Task<VehicleInsuranceDto> GetSingleVehicleInsurance(int id)
@@ -66,7 +67,7 @@ namespace reservation_system_be.Services.VehicleInsuranceServices
         }
 
 
-        public async Task<VehicleInsurance> UpdateVehicleInsurance(int id, VehicleInsurance vehicleInsurance)
+        public async Task<VehicleInsurance> UpdateVehicleInsurance(int id, CreateVehicleInsuranceDto vehicleInsurance)
         {
             var existingVehicleInsurance = await _context.VehicleInsurances.FindAsync(id);
             if (existingVehicleInsurance == null)
