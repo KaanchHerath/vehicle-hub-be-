@@ -10,19 +10,9 @@ namespace reservation_system_be.Models
             public string Title { get; set; } = string.Empty;
             public string Description { get; set; } = string.Empty;
             public DateTime Generated_DateTime { get; set; }
-           
-            [ForeignKey("VehicleInsuranceID")]
-            public int? VehicleInsuranceID { get; set; } = null;
-           
-            public VehicleInsurance? VehicleInsurance { get; set; }
-
-            [ForeignKey("VehicleMaintenanceId")]
-            public int? VehicleMaintenanceId { get; set; } = null;
-        
-            public VehicleMaintenance? VehicleMaintenance { get; set; }
-
+            public bool IsRead { get; set; } = false;
         }
     
 
 }
-}
+
