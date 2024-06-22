@@ -84,11 +84,11 @@ namespace reservation_system_be.Services.VehicleMaintenanceDueService
                             VehicleMaintenanceId = lastBrakePadReplacement.Id
                         };
 
-                        if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastBrakePadReplacement.Id))
+                        /*if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastBrakePadReplacement.Id))
                         {
                             continue;
                         }
-                        await notificationService.AddNotification(notification);
+                        await notificationService.AddNotification(notification);*/
                     }    
                 }
             }

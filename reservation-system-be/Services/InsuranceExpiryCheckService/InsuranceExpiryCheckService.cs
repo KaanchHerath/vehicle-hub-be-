@@ -60,11 +60,11 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
                         VehicleInsuranceID = insurance.Id
                     };
 
-                    if(context.Notifications.Any(n => n.VehicleInsuranceID == insurance.Id))
+                   /* if(context.Notifications.Any(n => n.VehicleInsuranceID == insurance.Id))
                     {
                         continue;
                     }
-                    await notificationService.AddNotification(notification);
+                    await notificationService.AddNotification(notification);*/
                 }
 
                 var vehiclesWithoutInsurance = vehicles
