@@ -13,11 +13,8 @@ namespace reservation_system_be.Models
         public string Fuel { get; set; } = string.Empty;
         [ForeignKey("VehicleMakeId")]
         public int VehicleMakeId { get; set; }
-        [JsonIgnore]
         public VehicleMake? VehicleMake { get; set; }
-        [JsonIgnore]
         public ICollection<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
-        [JsonIgnore]
         public AdditionalFeatures? AdditionalFeatures { get; set; }
     }
 }
