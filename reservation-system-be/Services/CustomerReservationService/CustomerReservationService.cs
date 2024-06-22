@@ -80,6 +80,8 @@ namespace reservation_system_be.Services.CustomerReservationService
             })
             .ToListAsync();
 
+            customerReservations = customerReservations.OrderByDescending(cr => cr.Reservation.StartDate).ToList();
+
             return customerReservations;
         }
 

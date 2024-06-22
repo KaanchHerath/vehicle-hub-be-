@@ -7,7 +7,7 @@ namespace reservation_system_be.Models
     public class Feedback
     {
         public int Id { get; set; }
-        public string Designation { get; set; } = string.Empty;
+      
         public string Type { get; set; } = string.Empty;
         public string Vehicle_Review { get; set; } = string.Empty;
         public string Service_Review { get; set; } = string.Empty;

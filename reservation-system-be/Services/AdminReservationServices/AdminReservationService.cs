@@ -197,7 +197,7 @@ namespace reservation_system_be.Services.AdminReservationServices
             return viewReservations;
         }
 
-        public async Task BeginReservation(int id)
+        public async Task BeginReservation(int id, int eid)
         {
             var customerReservation = await _customerReservationService.GetCustomerReservation(id);
 
@@ -207,7 +207,7 @@ namespace reservation_system_be.Services.AdminReservationServices
             }
 
             customerReservation.Reservation.Status = Status.Ongoing;
-
+            customerReservation.Reservation.EmployeeId = eid;
             await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
 
             var notification = new Notification
@@ -221,17 +221,21 @@ namespace reservation_system_be.Services.AdminReservationServices
             await _notificationService.AddNotification(notification);
         }
 
-        public async Task EndReservation(int id, VehicleLogDto vehicleLog)
+        public async Task EndReservation(int id, int eid, VehicleLogDto vehicleLog)
         {
             var customerReservation = await _customerReservationService.GetCustomerReservation(id);
 
             if (customerReservation.Reservation.Status == Status.Ongoing)
             {
+                customerReservation.Reservation.EmployeeId = eid;
                 customerReservation.Reservation.Status = Status.Ended;
                 await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
             }
-            else if (customerReservation.Reservation.Status != Status.Ended)
+            else if (customerReservation.Reservation.Status == Status.Ended)
             {
+                customerReservation.Reservation.EmployeeId = eid;
+                await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
+
                 var existingVehicleLog = await _context.VehicleLogs.FirstOrDefaultAsync(vl => vl.CustomerReservationId == id);
                 if (existingVehicleLog != null)
                 {
@@ -279,7 +283,7 @@ namespace reservation_system_be.Services.AdminReservationServices
                 Amount = CalFinalAmount(customerReservation, vl),
                 CustomerReservationId = customerReservation.Id
             };
-            await _invoiceService.CreateInvoice(invoice_model);
+            var invoice = await _invoiceService.CreateInvoice(invoice_model);
 
             var notification = new Notification
             {
@@ -295,8 +299,9 @@ namespace reservation_system_be.Services.AdminReservationServices
             {
                 ToEmail = customerReservation.Customer.Email,
                 Subject = "Reservation Ended",
-                Body = ReservationEndedMail(customerReservation.Id)
+                Body = ReservationEndedMail(invoice.Id)
             };
+            await _emailService.SendEmailAsync(mailRequest);
         }
 
         private string ReservationEndedMail(int id)
@@ -347,7 +352,7 @@ namespace reservation_system_be.Services.AdminReservationServices
 
             // Get the list of vehicles that are not reserved during the given period
             var reservedVehicleIds = await _context.CustomerReservations
-                .Where(cr => cr.Reservation.StartDate <= reservation.EndDate && cr.Reservation.EndDate >= reservation.StartDate && cr.Reservation.Status != Status.Cancelled)
+                .Where(cr => cr.Reservation.StartDate <= reservation.EndDate && cr.Reservation.EndDate >= reservation.StartDate && (cr.Reservation.Status != Status.Cancelled || cr.Reservation.Status != Status.Completed))
                 .Select(cr => cr.VehicleId)
                 .ToListAsync();
 
@@ -390,6 +395,16 @@ namespace reservation_system_be.Services.AdminReservationServices
 
             _context.Entry(customerReservation).State = EntityState.Modified;
             await _context.SaveChangesAsync();
+        }
+
+        public async Task CancelReservation(int id, int eid)
+        {
+            var customerReservation = await _customerReservationService.GetCustomerReservation(id);
+
+            customerReservation.Reservation.Status = Status.Cancelled;
+            customerReservation.Reservation.EmployeeId = eid;
+
+            await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
         }
     }
 }
