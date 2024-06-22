@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
 using reservation_system_be.Models;
@@ -8,6 +9,7 @@ namespace reservation_system_be.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    
     public class EmployeeController : ControllerBase
     {
         private readonly IEmployeeService _employeeService;
@@ -53,10 +55,7 @@ namespace reservation_system_be.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> PutEmployee(int id, Employee employee)
         {
-            if (id != employee.Id)
-            {
-                return BadRequest("Employee ID mismatch");
-            }
+            
 
             try
             {
@@ -71,6 +70,7 @@ namespace reservation_system_be.Controllers
 
         
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteEmployee(int id)
         {
             try

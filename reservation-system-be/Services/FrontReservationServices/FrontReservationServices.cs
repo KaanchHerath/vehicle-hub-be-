@@ -9,6 +9,7 @@ using reservation_system_be.Services.CustomerReservationService;
 using reservation_system_be.Services.CustomerServices;
 using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Services.InvoiceService;
+using reservation_system_be.Services.VehicleServices;
 
 namespace reservation_system_be.Services.FrontReservationServices
 {
@@ -19,14 +20,16 @@ namespace reservation_system_be.Services.FrontReservationServices
         private readonly IEmailService _emailService;
         private readonly ICustomerService _customerService;
         private readonly IInvoiceService _invoiceService;
+        private readonly IVehicleService _vehicleService;
         public FrontReservationServices(DataContext context, ICustomerReservationService customerReservationService, IEmailService emailService,
-            ICustomerService customerService, IInvoiceService invoiceService)
+            ICustomerService customerService, IInvoiceService invoiceService, IVehicleService vehicleService)
         {
             _context = context;
             _customerReservationService = customerReservationService;
             _emailService = emailService;
             _customerService = customerService;
             _invoiceService = invoiceService;
+            _vehicleService = vehicleService;
         }
 
         public async Task<CustomerReservation> RequestReservations(CreateCustomerReservationDto customerReservationDto)
@@ -79,7 +82,9 @@ namespace reservation_system_be.Services.FrontReservationServices
                 throw new DataNotFoundException("No ongoing rentals found");
             }
 
-            customerReservations = customerReservations.Where(cr => cr.Customer.Id == id).ToList();
+            customerReservations = customerReservations.Where(cr => cr.Customer.Id == id)
+                .OrderByDescending(cr => cr.Reservation.StartDate)
+                .ToList();
 
             var ongoingRentals = new List<RentalDto>();
 
@@ -116,7 +121,8 @@ namespace reservation_system_be.Services.FrontReservationServices
                 EndDate = customerReservation.Reservation.EndDate,
                 StartTime = customerReservation.Reservation.StartTime,
                 EndTime = customerReservation.Reservation.EndTime,
-                Status = customerReservation.Reservation.Status
+                Status = customerReservation.Reservation.Status,
+                Thumbnail = customerReservation.Vehicle.Thumbnail
             };
 
             return ongoingRentalSingle;
@@ -130,7 +136,9 @@ namespace reservation_system_be.Services.FrontReservationServices
                 throw new DataNotFoundException("No ongoing rentals found");
             }
 
-            customerReservations = customerReservations.Where(cr => cr.Customer.Id == id).ToList();
+            customerReservations = customerReservations.Where(cr => cr.Customer.Id == id)
+                .OrderByDescending(cr => cr.Reservation.EndDate)
+                .ToList();
 
             var rentalHistorys = new List<RentalDto>();
 
@@ -200,7 +208,8 @@ namespace reservation_system_be.Services.FrontReservationServices
                 RentalCost = rentalCost,
                 ExtraKMCost = extraKMCost,
                 Penalty = penalty,
-                Amount = amount
+                Amount = amount,
+                Thumbnail = customerReservation.Vehicle.Thumbnail
             };
 
             return rentalHistorySingle;
@@ -216,8 +225,9 @@ namespace reservation_system_be.Services.FrontReservationServices
 
             var customerReservation = await _customerReservationService.GetCustomerReservation(invoice.CustomerReservationId);
 
+
             var vehicleLog = await _context.VehicleLogs.FirstOrDefaultAsync(vl => vl.CustomerReservationId == invoice.CustomerReservationId);
-            if (vehicleLog == null)
+            if (invoice.Type == "Final" && vehicleLog == null)
             {
                 throw new DataNotFoundException("No vehicleLog found");
             }
@@ -232,13 +242,38 @@ namespace reservation_system_be.Services.FrontReservationServices
                 StartTime = customerReservation.Reservation.StartTime,
                 EndTime = customerReservation.Reservation.EndTime,
                 Deposit = customerReservation.Vehicle.VehicleType.DepositAmount,
-                ExtraKMCost = vehicleLog.ExtraKM * customerReservation.Vehicle.CostPerExtraKM,
-                Penalty = vehicleLog.Penalty,
-                RentalCost = customerReservation.Vehicle.CostPerDay * customerReservation.Reservation.NoOfDays,
-                Amount = invoice.Amount
+                ExtraKMCost = vehicleLog == null? 0 : vehicleLog.ExtraKM * customerReservation.Vehicle.CostPerExtraKM,
+                Penalty = vehicleLog == null? 0 : vehicleLog.Penalty,
+                RentalCost = vehicleLog == null? 0 : customerReservation.Vehicle.CostPerDay * customerReservation.Reservation.NoOfDays,
+                Amount = invoice.Amount,
+                Thumbnail = customerReservation.Vehicle.Thumbnail,
+                InvoiceType = invoice.Type
             };
 
             return bookingConfirmation;
+        }
+
+        public async Task<DetailCarDto> GetVehicleDetails(int id)
+        {
+            var vehicle = await _vehicleService.GetVehicle(id);
+
+            var detailCarDto = new DetailCarDto
+            {
+                Id = vehicle.Id,
+                Make = vehicle.VehicleModel.VehicleMake.Name,
+                Model = vehicle.VehicleModel.Name,
+                Colour = vehicle.Colour,
+                Mileage = vehicle.Mileage,
+                CostPerDay = vehicle.CostPerDay,
+                CostPerExtraKM = vehicle.CostPerExtraKM,
+                Transmission = vehicle.Transmission,
+                SeatingCapacity = vehicle.VehicleModel.SeatingCapacity,
+                Year = vehicle.VehicleModel.Year,
+                EngineCapacity = vehicle.VehicleModel.EngineCapacity,
+                FuelType = vehicle.VehicleModel.Fuel
+            };
+
+            return detailCarDto;
         }
     }
 }

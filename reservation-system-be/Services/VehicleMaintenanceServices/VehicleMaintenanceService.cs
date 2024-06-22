@@ -40,11 +40,13 @@ namespace reservation_system_be.Services.VehicleMaintenanceServices
                     Date = vehicleMaintenance.Date,
                     Description = vehicleMaintenance.Description,
                     Type = vehicleMaintenance.Type,
+                    CurrentMileage = vehicleMaintenance.CurrentMileage,
                     Vehicle = vehicle
                 };
 
                 vehicleMaintenanceDtos.Add(vehicleMaintenanceDto);
             }
+            vehicleMaintenanceDtos = vehicleMaintenanceDtos.OrderByDescending(v => v.Id).ToList();
             return vehicleMaintenanceDtos;
         }
 
@@ -64,6 +66,7 @@ namespace reservation_system_be.Services.VehicleMaintenanceServices
                 Date = vehicleMaintenance.Date,
                 Description = vehicleMaintenance.Description,
                 Type = vehicleMaintenance.Type,
+                CurrentMileage = vehicleMaintenance.CurrentMileage,
                 Vehicle = await _vehicleService.GetVehicle(vehicleMaintenance.VehicleId)
             };
             return vehicleMaintenanceDto;
@@ -71,7 +74,14 @@ namespace reservation_system_be.Services.VehicleMaintenanceServices
 
         public async Task<VehicleMaintenance> CreateVehicleMaintenance(VehicleMaintenance vehicleMaintenance)
         {
-            _context.VehicleMaintenances.Add(vehicleMaintenance);
+            var vehicle = await _context.Vehicles.FindAsync(vehicleMaintenance.VehicleId);
+            if(vehicle == null)
+            {
+                throw new DataNotFoundException();
+            }
+            vehicle.Mileage = vehicleMaintenance.CurrentMileage;
+            vehicle.Mileage = vehicleMaintenance.CurrentMileage;
+            _context.Entry(vehicle).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return vehicleMaintenance;
         }
@@ -86,6 +96,7 @@ namespace reservation_system_be.Services.VehicleMaintenanceServices
             existingVehicleMaintenance.Date = vehicleMaintenance.Date;
             existingVehicleMaintenance.Description = vehicleMaintenance.Description;
             existingVehicleMaintenance.Type = vehicleMaintenance.Type;
+            existingVehicleMaintenance.CurrentMileage = vehicleMaintenance.CurrentMileage;
             existingVehicleMaintenance.VehicleId = vehicleMaintenance.VehicleId;
             _context.Entry(existingVehicleMaintenance).State = EntityState.Modified;
             await _context.SaveChangesAsync();

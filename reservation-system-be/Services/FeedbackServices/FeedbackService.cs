@@ -13,7 +13,7 @@ namespace reservation_system_be.Services.FeedbackServices
             _context = context;
         }
 
-        public async Task<List<Feedback>> AddFeedbacks(FeedbackRequest feedbackRequest)
+        public async Task<Feedback> AddFeedbacks(FeedbackRequest feedbackRequest)
         {
 
             if (feedbackRequest == null)
@@ -23,28 +23,15 @@ namespace reservation_system_be.Services.FeedbackServices
 
             try
             {
-                var serviceFeedback = new Feedback
+                var feedback = new Feedback
                 {
                     Designation = feedbackRequest.Designation,
                     Type = "service",
+                    Vehicle_Review = feedbackRequest.Vehicle_Review,
                     Service_Review = feedbackRequest.Service_Review,
                     RatingNo = feedbackRequest.RatingNo,
                     Feedback_Date = DateTime.Now,
                     Feedback_Time = DateTime.Now,
-                    //VehicleId = feedbackRequest.VehicleId
-                    CustomerReservationId = feedbackRequest.CustomerReservationId,
-                    CustomerReservation = null,
-                };
-
-                var vehicleFeedback = new Feedback
-                {
-                    Designation = feedbackRequest.Designation,
-                    Type = "vehicle",
-                    Vehicle_Review = feedbackRequest.Vehicle_Review,
-                    RatingNo = feedbackRequest.RatingNo,
-                    Feedback_Date = DateTime.Now,
-                    Feedback_Time = DateTime.Now,
-                    //VehicleId = feedbackRequest.VehicleId
                     CustomerReservationId = feedbackRequest.CustomerReservationId,
                     CustomerReservation = null,
                 };
@@ -58,25 +45,20 @@ namespace reservation_system_be.Services.FeedbackServices
                         throw new ArgumentException("Invalid ReservationId");
                     }
 
-                    serviceFeedback.CustomerReservationId = feedbackRequest.CustomerReservationId;
-                    serviceFeedback.CustomerReservation = customerReservation;
-
-                    vehicleFeedback.CustomerReservationId = feedbackRequest.CustomerReservationId;
-                    vehicleFeedback.CustomerReservation = customerReservation;
+                    feedback.CustomerReservation = customerReservation;
 
                 }
 
-                _context.Feedbacks.AddRange(serviceFeedback, vehicleFeedback);
+                _context.Feedbacks.AddRange(feedback);
                 await _context.SaveChangesAsync();
 
-                return new List<Feedback> { serviceFeedback, vehicleFeedback };
+                return feedback ;
             }
             catch (Exception ex)
             {
                 Console.WriteLine("An error occurred while adding feedbacks:");
                 Console.WriteLine(ex.ToString());
 
-                // Print inner exception details if available
                 if (ex.InnerException != null)
                 {
                     Console.WriteLine("Inner Exception:");
@@ -121,14 +103,10 @@ namespace reservation_system_be.Services.FeedbackServices
             try
             {
                 var feedbackResponses = await _context.Feedbacks
-                    .Join(_context.Reservations,
-                          feedback => feedback.CustomerReservationId,
-                          reservation => reservation.Id,
-                          (feedback, reservation) => new { feedback, reservation })
                     .Join(_context.CustomerReservations,
-                          fr => fr.reservation.Id,
-                          customerReservation => customerReservation.ReservationId,
-                          (fr, customerReservation) => new { fr.feedback, fr.reservation, customerReservation })
+                          feedback => feedback.CustomerReservationId,
+                          customerReservation => customerReservation.Id,
+                          (feedback, customerReservation) => new { feedback, customerReservation })
                     .Join(_context.Customers,
                            frc => frc.customerReservation.CustomerId,
                            customer => customer.Id,
@@ -149,8 +127,6 @@ namespace reservation_system_be.Services.FeedbackServices
             }
         }
 
-
-
     }
 
     public class FeedbackResponse
@@ -165,7 +141,6 @@ namespace reservation_system_be.Services.FeedbackServices
         public int RatingNo { get; set; }
         public string Service_Review { get; set; } = string.Empty;
         public string Vehicle_Review { get; set; } = string.Empty;
-        public int VehicleId { get; set; }
         public int CustomerReservationId { get; set; }
 
     }

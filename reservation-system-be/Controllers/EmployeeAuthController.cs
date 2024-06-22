@@ -8,6 +8,8 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
 using reservation_system_be.Services.EmployeeAuthService;
+using Microsoft.AspNetCore.Authorization;
+using reservation_system_be.Services.CustomerAuthServices;
 
 namespace reservation_system_be.Controllers
 {
@@ -23,6 +25,7 @@ namespace reservation_system_be.Controllers
             _employeeAuthService = employeeAuthService;
         }
 
+        [Authorize(Policy = "AdminOnly")]
         [HttpPost("register")]
         public async Task<IActionResult> Register(Employee employee)
         {
@@ -51,6 +54,31 @@ namespace reservation_system_be.Controllers
             }
 
         }
-       
+
+        [HttpPost("ResetPassword")]
+        public async Task<IActionResult> ResetPassword([FromBody] EmployeePasswordDTO employeePasswordDTO)
+        {
+
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            var result = await _employeeAuthService.ResetPassword(employeePasswordDTO);
+            if (result == "Password has been reset successfully")
+            {
+                return Ok(result);
+            }
+            return BadRequest(result);
+
+        }
+
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            var result = _employeeAuthService.Logout();
+            return Ok(result);
+        }
+
     }
 }

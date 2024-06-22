@@ -1,10 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using reservation_system_be.DTOs;
 using reservation_system_be.Models;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace reservation_system_be.Services.PaymentService
 {
     public interface IPaymentService
     {
-        Task<Payment> AddPayment(Payment payment);
+        Task<PaymentServiceDTO?> AddPayment(Payment payment);
+        Task<List<PaymentServiceDTO>> GetAllPayments();
+        Task<PaymentServiceDTO?> GetPaymentById(int id);
+        Task<bool> DeletePayment(int id);
+        Task<bool> UpdateReservationStatusByInvoiceId(int invoiceId, Status newStatus);
     }
 }

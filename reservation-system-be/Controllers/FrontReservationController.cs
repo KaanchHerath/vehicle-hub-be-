@@ -63,5 +63,13 @@ namespace reservation_system_be.Controllers
 
             return Ok(bookingConfirmation);
         }
+
+        [HttpGet("DetailCar/{id}")]
+        public async Task<IActionResult> GetVehicleDetails(int id)
+        {
+            var detailCar = await _frontReservationServices.GetVehicleDetails(id);
+
+            return Ok(detailCar);
+        }
     }
 }

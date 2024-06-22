@@ -9,6 +9,12 @@
         int Year,
         string Transmission,
         int SeatingCapacity,
-        float CostPerDay
+        float CostPerDay,
+        string Thumbnail,
+        string FrontImg,
+        string RearImg,
+        string DashboardImg,
+        string InteriorImg,
+        string Logo
     );
 }

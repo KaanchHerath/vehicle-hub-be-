@@ -1,9 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
 using reservation_system_be.Models;
-using reservation_system_be.Services.FeedbackServices;
 
-namespace reservation_system_be.Services.NotificationService
+namespace reservation_system_be.Services.NotificationServices
 {
     public class NotificationService : INotificationService
     {
@@ -18,14 +17,10 @@ namespace reservation_system_be.Services.NotificationService
             try
             {
                 var notifications = await _context.Notifications
-                    .Join(_context.Reservations,
-                          notification => notification.ReservationId,
-                          reservation => reservation.Id,
-                          (notification, reservation) => new { notification, reservation })
                     .Join(_context.CustomerReservations,
-                          nr => nr.reservation.Id,
-                          customerReservation => customerReservation.ReservationId,
-                          (nr, customerReservation) => new { nr.notification, nr.reservation, customerReservation })
+                          notification => notification.CustomerReservationId,
+                          customerReservation => customerReservation.Id,
+                          (notification, customerReservation) => new { notification, customerReservation })
                     .Where(nrc => nrc.customerReservation.CustomerId == uid)
                     .Select(nrc => nrc.notification)
                     .ToListAsync();
@@ -35,6 +30,55 @@ namespace reservation_system_be.Services.NotificationService
             catch (Exception ex)
             {
                 throw new Exception("Error getting notifications for user.", ex);
+            }
+        }
+
+        public async Task<List<Notification>> GetNotifications()
+        {
+            try
+            {
+                var notifications = await _context.Notifications
+                                                  .OrderByDescending(n => n.Generated_DateTime)
+                                                  .ToListAsync();
+                return notifications;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error getting notifications for user.", ex);
+            }
+        }
+
+        public async Task<bool> DeleteNotification(int notificationId)
+        {
+            try
+            {
+                var notification = await _context.Notifications.FindAsync(notificationId);
+                if (notification == null)
+                {
+                    return false;
+                }
+
+                _context.Notifications.Remove(notification);
+                await _context.SaveChangesAsync();
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error deleting notification.", ex);
+            }
+        }
+
+        public async Task<Notification> AddNotification(Notification notification)
+        {
+            try
+            {
+                _context.Notifications.Add(notification);
+                await _context.SaveChangesAsync();
+                return notification;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error adding notification.", ex);
             }
         }
 

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
+using reservation_system_be.Helper;
 using reservation_system_be.Models;
 
 namespace reservation_system_be.Services.CustomerServices
@@ -43,10 +44,15 @@ namespace reservation_system_be.Services.CustomerServices
             return await _context.Customers.FirstOrDefaultAsync(u => u.Email == email);
         }
 
-
+        public async Task<Customer> GetCustomerByOtp(string otp)
+        {
+            return await _context.Customers.FirstOrDefaultAsync(c => c.PasswordResetOtp == otp);
+        }
 
         public async Task<Customer> UpdateCustomer(int id, Customer customer)
         {
+            
+
             var existingCustomer = await _context.Customers.FindAsync(id);
             if (existingCustomer == null)
             {
@@ -66,6 +72,7 @@ namespace reservation_system_be.Services.CustomerServices
             {
                 // Hash the new password
                 existingCustomer.Password = BCrypt.Net.BCrypt.HashPassword(customer.Password);
+               
             }
 
             _context.Entry(existingCustomer).State = EntityState.Modified;
@@ -87,6 +94,9 @@ namespace reservation_system_be.Services.CustomerServices
 
         }
 
-
+        public async Task<Customer> GetCustomerById(int id)
+        {
+            return await _context.Customers.FindAsync(id);
+        }
     }
 }

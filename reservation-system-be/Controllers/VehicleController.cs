@@ -42,17 +42,104 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Vehicle>> CreateVehicle(Vehicle vehicle)
-        {
-            return await _vehicleService.CreateVehicle(vehicle);
-        }
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Vehicle>> UpdateVehicle(int id, Vehicle vehicle)
+        public async Task<ActionResult<Vehicle>> CreateVehicle([FromForm] CreateVehicleDto createVehicleDto, IFormFile formFile, IFormFile front, IFormFile rear, IFormFile dashboard, IFormFile interior)
         {
             try
             {
-                return await _vehicleService.UpdateVehicle(id, vehicle);
+                var vehicle = await _vehicleService.CreateVehicle(createVehicleDto, formFile, front, rear, dashboard, interior);
+                return Ok(vehicle);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(new { message = e.Message });
+            }
+            catch (Exception e) when (e.Message.Contains("Vehicle with the same registration number already exists"))
+            {
+                return BadRequest(new { error = e.Message, field = "regNo" });
+            }
+            catch (Exception e)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, new { message = e.Message });
+            }
+        }
+
+        [HttpPut("Details/{id}")]
+        public async Task<ActionResult<Vehicle>> UpdateVehicle(int id,UpdateVehicleDetailsDto createVehicleDto)
+        {
+            try
+            {
+                var vehicle = await _vehicleService.UpdateVehicle(id, createVehicleDto);
+                return Ok(vehicle);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("Thumbnail/{id}")]
+        public async Task<ActionResult> UpdateThumbnail(int id, IFormFile formFile)
+        { 
+            try
+            {
+                await _vehicleService.UpdateThumbnail(id, formFile);
+                return Ok();
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("FrontImg/{id}")]
+        public async Task<ActionResult> UpdateFrontImg(int id,IFormFile front)
+        {
+            try
+            {
+                await _vehicleService.UpdateFrontImg(id, front);
+                return Ok();
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("RearImg/{id}")]
+        public async Task<ActionResult> UpdateRearImg(int id, IFormFile rear)
+        {
+            try
+            {
+                await _vehicleService.UpdateRearImg(id, rear);
+                return Ok();
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("DashboardImg/{id}")]
+        public async Task<ActionResult> UpdateDashboardImg(int id, IFormFile dashboard)
+        {
+            try
+            {
+                await _vehicleService.UpdateDashboardImg(id, dashboard);
+                return Ok();
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpPut("InteriorImg/{id}")]
+        public async Task<ActionResult> UpdateInteriorImg(int id, IFormFile interior)
+        {
+            try
+            {
+                await _vehicleService.UpdateInteriorImg(id, interior);
+                return Ok();
             }
             catch (DataNotFoundException e)
             {
@@ -74,20 +161,6 @@ namespace reservation_system_be.Controllers
             }
         }
 
-        [HttpGet("vehicles/search")]
-        public async Task<ActionResult<List<VehicleResponse>>> SearchVehicle(String search)
-        {
-            try
-            {
-                var vehicles = await _vehicleService.SearchVehicle(search);
-                return Ok(vehicles);
-            }
-            catch (DataNotFoundException e)
-            {
-                return NotFound(e.Message);
-            }
-        }
-
         [HttpGet("alldata")]
         public async Task<ActionResult<List<VehicleResponse>>> GetAllVehiclesDetails()
         {
@@ -102,23 +175,7 @@ namespace reservation_system_be.Controllers
             }
         }
 
-        [HttpGet("vehicles/filter")]
-        public async Task<ActionResult<List<VehicleResponse>>> FilterVehicles(int? vehicleTypeId, int? vehicleMakeId, int? seatingCapacity, float? depositAmount)
-        {
-            try
-            {
-                var vehicles = await _vehicleService.FilterVehicles(vehicleTypeId, vehicleMakeId, seatingCapacity, depositAmount);
-                if (vehicles == null || vehicles.Count == 0)
-                {
-                    return NotFound("No vehicles match the provided criteria.");
-                }
-                return Ok(vehicles);
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(ex.Message);
-            }
-        }
+        
 
     }
 }

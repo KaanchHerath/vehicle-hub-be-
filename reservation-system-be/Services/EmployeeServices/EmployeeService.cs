@@ -59,6 +59,9 @@ namespace reservation_system_be.Services.EmployeeServices
                 existingEmployee.Address = employee.Address;
                 existingEmployee.Password = employee.Password;
                 existingEmployee.Role = employee.Role;
+                existingEmployee.ContactNo = employee.ContactNo;
+                existingEmployee.Gender = employee.Gender;
+                existingEmployee.DOB = employee.DOB;
 
             if (!string.IsNullOrEmpty(employee.Password))
             {

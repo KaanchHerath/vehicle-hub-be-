@@ -24,7 +24,6 @@ using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Services.FrontReservationServices;
 using reservation_system_be.Services.AdminReservationServices;
 using reservation_system_be.Services.VehicleUtilizationReportServices;
-
 using reservation_system_be.Services.EmployeeAuthService;
 using reservation_system_be.Services.StripeService;
 using reservation_system_be.Services.AdminVehicleServices;
@@ -36,6 +35,16 @@ using reservation_system_be.Services.ReservationStatusServices;
 using reservation_system_be.Services.DashboardStatusServices;
 using reservation_system_be.Services.PaymentService;
 using Azure.Storage.Blobs;
+using reservation_system_be.Services.FileServices;
+using reservation_system_be.Services.NotificationServices;
+using reservation_system_be.Services.VehicleFilterServices;
+using reservation_system_be.Services.FeedbackServices;
+using reservation_system_be.Services.InsuranceExpiryCheckService;
+using reservation_system_be.Services.VehicleMaintenanceDueService;
+using reservation_system_be.Services.CheckCustomerReservationConflictsServices;
+using reservation_system_be.Services.NewFolder;
+using Microsoft.OpenApi.Models;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -50,11 +59,51 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             ValidateAudience = true,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = "Jwt:Issuer", // Specify the issuer
-            ValidAudience = "Jwt:audience", // Specify the audience
-            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("Jwt:Key")) // Specify the secret key
+            ValidIssuer = builder.Configuration["Jwt:Issuer"], // Specify the issuer
+            ValidAudience = builder.Configuration["Jwt:Audience"], // Specify the audience
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Specify the secret key
         };
     });
+
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
+
+    // Define the JWT Bearer security scheme
+    c.AddSecurityDefinition("ApiKey", new OpenApiSecurityScheme
+    {
+        Description = "API Key Authorization",
+        Type = SecuritySchemeType.ApiKey,
+        Name = "Authorization",
+        In = ParameterLocation.Header
+    });
+
+    // Make sure Swagger UI requires a Bearer token to access endpoints
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "ApiKey"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminOnly", policy => policy.RequireRole("admin"));
+    options.AddPolicy("CustomerOnly", policy => policy.RequireRole("customer"));
+    options.AddPolicy("AdminAndStaffOnly", policy => policy.RequireRole("admin", "staff"));
+});
+
+
 
 
 builder.Services.AddDbContext<DataContext>(options =>
@@ -73,11 +122,26 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 
 builder.Services.Configure<MailSettings>(builder.Configuration.GetSection("EmailSettings"));
 
+
+//add connection azure blob
+builder.Services.AddScoped(_ =>
+{
+    return new BlobServiceClient(builder.Configuration.GetConnectionString("AzureBlobStorage"));
+});
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Add session services
+builder.Services.AddDistributedMemoryCache();
 
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 
 //Injection List
@@ -105,16 +169,31 @@ builder.Services.AddScoped<IRevenueReportService, RevenueReportService>();
 builder.Services.AddScoped<ISalesChartService, SalesChartService>();
 builder.Services.AddScoped<IReservationStatusService, ReservationStatusService>();
 builder.Services.AddScoped<IDashboardStatusService, DashboardStatusService>();
-
+builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
-
-builder.Services.AddScoped<IBookNowService, BookNowService>();
-
+builder.Services.AddScoped<IFrontVehicleService, FrontVehicleService>();
 builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>();
+builder.Services.AddScoped<IFileService, FileService>();
+builder.Services.AddScoped<IVehicleFilterService, VehicleFilterService>();
+builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddHttpContextAccessor();
+
+
+
 builder.Services.AddTransient<IEmailService, EmailService>();
 
 
+// The insurance expiry check service
+builder.Services.AddHostedService<InsuranceExpiryCheckService>();
 
+// The maintenance due check service
+builder.Services.AddHostedService<VehicleMaintenanceDueService>();
+
+// The customer reservation conflict service
+builder.Services.AddHostedService<CheckCustomerReservationConflictsService>();
+
+// The reservation automatic cancellation service
+builder.Services.AddHostedService<ReservationPendingService>();
 
 builder.Services.AddCors(options =>
 {
@@ -128,21 +207,27 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
-    app.UseSwaggerUI();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "Your API V1");
+        c.RoutePrefix = "swagger"; // Set the UI at the app's /swagger URL
+    });
 }
 
-
+app.UseSession();
 
 // Use CORS policy
 app.UseCors("AllowSpecificOrigin");
 
-app.UseAuthorization();
 app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
+    //.RequireAuthorization(); // Require authorization for all controllers and actions
 
 app.Run();

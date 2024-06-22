@@ -16,6 +16,7 @@ namespace reservation_system_be.DTOs
         float RentalCost,
         float ExtraKMCost,
         float Penalty,
-        float Amount
+        float Amount,
+        string Thumbnail
     );
 }

@@ -5,6 +5,11 @@ using reservation_system_be.DTOs;
 using reservation_system_be.Services.EmployeeServices;
 using reservation_system_be.Services.VehicleModelServices;
 using reservation_system_be.Services.VehicleTypeServices;
+using reservation_system_be.Services.FileServices;
+using Microsoft.AspNetCore.Mvc;
+using reservation_system_be.Services.NotificationServices;
+using System;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace reservation_system_be.Services.VehicleServices
 {
@@ -14,13 +19,22 @@ namespace reservation_system_be.Services.VehicleServices
         private readonly IVehicleTypeService _vehicleTypeService;
         private readonly IVehicleModelService _vehicleModelService;
         private readonly IEmployeeService _employeeService;
+        private const string AzureContainerName = "thumbnails";
+        private const string AzureContainerName2 = "front";
+        private const string AzureContainerName3 = "rear";
+        private const string AzureContainerName4 = "dashboard";
+        private const string AzureContainerName5 = "interior";
+        private readonly IFileService _fileServices;
+        private readonly INotificationService _notificationService;
 
-        public VehicleService(DataContext context, IVehicleTypeService vehicleTypeService, IVehicleModelService vehicleModelService, IEmployeeService employeeService)
+        public VehicleService(DataContext context, IVehicleTypeService vehicleTypeService, IVehicleModelService vehicleModelService, IEmployeeService employeeService, IFileService fileService, INotificationService notificationService)
         {
             _context = context;
             _vehicleTypeService = vehicleTypeService;
             _vehicleModelService = vehicleModelService;
             _employeeService = employeeService;
+            _fileServices = fileService;
+            _notificationService = notificationService;
         }
         public async Task<IEnumerable<VehicleDto>> GetAllVehicles()
         {
@@ -52,6 +66,11 @@ namespace reservation_system_be.Services.VehicleServices
                     CostPerDay = vehicle.CostPerDay,
                     Transmission = vehicle.Transmission,
                     CostPerExtraKM = vehicle.CostPerExtraKM,
+                    Thumbnail = vehicle.Thumbnail,
+                    FrontImg = vehicle.FrontImg,
+                    RearImg = vehicle.RearImg,
+                    DashboardImg = vehicle.DashboardImg,
+                    InteriorImg = vehicle.InteriorImg,
                     Status = vehicle.Status,
                     VehicleType = vehicleType,
                     VehicleModel = vehicleModel,
@@ -59,6 +78,7 @@ namespace reservation_system_be.Services.VehicleServices
                 };
                 vehicleDtos.Add(vehicleDto);
             }
+            vehicleDtos = vehicleDtos.OrderByDescending(v => v.Id).ToList();
             return vehicleDtos;
         }
 
@@ -84,6 +104,11 @@ namespace reservation_system_be.Services.VehicleServices
                 CostPerDay = vehicle.CostPerDay,
                 Transmission = vehicle.Transmission,
                 CostPerExtraKM = vehicle.CostPerExtraKM,
+                Thumbnail = vehicle.Thumbnail,
+                FrontImg = vehicle.FrontImg,
+                RearImg = vehicle.RearImg,
+                DashboardImg = vehicle.DashboardImg,
+                InteriorImg = vehicle.InteriorImg,
                 Status = vehicle.Status,
                 VehicleType = await _vehicleTypeService.GetSingleVehicleType(vehicle.VehicleTypeId),
                 VehicleModel = await _vehicleModelService.GetVehicleModel(vehicle.VehicleModelId),
@@ -91,35 +116,199 @@ namespace reservation_system_be.Services.VehicleServices
             };
             return vehicleDto;
         }
-        public async Task<Vehicle> CreateVehicle(Vehicle vehicle)
+        public async Task<Vehicle> CreateVehicle([FromForm] CreateVehicleDto createVehicleDto,IFormFile formFile,IFormFile front,IFormFile rear,IFormFile dashboard, IFormFile interior)
         {
+            if (formFile == null || formFile.Length == 0)
+            {
+                throw new DataNotFoundException("Thumbnail is required");
+            }
+            if (front == null || front.Length == 0)
+            {
+                throw new DataNotFoundException("Front image is required");
+            }
+            if (rear == null || rear.Length == 0)
+            {
+                throw new DataNotFoundException("Rear image is required");
+            }
+            if (dashboard == null || dashboard.Length == 0)
+            {
+                throw new DataNotFoundException("Dashboard image is required");
+            }
+            if (interior == null || interior.Length == 0)
+            {
+                throw new DataNotFoundException("Interior image is required");
+            }
+
+            var fileUrl = await _fileServices.Upload(formFile, AzureContainerName);
+            var frontUrl = await _fileServices.Upload(front, AzureContainerName2);
+            var rearUrl = await _fileServices.Upload(rear, AzureContainerName3);
+            var dashboardUrl = await _fileServices.Upload(dashboard, AzureContainerName4);
+            var interiorUrl = await _fileServices.Upload(interior, AzureContainerName5);
+
+            var vehicle = new Vehicle
+            {
+                RegistrationNumber = createVehicleDto.RegistrationNumber,
+                ChassisNo = createVehicleDto.ChassisNo,
+                Colour = createVehicleDto.Colour,
+                Mileage = createVehicleDto.Mileage,
+                CostPerDay = createVehicleDto.CostPerDay,
+                Transmission = createVehicleDto.Transmission,
+                CostPerExtraKM = createVehicleDto.CostPerExtraKM,
+                Thumbnail = fileUrl,
+                FrontImg = frontUrl,
+                RearImg = rearUrl,
+                DashboardImg = dashboardUrl,
+                InteriorImg = interiorUrl,
+                Status = createVehicleDto.Status,
+                VehicleTypeId = createVehicleDto.VehicleTypeId,
+                VehicleModelId = createVehicleDto.VehicleModelId,
+                EmployeeId = createVehicleDto.EmployeeId
+            };
+
+            var existingVehicles = await _context.Vehicles.ToListAsync();
+            if (existingVehicles.Any(v => v.RegistrationNumber == vehicle.RegistrationNumber))
+            {
+                throw new Exception("Vehicle with the same registration number already exists");
+            }
+
             _context.Vehicles.Add(vehicle);
             await _context.SaveChangesAsync();
+
+            // Trigger notification creation
+            var notification = new Notification
+            {
+                Type = "Insurance",
+                Title = "New Vehicle Created",
+                Description = $"Vehicle {vehicle.RegistrationNumber} currently does not have insurance coverage for the rest of {DateTime.Now.Year}.",
+                Generated_DateTime = DateTime.Now,
+                VehicleInsuranceID = null
+            };
+            await _notificationService.AddNotification(notification);
+
             return vehicle;
         }
 
-        public async Task<Vehicle> UpdateVehicle(int id, Vehicle vehicle)
+        public async Task<Vehicle> UpdateVehicle(int id,UpdateVehicleDetailsDto createVehicleDto)
         {
-            var existingVehicle = _context.Vehicles.Find(id);
+            var existingVehicle = await _context.Vehicles.FindAsync(id);
             if (existingVehicle == null)
             {
                 throw new DataNotFoundException("Vehicle not found");
             }
-            existingVehicle.RegistrationNumber = vehicle.RegistrationNumber;
-            existingVehicle.ChassisNo = vehicle.ChassisNo;
-            existingVehicle.Colour = vehicle.Colour;
-            existingVehicle.Mileage = vehicle.Mileage;
-            existingVehicle.CostPerDay = vehicle.CostPerDay;
-            existingVehicle.Transmission = vehicle.Transmission;
-            existingVehicle.CostPerExtraKM = vehicle.CostPerExtraKM;
-            existingVehicle.Status = vehicle.Status;
-            existingVehicle.VehicleTypeId = vehicle.VehicleTypeId;
-            existingVehicle.VehicleModelId = vehicle.VehicleModelId;
-            existingVehicle.EmployeeId = vehicle.EmployeeId;
+            existingVehicle.RegistrationNumber = createVehicleDto.RegistrationNumber;
+            existingVehicle.ChassisNo = createVehicleDto.ChassisNo;
+            existingVehicle.Colour = createVehicleDto.Colour;
+            existingVehicle.Mileage = createVehicleDto.Mileage;
+            existingVehicle.CostPerDay = createVehicleDto.CostPerDay;
+            existingVehicle.Transmission = createVehicleDto.Transmission;
+            existingVehicle.CostPerExtraKM = createVehicleDto.CostPerExtraKM;
+            existingVehicle.Status = createVehicleDto.Status;
+            existingVehicle.VehicleTypeId = createVehicleDto.VehicleTypeId;
+            existingVehicle.VehicleModelId = createVehicleDto.VehicleModelId;
+            existingVehicle.EmployeeId = createVehicleDto.EmployeeId;
             _context.Entry(existingVehicle).State = EntityState.Modified;
             await _context.SaveChangesAsync();
             return existingVehicle;
+        }
 
+        public async Task UpdateThumbnail(int id, IFormFile formFile)
+        {
+            var existingVehicle = await _context.Vehicles.FindAsync(id);
+            if (existingVehicle == null)
+            {
+                throw new DataNotFoundException("Vehicle not found");
+            }
+            if (formFile != null && formFile.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(existingVehicle.Thumbnail))
+                {
+                    await _fileServices.Delete(existingVehicle.Thumbnail, AzureContainerName);
+                }
+                var fileUrl = await _fileServices.Upload(formFile, AzureContainerName);
+                existingVehicle.Thumbnail = fileUrl;
+            }
+            _context.Entry(existingVehicle).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateFrontImg(int id, IFormFile front)
+        {
+            var existingVehicle = await _context.Vehicles.FindAsync(id);
+            if (existingVehicle == null)
+            {
+                throw new DataNotFoundException("Vehicle not found");
+            }
+            if (front != null && front.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(existingVehicle.FrontImg))
+                {
+                    await _fileServices.Delete(existingVehicle.FrontImg, AzureContainerName2);
+                }
+                var frontUrl = await _fileServices.Upload(front, AzureContainerName2);
+                existingVehicle.FrontImg = frontUrl;
+            }
+            _context.Entry(existingVehicle).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateRearImg(int id, IFormFile rear)
+        {
+            var existingVehicle = await _context.Vehicles.FindAsync(id);
+            if (existingVehicle == null)
+            {
+                throw new DataNotFoundException("Vehicle not found");
+            }
+            if (rear != null && rear.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(existingVehicle.RearImg))
+                {
+                    await _fileServices.Delete(existingVehicle.RearImg, AzureContainerName3);
+                }
+                var rearUrl = await _fileServices.Upload(rear, AzureContainerName3);
+                existingVehicle.RearImg = rearUrl;
+            }
+            _context.Entry(existingVehicle).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateDashboardImg(int id, IFormFile dashboard)
+        {
+            var existingVehicle = await _context.Vehicles.FindAsync(id);
+            if (existingVehicle == null)
+            {
+                throw new DataNotFoundException("Vehicle not found");
+            }
+            if (dashboard != null && dashboard.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(existingVehicle.DashboardImg))
+                {
+                    await _fileServices.Delete(existingVehicle.DashboardImg, AzureContainerName4);
+                }
+                var dashboardUrl = await _fileServices.Upload(dashboard, AzureContainerName4);
+                existingVehicle.DashboardImg = dashboardUrl;
+            }
+            _context.Entry(existingVehicle).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task UpdateInteriorImg(int id, IFormFile interior)
+        {
+            var existingVehicle = await _context.Vehicles.FindAsync(id);
+            if (existingVehicle == null)
+            {
+                throw new DataNotFoundException("Vehicle not found");
+            }
+            if (interior != null && interior.Length > 0)
+            {
+                if (!string.IsNullOrEmpty(existingVehicle.InteriorImg))
+                {
+                    await _fileServices.Delete(existingVehicle.InteriorImg, AzureContainerName5);
+                }
+                var interiorUrl = await _fileServices.Upload(interior, AzureContainerName5);
+                existingVehicle.InteriorImg = interiorUrl;
+            }
+            _context.Entry(existingVehicle).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
         public async Task DeleteVehicle(int id)
         {
@@ -128,100 +317,48 @@ namespace reservation_system_be.Services.VehicleServices
             {
                 throw new DataNotFoundException("Vehicle not found");
             }
+
+            if (!string.IsNullOrEmpty(vehicle.Thumbnail))
+            {
+                await _fileServices.Delete(vehicle.Thumbnail, AzureContainerName);
+            }
+            if (!string.IsNullOrEmpty(vehicle.FrontImg))
+            {
+                await _fileServices.Delete(vehicle.FrontImg, AzureContainerName2);
+            }
+            if (!string.IsNullOrEmpty(vehicle.RearImg))
+            {
+                await _fileServices.Delete(vehicle.RearImg, AzureContainerName3);
+            }
+            if (!string.IsNullOrEmpty(vehicle.DashboardImg))
+            {
+                await _fileServices.Delete(vehicle.DashboardImg, AzureContainerName4);
+            }
+            if (!string.IsNullOrEmpty(vehicle.InteriorImg))
+            {
+                await _fileServices.Delete(vehicle.InteriorImg, AzureContainerName5);
+            }
+
             _context.Vehicles.Remove(vehicle);
             await _context.SaveChangesAsync();
         }
-
-        public async Task<List<VehicleResponse>> SearchVehicle(string search)
-        {
-            var vehicles = await _context.Vehicles
-                .Include(v => v.VehicleType)
-                .Include(v => v.VehicleModel)
-                .ThenInclude(vm => vm.VehicleMake) // Ensure VehicleMake is included
-                .Where(v =>
-                    v.VehicleModel.Name.Contains(search) ||
-                    v.VehicleType.Name.Contains(search)
-                )
-                .Select(v => new VehicleResponse
-                {
-                    Vehicle = v,
-                    vehicleMake = v.VehicleModel.VehicleMake,
-                    vehicleModel = v.VehicleModel
-                })
-                .ToListAsync();
-
-            return vehicles;
-        }
-
 
         public async Task<List<VehicleResponse>> GetAllVehiclesDetails()
         {
             var vehicles = await _context.Vehicles
                 .Include(v => v.VehicleType)
                 .Include(v => v.VehicleModel)
-                .ThenInclude(vm => vm.VehicleMake)
+                    .ThenInclude(vm => vm.VehicleMake)
                 .Select(v => new VehicleResponse
                 {
                     Vehicle = v,
                     vehicleMake = v.VehicleModel.VehicleMake,
-                    vehicleModel = v.VehicleModel
+                    vehicleModel = v.VehicleModel,
+                    vehicleType = v.VehicleType
                 })
                 .ToListAsync();
 
             return vehicles;
-        }
-
-
-        public async Task<List<VehicleResponse>> FilterVehicles(int? vehicleTypeId, int? vehicleMakeId, int? seatingCapacity, float? depositAmount)
-        {
-            var query = _context.Vehicles
-                .Include(v => v.VehicleModel)
-                .ThenInclude(vm => vm.VehicleMake)
-                .Include(v => v.VehicleType)
-                .AsQueryable();
-
-            if (vehicleTypeId.HasValue)
-            {
-                query = query.Where(v => v.VehicleTypeId == vehicleTypeId.Value);
-            }
-
-            if (vehicleMakeId.HasValue)
-            {
-                var joinedQuery = query.Join(
-                    _context.VehicleModels,
-                    vehicle => vehicle.VehicleModelId,
-                    vehicleModel => vehicleModel.Id,
-                    (vehicle, vehicleModel) => new { vehicle, vehicleModel }
-                );
-
-                if (vehicleMakeId.HasValue)
-                {
-                    joinedQuery = joinedQuery.Where(vm => vm.vehicleModel.VehicleMakeId == vehicleMakeId.Value);
-                }
-
-                if (!(seatingCapacity == 0))
-                {
-                    joinedQuery = joinedQuery.Where(vm => vm.vehicleModel.SeatingCapacity < seatingCapacity);
-                }
-
-                query = joinedQuery.Select(vm => vm.vehicle);
-            }
-
-            if (depositAmount.HasValue)
-            {
-                query = query.Where(v => v.VehicleType.DepositAmount < depositAmount.Value);
-            }
-
-            var result = await query
-                .Select(v => new VehicleResponse
-                {
-                    Vehicle = v,
-                    vehicleMake = v.VehicleModel.VehicleMake,
-                    vehicleModel = v.VehicleModel
-                })
-                .ToListAsync();
-
-            return result;
         }
 
 
@@ -230,10 +367,9 @@ namespace reservation_system_be.Services.VehicleServices
     public class VehicleResponse
     {
         public Vehicle Vehicle { get; set; }
-
         public VehicleMake vehicleMake { get; set; }
-
         public VehicleModel vehicleModel { get; set; }
+        public VehicleType vehicleType { get; set; }
     }
 
 }

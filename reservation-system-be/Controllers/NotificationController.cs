@@ -1,8 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Models;
-using reservation_system_be.Services.FeedbackServices;
-using reservation_system_be.Services.NotificationService;
+using reservation_system_be.Services.NotificationServices;
 
 namespace reservation_system_be.Controllers
 {
@@ -19,7 +18,7 @@ namespace reservation_system_be.Controllers
 
 
         [HttpGet("Notifications/{uid}")]
-        public async Task<ActionResult<List<Notification>>> GetNotifications(int uid)
+        public async Task<ActionResult<List<Notification>>> GetAllNotifications(int uid)
         {
             try
             {
@@ -36,6 +35,32 @@ namespace reservation_system_be.Controllers
             }
         }
 
+        [HttpGet("allnotifications")]
+        public async Task<ActionResult<List<Notification>>> GetNotifications()
+        {
+            try
+            {
+                var notifications = await _notificationService.GetNotifications();
+                return Ok(notifications);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, "Internal server error");
+            }
+        }
 
+        [HttpPost("AddNotification")]
+        public async Task<ActionResult<Notification>> AddNotification(Notification notification)
+        {
+            try
+            {
+                var newNotification = await _notificationService.AddNotification(notification);
+                return Ok(newNotification);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

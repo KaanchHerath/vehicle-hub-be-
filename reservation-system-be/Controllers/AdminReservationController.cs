@@ -23,24 +23,52 @@ namespace reservation_system_be.Controllers
             return Ok(reservations);
         }
 
-        [HttpPost("{id}")]
+        [HttpPost("Accept-Reservation/{id}")]
         public async Task<IActionResult> AcceptReservation(int id, int eid)
         {
             await _adminReservationService.AcceptReservation(id, eid);
             return Ok();
         }
 
-        [HttpPost("Begin-Reservation/{id}")]
-        public async Task<IActionResult> BeginReservation(int id)
+        [HttpPost("Decline-Reservation/{id}")]
+        public async Task<IActionResult> DeclineReservation(int id, int eid)
         {
-            await _adminReservationService.BeginReservation(id);
+            await _adminReservationService.DeclineReservation(id, eid);
+            return Ok();
+        }
+
+        [HttpPost("Begin-Reservation/{id}")]
+        public async Task<IActionResult> BeginReservation(int id, int eid)
+        {
+            await _adminReservationService.BeginReservation(id, eid);
             return Ok();
         }
 
         [HttpPost("End-Reservation/{id}")]
-        public async Task<IActionResult> EndReservation(int id, VehicleLogDto vehicleLog)
+        public async Task<IActionResult> EndReservation(int id, int eid, VehicleLogDto vehicleLog)
         {
-            await _adminReservationService.EndReservation(id, vehicleLog);
+            await _adminReservationService.EndReservation(id, eid, vehicleLog);
+            return Ok();
+        }
+
+        [HttpGet("Available-Vehicles/{id}")]
+        public async Task<IActionResult> AvailableVehicles(int id)
+        {
+            var vehicles = await _adminReservationService.AvailableVehicles(id);
+            return Ok(vehicles);
+        }
+
+        [HttpPost("Change-Vehicle/{id}")]
+        public async Task<IActionResult> ReservationChangeVehicle(int id, int vid)
+        {
+            await _adminReservationService.ReservationChangeVehicle(id, vid);
+            return Ok();
+        }
+
+        [HttpPost("Cancel-Reservation/{id}")]
+        public async Task<IActionResult> CancelReservation(int id, int eid)
+        {
+            await _adminReservationService.CancelReservation(id, eid);
             return Ok();
         }
     }

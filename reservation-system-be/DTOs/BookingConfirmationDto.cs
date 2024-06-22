@@ -1,4 +1,6 @@
-﻿namespace reservation_system_be.DTOs
+﻿using reservation_system_be.Models;
+
+namespace reservation_system_be.DTOs
 {
     public record struct BookingConfirmationDto
     (
@@ -13,6 +15,8 @@
         float ExtraKMCost,
         float Penalty,
         float RentalCost,
-        float Amount
+        float Amount,
+        string Thumbnail,
+        string InvoiceType
     );
 }
