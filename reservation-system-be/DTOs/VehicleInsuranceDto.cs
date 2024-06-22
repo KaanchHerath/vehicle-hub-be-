@@ -7,7 +7,8 @@ namespace reservation_system_be.DTOs
         int Id,
         string InsuranceNo,
         DateTime ExpiryDate,
-        VehicleDto Vehicle,
+        int VehicleId,
+        string RegistrationNo,
         bool Status
     );
 }

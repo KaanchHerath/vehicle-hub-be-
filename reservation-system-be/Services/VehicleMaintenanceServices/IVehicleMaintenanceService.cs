@@ -7,8 +7,8 @@ namespace reservation_system_be.Services.VehicleMaintenanceServices
     {
         Task<IEnumerable<VehicleMaintenanceDto>> GetAllVehicleMaintenances();
         Task<VehicleMaintenanceDto> GetVehicleMaintenance(int id);
-        Task<VehicleMaintenance> CreateVehicleMaintenance(VehicleMaintenance vehicleMaintenance);
-        Task<VehicleMaintenance> UpdateVehicleMaintenance(int id, VehicleMaintenance vehicleMaintenance);
+        Task<VehicleMaintenance> CreateVehicleMaintenance(CreateVehicleMaintenanceDto createVehicleMaintenanceDto);
+        Task<VehicleMaintenance> UpdateVehicleMaintenance(int id, CreateVehicleMaintenanceDto vehicleMaintenance);
         Task DeleteVehicleMaintenance(int id);
     }
 }

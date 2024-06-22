@@ -10,18 +10,10 @@ namespace reservation_system_be.Models
         public string Title { get; set; } = string.Empty;
         public string Description { get; set; } = string.Empty;
         public DateTime Generated_DateTime { get; set; }
+        public bool IsRead { get; set; } = false;
         [ForeignKey("CustomerReservationId")]
         public int? CustomerReservationId { get; set; } = null;
         [JsonIgnore]
-        public CustomerReservation? CustomerReservation { get; set; }
-        [ForeignKey("VehicleInsuranceID")]
-        public int? VehicleInsuranceID { get; set; } = null;
-        [JsonIgnore]
-        public VehicleInsurance? VehicleInsurance { get; set; }
-        [ForeignKey("VehicleMaintenanceId")]
-        public int? VehicleMaintenanceId { get; set; } = null;
-        [JsonIgnore]
-        public VehicleMaintenance? VehicleMaintenance { get; set; }
-
+        public CustomerReservation? CustomerReservation { get; set; }      
     }
 }

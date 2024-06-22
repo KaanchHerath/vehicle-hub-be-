@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
+using reservation_system_be.DTOs;
 using reservation_system_be.Models;
 using reservation_system_be.Services.ReservationService;
 
@@ -41,7 +42,7 @@ namespace reservation_system_be.Controllers
         {
             return await _reservationService.CreateReservation(reservation);
         }
-
+        
         [HttpPut("{id}")]
         public async Task<ActionResult<Reservation>> UpdateReservation(int id, Reservation reservation)
         {

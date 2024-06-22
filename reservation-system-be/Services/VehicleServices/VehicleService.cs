@@ -25,95 +25,95 @@ namespace reservation_system_be.Services.VehicleServices
         private const string AzureContainerName4 = "dashboard";
         private const string AzureContainerName5 = "interior";
         private readonly IFileService _fileServices;
-        private readonly INotificationService _notificationService;
 
-        public VehicleService(DataContext context, IVehicleTypeService vehicleTypeService, IVehicleModelService vehicleModelService, IEmployeeService employeeService, IFileService fileService, INotificationService notificationService)
+        public VehicleService(DataContext context, IVehicleTypeService vehicleTypeService, IVehicleModelService vehicleModelService, IEmployeeService employeeService, IFileService fileService)
         {
             _context = context;
             _vehicleTypeService = vehicleTypeService;
             _vehicleModelService = vehicleModelService;
             _employeeService = employeeService;
             _fileServices = fileService;
-            _notificationService = notificationService;
         }
         public async Task<IEnumerable<VehicleDto>> GetAllVehicles()
         {
             var vehicles = await _context.Vehicles
+                .Include(v => v.Employee)
                 .Include(v => v.VehicleType)
                 .Include(v => v.VehicleModel)
-                .Include(v => v.Employee)
+                .ThenInclude(vm => vm.VehicleMake)
+                .Select (v => new VehicleDto
+                {
+                    Id = v.Id,
+                    RegistrationNumber = v.RegistrationNumber,
+                    ChassisNo = v.ChassisNo,
+                    Colour = v.Colour,
+                    Mileage = v.Mileage,
+                    CostPerDay = v.CostPerDay,
+                    Transmission = v.Transmission,
+                    CostPerExtraKM = v.CostPerExtraKM,
+                    Thumbnail = v.Thumbnail,
+                    FrontImg = v.FrontImg,
+                    RearImg = v.RearImg,
+                    DashboardImg = v.DashboardImg,
+                    InteriorImg = v.InteriorImg,
+                    Status = v.Status,
+                    Employee = v.Employee,
+                    VehicleType = v.VehicleType,
+                    VehicleModel = new VehicleModelMakeDto
+                    {
+                        Id = v.VehicleModel.Id,
+                        Name = v.VehicleModel.Name,
+                        EngineCapacity = v.VehicleModel.EngineCapacity,
+                        SeatingCapacity = v.VehicleModel.SeatingCapacity,
+                        Year = v.VehicleModel.Year,
+                        Fuel = v.VehicleModel.Fuel,
+                        VehicleMake = v.VehicleModel.VehicleMake
+                    },
+                })
                 .ToListAsync();
 
-            if (vehicles == null || !vehicles.Any())
-            {
-                throw new DataNotFoundException("No vehicles found");
-            }
-
-            var vehicleDtos = new List<VehicleDto>();
-            foreach (var vehicle in vehicles)
-            {
-                var vehicleType = await _vehicleTypeService.GetSingleVehicleType(vehicle.VehicleTypeId);
-                var vehicleModel = await _vehicleModelService.GetVehicleModel(vehicle.VehicleModelId);
-                var employee = await _employeeService.GetEmployee(vehicle.EmployeeId);
-
-                var vehicleDto = new VehicleDto
-                {
-                    Id = vehicle.Id,
-                    RegistrationNumber = vehicle.RegistrationNumber,
-                    ChassisNo = vehicle.ChassisNo,
-                    Colour = vehicle.Colour,
-                    Mileage = vehicle.Mileage,
-                    CostPerDay = vehicle.CostPerDay,
-                    Transmission = vehicle.Transmission,
-                    CostPerExtraKM = vehicle.CostPerExtraKM,
-                    Thumbnail = vehicle.Thumbnail,
-                    FrontImg = vehicle.FrontImg,
-                    RearImg = vehicle.RearImg,
-                    DashboardImg = vehicle.DashboardImg,
-                    InteriorImg = vehicle.InteriorImg,
-                    Status = vehicle.Status,
-                    VehicleType = vehicleType,
-                    VehicleModel = vehicleModel,
-                    Employee = employee
-                };
-                vehicleDtos.Add(vehicleDto);
-            }
-            return vehicleDtos;
+                return vehicles;
         }
 
         public async Task<VehicleDto> GetVehicle(int id)
         {
             var vehicle = await _context.Vehicles
+               .Include(v => v.Employee)
                 .Include(v => v.VehicleType)
                 .Include(v => v.VehicleModel)
-                .Include(v => v.Employee)
+                .ThenInclude(vm => vm.VehicleMake)
+                .Select(v => new VehicleDto
+                {
+                    Id = v.Id,
+                    RegistrationNumber = v.RegistrationNumber,
+                    ChassisNo = v.ChassisNo,
+                    Colour = v.Colour,
+                    Mileage = v.Mileage,
+                    CostPerDay = v.CostPerDay,
+                    Transmission = v.Transmission,
+                    CostPerExtraKM = v.CostPerExtraKM,
+                    Thumbnail = v.Thumbnail,
+                    FrontImg = v.FrontImg,
+                    RearImg = v.RearImg,
+                    DashboardImg = v.DashboardImg,
+                    InteriorImg = v.InteriorImg,
+                    Status = v.Status,
+                    Employee = v.Employee,
+                    VehicleType = v.VehicleType,
+                    VehicleModel = new VehicleModelMakeDto
+                    {
+                        Id = v.VehicleModel.Id,
+                        Name = v.VehicleModel.Name,
+                        EngineCapacity = v.VehicleModel.EngineCapacity,
+                        SeatingCapacity = v.VehicleModel.SeatingCapacity,
+                        Year = v.VehicleModel.Year,
+                        Fuel = v.VehicleModel.Fuel,
+                        VehicleMake = v.VehicleModel.VehicleMake
+                    },
+                })
                 .FirstOrDefaultAsync(v => v.Id == id);
 
-            if (vehicle == null)
-            {
-                throw new DataNotFoundException("Vehicle not found");
-            }
-            var vehicleDto = new VehicleDto
-            {
-                Id = vehicle.Id,
-                RegistrationNumber = vehicle.RegistrationNumber,
-                ChassisNo = vehicle.ChassisNo,
-                Colour = vehicle.Colour,
-                Mileage = vehicle.Mileage,
-                CostPerDay = vehicle.CostPerDay,
-                Transmission = vehicle.Transmission,
-                CostPerExtraKM = vehicle.CostPerExtraKM,
-                Thumbnail = vehicle.Thumbnail,
-                FrontImg = vehicle.FrontImg,
-                RearImg = vehicle.RearImg,
-                DashboardImg = vehicle.DashboardImg,
-                InteriorImg = vehicle.InteriorImg,
-                Status = vehicle.Status,
-                VehicleType = await _vehicleTypeService.GetSingleVehicleType(vehicle.VehicleTypeId),
-                VehicleModel = await _vehicleModelService.GetVehicleModel(vehicle.VehicleModelId),
-                Employee = await _employeeService.GetEmployee(vehicle.EmployeeId)
-            };
-            return vehicleDto;
+                 return vehicle;
         }
         public async Task<Vehicle> CreateVehicle([FromForm] CreateVehicleDto createVehicleDto,IFormFile formFile,IFormFile front,IFormFile rear,IFormFile dashboard, IFormFile interior)
         {
@@ -172,17 +172,6 @@ namespace reservation_system_be.Services.VehicleServices
 
             _context.Vehicles.Add(vehicle);
             await _context.SaveChangesAsync();
-
-            // Trigger notification creation
-            var notification = new Notification
-            {
-                Type = "Insurance",
-                Title = "New Vehicle Created",
-                Description = $"Vehicle {vehicle.RegistrationNumber} currently does not have insurance coverage for the rest of {DateTime.Now.Year}.",
-                Generated_DateTime = DateTime.Now,
-                VehicleInsuranceID = null
-            };
-            await _notificationService.AddNotification(notification);
 
             return vehicle;
         }

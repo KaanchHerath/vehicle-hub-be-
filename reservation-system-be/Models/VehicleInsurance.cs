@@ -13,7 +13,6 @@ namespace reservation_system_be.Models
 
         [ForeignKey("VehicleId")]
         public int VehicleId { get; set; }
-        [JsonIgnore]
         public Vehicle? Vehicle { get; set; }
         public bool Status
             {

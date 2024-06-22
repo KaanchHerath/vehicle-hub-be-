@@ -18,74 +18,61 @@ namespace reservation_system_be.Services.VehicleModelServices
             _vehicleMakeService = vehicleMakeService;
         }
 
-        public async Task<IEnumerable<VehicleModelDto>> GetAllVehicleModels()
+        public async Task<IEnumerable<VehicleModelMakeDto>> GetAllVehicleModels()
         {
             var vehicleModels = await _context.VehicleModels
             .Include(v => v.VehicleMake)
+            .Select(v => new VehicleModelMakeDto
+            {
+                Id = v.Id,
+                Name = v.Name,
+                VehicleMake = v.VehicleMake,
+                Year = v.Year,
+                EngineCapacity = v.EngineCapacity,
+                SeatingCapacity = v.SeatingCapacity,
+                Fuel = v.Fuel
+            })
             .ToListAsync();
 
-            if (vehicleModels == null || !vehicleModels.Any())
-            {
-                throw new DataNotFoundException("No vehicle models found");
-            }
-
-            var  vehicleModelDtos = new List<VehicleModelDto>();
-
-            foreach (var vehicleModel in vehicleModels)
-            {
-                var vehicleMake = await _vehicleMakeService.GetVehicleMake(vehicleModel.VehicleMakeId);
-
-                var vehicleModelDto = new VehicleModelDto
-                {
-                    Id = vehicleModel.Id,
-                    Name = vehicleModel.Name,
-                    VehicleMake = vehicleMake,
-                    Year = vehicleModel.Year,
-                    EngineCapacity = vehicleModel.EngineCapacity,
-                    SeatingCapacity = vehicleModel.SeatingCapacity,
-                    Fuel = vehicleModel.Fuel
-                };
-
-                vehicleModelDtos.Add(vehicleModelDto);
-            }
-
-            return vehicleModelDtos;
+            return vehicleModels;
         }
 
-        public async Task<VehicleModelDto> GetVehicleModel(int id)
+        public async Task<VehicleModelMakeDto> GetVehicleModel(int id)
         {
             var vehicleModel = await _context.VehicleModels
             .Include(v => v.VehicleMake)
+            .Select (v => new VehicleModelMakeDto
+            {
+                Id = v.Id,
+                Name = v.Name,
+                VehicleMake = v.VehicleMake,
+                Year = v.Year,
+                EngineCapacity = v.EngineCapacity,
+                SeatingCapacity = v.SeatingCapacity,
+                Fuel = v.Fuel
+            })
             .FirstOrDefaultAsync(v => v.Id==id);
 
-            if (vehicleModel == null)
-            {
-                throw new DataNotFoundException("Vehicle model not found");
-            }
-
-            var vehicleModelDto = new VehicleModelDto
-            {
-                Id = vehicleModel.Id,
-                Name = vehicleModel.Name,
-                VehicleMake = await _vehicleMakeService.GetVehicleMake(vehicleModel.VehicleMakeId),
-                Year = vehicleModel.Year,
-                EngineCapacity = vehicleModel.EngineCapacity,
-                SeatingCapacity = vehicleModel.SeatingCapacity,
-                Fuel = vehicleModel.Fuel
-
-            };
-
-            return vehicleModelDto;
+           return vehicleModel;
         }
 
-        public async Task<VehicleModel> CreateVehicleModel(VehicleModel vehicleModel)
+        public async Task<VehicleModel> CreateVehicleModel(CreateVehicleModelDto createVehicleModelDto)
         {
+            var vehicleModel = new VehicleModel
+            {
+                Name = createVehicleModelDto.Name,
+                VehicleMakeId = createVehicleModelDto.VehicleMakeId,
+                Year = createVehicleModelDto.Year,
+                EngineCapacity = createVehicleModelDto.EngineCapacity,
+                SeatingCapacity = createVehicleModelDto.SeatingCapacity,
+                Fuel = createVehicleModelDto.Fuel
+            };
             _context.VehicleModels.Add(vehicleModel);
             await _context.SaveChangesAsync();
             return vehicleModel;
         }
 
-        public async Task<VehicleModel> UpdateVehicleModel(int id, VehicleModel vehicleModel)
+        public async Task<VehicleModel> UpdateVehicleModel(int id, CreateVehicleModelDto vehicleModel)
         {
             var existingVehicleModel = await _context.VehicleModels.FindAsync(id);
             if (existingVehicleModel == null)

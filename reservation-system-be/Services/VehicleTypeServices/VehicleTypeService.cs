@@ -14,7 +14,9 @@ namespace reservation_system_be.Services.VehicleTypeServices
         }
         public async Task<List<VehicleType>> GetAllVehicleTypes()
         {
-            return await _context.VehicleTypes.ToListAsync();
+            var types = await _context.VehicleTypes.ToListAsync();
+            types = types.OrderByDescending(t => t.Id).ToList();
+            return types;
         }
 
         public async Task<VehicleType?> GetSingleVehicleType(int id)

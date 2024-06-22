@@ -56,14 +56,13 @@ namespace reservation_system_be.Services.VehicleMaintenanceDueService
                             Title = "Vehicle Service Maintenance Due",
                             Description = $"Vehicle {vehicle.RegistrationNumber} is due for Service.",
                             Generated_DateTime = DateTime.Now,
-                            VehicleMaintenanceId = lastService.Id
                         };
 
-                        if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastService.Id))
+                        /*if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastService.Id))
                         {
                             continue;
                         }
-                        await notificationService.AddNotification(notification);
+                        await notificationService.AddNotification(notification);*/
                     }
                 }
                 foreach (var vehicle in vehicles)
@@ -81,7 +80,6 @@ namespace reservation_system_be.Services.VehicleMaintenanceDueService
                             Title = "Vehicle Break Pad Replacement Maintenance Due",
                             Description = $"Vehicle {vehicle.RegistrationNumber} is due for Brake Pad Replacement Maintenance.",
                             Generated_DateTime = DateTime.Now,
-                            VehicleMaintenanceId = lastBrakePadReplacement.Id
                         };
 
                         /*if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastBrakePadReplacement.Id))

@@ -18,14 +18,14 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<List<IEnumerable<VehicleModelDto>>>> GetAllVehicleModels()
+        public async Task<ActionResult<List<IEnumerable<VehicleModelMakeDto>>>> GetAllVehicleModels()
         {
             var vehicleModels = await _vehicleModelService.GetAllVehicleModels();
             return Ok(vehicleModels);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<VehicleModelDto>> GetVehicleModel(int id)
+        public async Task<ActionResult<VehicleModelMakeDto>> GetVehicleModel(int id)
         {
             try
             {
@@ -39,14 +39,14 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VehicleModel>> CreateVehicleModel(VehicleModel vehicleModel)
+        public async Task<ActionResult<VehicleModel>> CreateVehicleModel(CreateVehicleModelDto vehicleModel)
         {
             var newVehicleModel = await _vehicleModelService.CreateVehicleModel(vehicleModel);
             return Ok(newVehicleModel);
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<VehicleModel>> UpdateVehicleModel(int id, VehicleModel vehicleModel)
+        public async Task<ActionResult<VehicleModel>> UpdateVehicleModel(int id, CreateVehicleModelDto vehicleModel)
         {
             try
             {

@@ -17,7 +17,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<VehicleModelDto>>> ViewVehicleModels()
+        public async Task<ActionResult<IEnumerable<CreateVehicleModelDto>>> ViewVehicleModels()
         {
             try
             {
@@ -45,7 +45,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult> CreateVehicleModel(CreateVehicleModelDto createVehicleModelDto)
+        public async Task<ActionResult> CreateVehicleModel(VehicleModelDto createVehicleModelDto)
         {
             try
             {
@@ -59,7 +59,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateVehicleModel(int id, CreateVehicleModelDto createVehicleModelDto)
+        public async Task<ActionResult> UpdateVehicleModel(int id, VehicleModelDto createVehicleModelDto)
         {
             try
             {

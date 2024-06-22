@@ -60,12 +60,11 @@ namespace reservation_system_be.Services.NewFolder
                         {
                             ToEmail = customerReservation.Result.Customer.Email,
                             Subject = "Pending Reservation has been cancelled",
-                            Body = $"Your reservation is pending for more than 3 days. Please pay the invoice to confirm the reservation."
+                            Body = $"Your reservation is pending for more than 3 days. Please note that the reservation will be cancelled."
                         };
                         await emailService.SendEmailAsync(mailRequest);
 
                         reservation.Status = Status.Cancelled;
-
                         await reservationService.UpdateReservation(reservation.Id, reservation);
                     }
                 }

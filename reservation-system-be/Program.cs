@@ -44,6 +44,7 @@ using reservation_system_be.Services.VehicleMaintenanceDueService;
 using reservation_system_be.Services.CheckCustomerReservationConflictsServices;
 using reservation_system_be.Services.NewFolder;
 using Microsoft.OpenApi.Models;
+using reservation_system_be.Services.AdminNotificationServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Google;
 
@@ -180,6 +181,7 @@ builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>(
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IVehicleFilterService, VehicleFilterService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<IAdminNotificationService, AdminNotificationService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IExternalLoginService, ExternalLoginService>();
 

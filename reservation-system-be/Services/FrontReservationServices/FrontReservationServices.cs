@@ -173,7 +173,7 @@ namespace reservation_system_be.Services.FrontReservationServices
                 var vehicleLog = await _context.VehicleLogs.FirstOrDefaultAsync(vl => vl.CustomerReservationId == id);
                 if (vehicleLog == null)
                 {
-                    throw new DataNotFoundException("No rental history found");
+                    throw new DataNotFoundException("No vehicle log found found");
                 }
                 extraKMCost = vehicleLog.ExtraKM * customerReservation.Vehicle.CostPerExtraKM;
                 penalty = vehicleLog.Penalty;
@@ -181,13 +181,17 @@ namespace reservation_system_be.Services.FrontReservationServices
                 var invoice = await _context.Invoices.Where(i => i.Type == "Final").FirstOrDefaultAsync(i => i.CustomerReservationId == id);
                 if (invoice == null)
                 {
-                    throw new DataNotFoundException("No rental history found");
+                    throw new DataNotFoundException("No final invoice found");
                 }
                 amount = invoice.Amount;
             }
             else if (customerReservation.Reservation.Status == Status.Cancelled)
             {
-                // Intentionally left blank for cancelled reservations
+                var invoice = await _context.Invoices.Where(i => i.Type == "Deposit").FirstOrDefaultAsync(i => i.CustomerReservationId == id);
+                if (invoice != null)
+                {
+                    amount = invoice.Amount;
+                }
             }
             else
             {
