@@ -388,7 +388,8 @@ namespace reservation_system_be.Services.AdminReservationServices
 
             customerReservation.VehicleId = vid;
 
-            await _customerReservationService.UpdateCustomerReservation(id, customerReservation);
+            _context.Entry(customerReservation).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
     }
 }
