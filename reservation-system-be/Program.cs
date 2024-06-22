@@ -44,6 +44,8 @@ using reservation_system_be.Services.VehicleMaintenanceDueService;
 using reservation_system_be.Services.CheckCustomerReservationConflictsServices;
 using reservation_system_be.Services.NewFolder;
 using Microsoft.OpenApi.Models;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.Google;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,6 +66,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Specify the secret key
         };
     });
+
+
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -177,7 +181,7 @@ builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IVehicleFilterService, VehicleFilterService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddHttpContextAccessor();
-
+builder.Services.AddScoped<IExternalLoginService, ExternalLoginService>();
 
 
 builder.Services.AddTransient<IEmailService, EmailService>();
