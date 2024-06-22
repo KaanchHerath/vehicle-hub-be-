@@ -11,6 +11,10 @@ using reservation_system_be.Models;
 using reservation_system_be.Services.CustomerServices;
 using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Helper;
+using Google.Apis.Auth.OAuth2.Flows;
+using Google.Apis.Auth.OAuth2;
+using Google.Apis.Oauth2.v2;
+using Google.Apis.Services;
 
 
 namespace reservation_system_be.Services.CustomerAuthServices
@@ -24,13 +28,15 @@ namespace reservation_system_be.Services.CustomerAuthServices
         private readonly IEmailService _emailService;
         private readonly IConfiguration _config;
         private readonly IHttpContextAccessor _httpContextAccessor;
-        public CustomerAuthService(DataContext context, ICustomerService customerService, IEmailService emailService, IConfiguration config, IHttpContextAccessor httpContextAccessor)
+        private readonly IExternalLoginService _externalLoginService;
+        public CustomerAuthService(DataContext context, ICustomerService customerService, IEmailService emailService, IConfiguration config, IHttpContextAccessor httpContextAccessor, IExternalLoginService externalLoginService)
         {
             _context = context;
             _customerService = customerService;
             _emailService = emailService;
             _config = config;
             _httpContextAccessor = httpContextAccessor;
+            _externalLoginService = externalLoginService;
         }
         public async Task<string> Register(CustomerAuthDTO customer)
         {
@@ -262,5 +268,9 @@ namespace reservation_system_be.Services.CustomerAuthServices
             customer.Status = false;
             await _customerService.UpdateCustomer(id, customer);
         }
+
+        
+        
+        
     }
 }
