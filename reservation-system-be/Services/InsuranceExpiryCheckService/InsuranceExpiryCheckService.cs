@@ -57,14 +57,13 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
                         Title = "Insurance Expiry",
                         Description = $"Insurance for vehicle {vehicle.RegistrationNumber} is expiring on {insurance.ExpiryDate.ToString("yyyy-MM-dd")}",
                         Generated_DateTime = DateTime.Now,
-                        VehicleInsuranceID = insurance.Id
                     };
 
-                    if(context.Notifications.Any(n => n.VehicleInsuranceID == insurance.Id))
+                    /*if(context.Notifications.Any(n => n.VehicleInsuranceID == insurance.Id))
                     {
                         continue;
                     }
-                    await notificationService.AddNotification(notification);
+                    await notificationService.AddNotification(notification);*/
                 }
 
                 var vehiclesWithoutInsurance = vehicles
@@ -79,7 +78,6 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
                         Title = "No Insurance",
                         Description = $"Vehicle {vehicle.RegistrationNumber} currently does not have insurance coverage for the rest of {DateTime.Now.Year}.",
                         Generated_DateTime = DateTime.Now,
-                        VehicleInsuranceID = null
                     };
 
                     if (context.Notifications.Any(n => n.Description == notification.Description))

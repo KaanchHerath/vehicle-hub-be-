@@ -35,6 +35,7 @@ namespace reservation_system_be.Services.CheckCustomerReservationConflictsServic
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
                 var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
                 var customerReservationService = scope.ServiceProvider.GetRequiredService<ICustomerReservationService>();
+                var vehicleService = scope.ServiceProvider.GetRequiredService<IVehicleService>();
 
 
                 var inactiveVehicles = context.Vehicles
@@ -44,16 +45,18 @@ namespace reservation_system_be.Services.CheckCustomerReservationConflictsServic
                 foreach (var vehicle in inactiveVehicles)
                 {
                     var customerReservations = context.CustomerReservations
-                        .Where(cr => cr.VehicleId == vehicle.Id && cr.Reservation.Status != Status.Cancelled)
+                        .Where(cr => cr.VehicleId == vehicle.Id && (cr.Reservation.Status != Status.Ongoing || cr.Reservation.Status != Status.Ended || 
+                                    cr.Reservation.Status != Status.Completed || cr.Reservation.Status != Status.Cancelled) && cr.Reservation.StartDate > DateTime.Now)
                         .ToList();
 
                     foreach (var customerReservation in customerReservations)
                     {
+                        var newVehicle = await vehicleService.GetVehicle(customerReservation.VehicleId);
                         var notification = new Notification
                         {
                             Type = "Reservation Conflicts",
                             Title = "Vehicle Unavailable",
-                            Description = $"The vehicle for the reservation {customerReservation.Id} with registration number {vehicle.RegistrationNumber} is currently unavailable ",
+                            Description = $"The vehicle for the reservation {customerReservation.Id} with registration number {newVehicle.VehicleModel.VehicleMake.Name} {newVehicle.VehicleModel.Name} is currently unavailable ",
                             Generated_DateTime = DateTime.Now,
                             CustomerReservationId = customerReservation.Id
                         };

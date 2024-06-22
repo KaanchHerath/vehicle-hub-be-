@@ -25,7 +25,6 @@ namespace reservation_system_be.Services.FeedbackServices
             {
                 var feedback = new Feedback
                 {
-                    Designation = feedbackRequest.Designation,
                     Type = "service",
                     Vehicle_Review = feedbackRequest.Vehicle_Review,
                     Service_Review = feedbackRequest.Service_Review,
