@@ -34,35 +34,53 @@ namespace reservation_system_be.Services.CustomerReservationService
         {
             var customerReservations = await _context.CustomerReservations
             .Include(cr => cr.Customer)
-            .Include(cr => cr.Vehicle)
             .Include(cr => cr.Reservation)
+            .Include(cr => cr.Vehicle)
+            .ThenInclude(v => v.VehicleType)
+            .Include(cr => cr.Vehicle)
+            .ThenInclude(v => v.VehicleModel)
+            .ThenInclude(vm => vm.VehicleMake)
+            .Include(cr => cr.Vehicle)
+            .ThenInclude(v => v.Employee)
+            .Select(cr => new CustomerReservationDto
+            {
+                Id = cr.Id,
+                Customer = cr.Customer,
+                Reservation = cr.Reservation,
+                Vehicle = new VehicleDto
+                {
+                    Id = cr.Vehicle.Id,
+                    RegistrationNumber = cr.Vehicle.RegistrationNumber,
+                    ChassisNo = cr.Vehicle.ChassisNo,
+                    Colour = cr.Vehicle.Colour,
+                    Mileage = cr.Vehicle.Mileage,
+                    CostPerDay = cr.Vehicle.CostPerDay,
+                    CostPerExtraKM = cr.Vehicle.CostPerExtraKM,
+                    Transmission = cr.Vehicle.Transmission,
+                    Thumbnail = cr.Vehicle.Thumbnail,
+                    FrontImg = cr.Vehicle.FrontImg,
+                    RearImg = cr.Vehicle.RearImg,
+                    DashboardImg = cr.Vehicle.DashboardImg,
+                    InteriorImg = cr.Vehicle.InteriorImg,
+                    Status = cr.Vehicle.Status,
+                    Employee = cr.Vehicle.Employee,
+                    VehicleType = cr.Vehicle.VehicleType,
+                    VehicleModel = new VehicleModelMakeDto
+                    {
+                        Id = cr.Vehicle.VehicleModel.Id,
+                        Name = cr.Vehicle.VehicleModel.Name,
+                        Year = cr.Vehicle.VehicleModel.Year,
+                        EngineCapacity = cr.Vehicle.VehicleModel.EngineCapacity,
+                        SeatingCapacity = cr.Vehicle.VehicleModel.SeatingCapacity,
+                        Fuel = cr.Vehicle.VehicleModel.Fuel,
+                        VehicleMake = cr.Vehicle.VehicleModel.VehicleMake
+                    },
+                },
+               
+            })
             .ToListAsync();
 
-            if (customerReservations == null || !customerReservations.Any())
-            {
-                throw new DataNotFoundException("No customer reservations found");
-            }
-
-            var customerReservationDtos = new List<CustomerReservationDto>();
-
-            foreach (var customerReservation in customerReservations)
-            {
-                var customerDto = await _customerService.GetCustomer(customerReservation.CustomerId);
-                var vehicleDto = await _vehicleService.GetVehicle(customerReservation.VehicleId);
-                var reservationDto = await _reservationService.GetReservation(customerReservation.ReservationId);
-
-                var customerReservationDto = new CustomerReservationDto
-                {
-                    Id = customerReservation.Id,
-                    Customer = customerDto,
-                    Vehicle = vehicleDto,
-                    Reservation = reservationDto
-                };
-
-                customerReservationDtos.Add(customerReservationDto);
-            }
-
-            return customerReservationDtos;
+            return customerReservations;
         }
 
 
@@ -70,26 +88,54 @@ namespace reservation_system_be.Services.CustomerReservationService
         public async Task<CustomerReservationDto> GetCustomerReservation(int id)
         {
             var customerReservation = await _context.CustomerReservations
-                .Include(cr => cr.Customer)
-                .Include(cr => cr.Vehicle)
-                .Include(cr => cr.Reservation)
+            .Include(cr => cr.Customer)
+            .Include(cr => cr.Reservation)
+            .Include(cr => cr.Vehicle)
+            .ThenInclude(v => v.VehicleType)
+            .Include(cr => cr.Vehicle)
+            .ThenInclude(v => v.VehicleModel)
+            .ThenInclude(vm => vm.VehicleMake)
+            .Include(cr => cr.Vehicle)
+            .ThenInclude(v => v.Employee)
+            .Select(cr => new CustomerReservationDto
+            {
+                Id = cr.Id,
+                Customer = cr.Customer,
+                Reservation = cr.Reservation,
+                Vehicle = new VehicleDto
+                {
+                    Id = cr.Vehicle.Id,
+                    RegistrationNumber = cr.Vehicle.RegistrationNumber,
+                    ChassisNo = cr.Vehicle.ChassisNo,
+                    Colour = cr.Vehicle.Colour,
+                    Mileage = cr.Vehicle.Mileage,
+                    CostPerDay = cr.Vehicle.CostPerDay,
+                    CostPerExtraKM = cr.Vehicle.CostPerExtraKM,
+                    Transmission = cr.Vehicle.Transmission,
+                    Thumbnail = cr.Vehicle.Thumbnail,
+                    FrontImg = cr.Vehicle.FrontImg,
+                    RearImg = cr.Vehicle.RearImg,
+                    DashboardImg = cr.Vehicle.DashboardImg,
+                    InteriorImg = cr.Vehicle.InteriorImg,
+                    Status = cr.Vehicle.Status,
+                    Employee = cr.Vehicle.Employee,
+                    VehicleType = cr.Vehicle.VehicleType,
+                    VehicleModel = new VehicleModelMakeDto
+                    {
+                        Id = cr.Vehicle.VehicleModel.Id,
+                        Name = cr.Vehicle.VehicleModel.Name,
+                        Year = cr.Vehicle.VehicleModel.Year,
+                        EngineCapacity = cr.Vehicle.VehicleModel.EngineCapacity,
+                        SeatingCapacity = cr.Vehicle.VehicleModel.SeatingCapacity,
+                        Fuel = cr.Vehicle.VehicleModel.Fuel,
+                        VehicleMake = cr.Vehicle.VehicleModel.VehicleMake
+                    },
+                },
+
+            })
                 .FirstOrDefaultAsync(cr => cr.Id == id);
-                
 
-            if (customerReservation == null)
-            {
-                throw new DataNotFoundException("Customer Reservation not found");
-            }
-
-            var customerReservationDto = new CustomerReservationDto
-            {
-                Id = customerReservation.Id,
-                Customer = await _customerService.GetCustomer(customerReservation.CustomerId),
-                Vehicle = await _vehicleService.GetVehicle(customerReservation.VehicleId),
-                Reservation = await _reservationService.GetReservation(customerReservation.ReservationId)
-            };
-
-            return customerReservationDto;
+            return customerReservation;
         }
 
         public async Task<CustomerReservation> CreateCustomerReservation(CreateCustomerReservationDto customerReservationDto)
@@ -107,7 +153,7 @@ namespace reservation_system_be.Services.CustomerReservationService
             return customerReservation;
         }
 
-        public async Task<CustomerReservation> UpdateCustomerReservation(int id, CustomerReservation customerReservation)
+        public async Task<CustomerReservation> UpdateCustomerReservation(int id, CreateCustomerReservationDto customerReservation)
         {
             var existingCustomerReservation = await _context.CustomerReservations.FindAsync(id);
             if (existingCustomerReservation == null)
