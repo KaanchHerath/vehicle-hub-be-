@@ -20,15 +20,16 @@ namespace reservation_system_be.Services.EmployeeAuthService
         private readonly IConfiguration _config;
         private readonly IEmployeeService _employeeService;
         private readonly IEmailService _emailService;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-
-        public EmployeeAuthService(DataContext context, IConfiguration config, IEmployeeService employeeService, IEmailService emailService)
+        public EmployeeAuthService(DataContext context, IConfiguration config, IEmployeeService employeeService, IEmailService emailService, IHttpContextAccessor httpContextAccessor)
         {
 
             _context = context;
             _config = config;
             _employeeService = employeeService;
             _emailService = emailService;
+            _httpContextAccessor = httpContextAccessor;
         }
         public async Task<string> Register(Employee employee)
         {
@@ -132,6 +133,11 @@ namespace reservation_system_be.Services.EmployeeAuthService
             {
                 roles.Add("admin");
             }
+
+            if (user.Role == "Staff")
+            {
+                roles.Add("staff");
+            }
             // Add more roles as needed based on your application's logic
 
             return roles;
@@ -152,9 +158,12 @@ namespace reservation_system_be.Services.EmployeeAuthService
             };
 
             // Add roles to claims if roles are provided
-            if (roles != null)
+            if (roles != null && roles.Any())
             {
-                claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+                foreach (var role in roles)
+                {
+                    claims.Add(new Claim(ClaimTypes.Role, role)); // Add each role as a separate claim
+                }
             }
 
             var token = new JwtSecurityToken(
@@ -167,26 +176,33 @@ namespace reservation_system_be.Services.EmployeeAuthService
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
 
-        public async Task<string> ResetPassword(EmployeePasswordDTO employee)
+        public async Task<string> ResetPassword(EmployeePasswordDTO employeePasswordDTO)
         {
-            var user = await _context.Employees.FirstOrDefaultAsync(u => u.Email == employee.Email);
+            var user = await _context.Employees.FindAsync(employeePasswordDTO.Id);
             if (user == null)
             {
-                throw new InvalidOperationException("User with the provided email not found");
+                throw new InvalidOperationException("User with the provided ID not found");
             }
 
             // Verify current password
-            if (!BCrypt.Net.BCrypt.Verify(employee.CurrentPassword, user.Password))
+            if (!BCrypt.Net.BCrypt.Verify(employeePasswordDTO.CurrentPassword, user.Password))
             {
                 throw new InvalidOperationException("Current password is incorrect");
             }
 
             // Update the password
-            user.Password = BCrypt.Net.BCrypt.HashPassword(employee.NewPassword);
+            user.Password = BCrypt.Net.BCrypt.HashPassword(employeePasswordDTO.NewPassword);
             _context.Employees.Update(user);
             await _context.SaveChangesAsync();
 
             return "Password has been reset successfully";
+        }
+
+        public string Logout()
+        {
+            // Clear the user's session data
+            _httpContextAccessor.HttpContext?.Session.Clear();
+            return "Logged out successfully!";
         }
 
     }

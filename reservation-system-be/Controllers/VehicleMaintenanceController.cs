@@ -39,14 +39,21 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<VehicleMaintenance>> CreateVehicleMaintenance(VehicleMaintenance vehicleMaintenance)
+        public async Task<ActionResult<VehicleMaintenance>> CreateVehicleMaintenance(CreateVehicleMaintenanceDto createVehicleMaintenanceDto)
         {
-            var newVehicleMaintenance = await _vehicleMaintenanceService.CreateVehicleMaintenance(vehicleMaintenance);
-            return CreatedAtAction(nameof(GetVehicleMaintenance), new { id = newVehicleMaintenance.Id }, newVehicleMaintenance);
+            try
+            {
+                var newVehicleMaintenance = await _vehicleMaintenanceService.CreateVehicleMaintenance(createVehicleMaintenanceDto);
+                return Ok(newVehicleMaintenance);
+            }
+            catch (DataNotFoundException)
+            {
+                return NotFound();
+            }
         }
 
         [HttpPut("{id}")]
-        public async Task<ActionResult<VehicleMaintenance>> UpdateVehicleMaintenance(int id, VehicleMaintenance vehicleMaintenance)
+        public async Task<ActionResult<VehicleMaintenance>> UpdateVehicleMaintenance(int id, CreateVehicleMaintenanceDto vehicleMaintenance)
         {
             try
             {

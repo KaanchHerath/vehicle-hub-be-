@@ -44,6 +44,9 @@ using reservation_system_be.Services.VehicleMaintenanceDueService;
 using reservation_system_be.Services.CheckCustomerReservationConflictsServices;
 using reservation_system_be.Services.NewFolder;
 using Microsoft.OpenApi.Models;
+using reservation_system_be.Services.AdminNotificationServices;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.Google;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -64,6 +67,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Specify the secret key
         };
     });
+
+
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -99,6 +104,8 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddAuthorization(options =>
 {
     options.AddPolicy("AdminOnly", policy => policy.RequireRole("admin"));
+    options.AddPolicy("CustomerOnly", policy => policy.RequireRole("customer"));
+    options.AddPolicy("AdminAndStaffOnly", policy => policy.RequireRole("admin", "staff"));
 });
 
 
@@ -130,6 +137,16 @@ builder.Services.AddScoped(_ =>
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Add session services
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 
 //Injection List
@@ -164,6 +181,9 @@ builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>(
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IVehicleFilterService, VehicleFilterService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<IAdminNotificationService, AdminNotificationService>();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IExternalLoginService, ExternalLoginService>();
 
 
 builder.Services.AddTransient<IEmailService, EmailService>();
@@ -193,6 +213,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -204,13 +225,12 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-
+app.UseSession();
 
 // Use CORS policy
 app.UseCors("AllowSpecificOrigin");
 
 app.UseAuthentication();
-
 app.UseAuthorization();
 
 app.MapControllers();
