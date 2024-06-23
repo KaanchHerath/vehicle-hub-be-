@@ -9,6 +9,7 @@ using reservation_system_be.Services.CustomerReservationService;
 using reservation_system_be.Services.CustomerServices;
 using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Services.InvoiceService;
+using reservation_system_be.Services.ReservationService;
 using reservation_system_be.Services.VehicleServices;
 
 namespace reservation_system_be.Services.FrontReservationServices
@@ -21,8 +22,9 @@ namespace reservation_system_be.Services.FrontReservationServices
         private readonly ICustomerService _customerService;
         private readonly IInvoiceService _invoiceService;
         private readonly IVehicleService _vehicleService;
+        private readonly IReservationService _reservationService;
         public FrontReservationServices(DataContext context, ICustomerReservationService customerReservationService, IEmailService emailService,
-            ICustomerService customerService, IInvoiceService invoiceService, IVehicleService vehicleService)
+            ICustomerService customerService, IInvoiceService invoiceService, IVehicleService vehicleService, IReservationService reservationService)
         {
             _context = context;
             _customerReservationService = customerReservationService;
@@ -30,6 +32,7 @@ namespace reservation_system_be.Services.FrontReservationServices
             _customerService = customerService;
             _invoiceService = invoiceService;
             _vehicleService = vehicleService;
+            _reservationService = reservationService;
         }
 
         public async Task<CustomerReservation> RequestReservations(CreateCustomerReservationDto customerReservationDto)
@@ -279,5 +282,15 @@ namespace reservation_system_be.Services.FrontReservationServices
 
             return detailCarDto;
         }
+
+        public async Task CancelReservation(int id)
+        {
+            var customerReservation = await _customerReservationService.GetCustomerReservation(id);
+
+            customerReservation.Reservation.Status = Status.Cancelled;
+
+            await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
+        }
     }
+}
 }
