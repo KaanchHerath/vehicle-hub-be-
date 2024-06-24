@@ -146,9 +146,25 @@ namespace reservation_system_be.Controllers
             }
         }
 
-       
+        [HttpPost("reactivate/{id}")]
+        public async Task<IActionResult> ReactivateCustomer(int id)
+        {
+            try
+            {
+                await _customerAuthService.ReactivateCustomer(id);
+                return Ok(new { message = "Customer Reactivated successfully" });
+            }
+            catch (DataNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
 
-        
+
 
 
 
