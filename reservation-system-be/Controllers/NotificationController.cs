@@ -62,5 +62,33 @@ namespace reservation_system_be.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpDelete("DeleteNotification")]
+        public async Task<ActionResult<bool>> DeleteNotification(int notificationId)
+        {
+            try
+            {
+                bool isDeleted = await _notificationService.DeleteNotification(notificationId);
+                return Ok(isDeleted);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("MarkAsRead")]
+        public async Task<ActionResult<bool>> MarkAsRead(int notificationid)
+        {
+            try
+            {
+                bool isUpdated = await _notificationService.MarkAsRead(notificationid);
+                return Ok(isUpdated);
+            }
+            catch  (Exception ex)
+            {
+                return BadRequest(ex.Message); 
+            }
+        }
     }
 }
