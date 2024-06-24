@@ -71,5 +71,13 @@ namespace reservation_system_be.Controllers
 
             return Ok(detailCar);
         }
+
+        [HttpPost("cancel-reservation/{id}")]
+        public async Task<IActionResult> CancelReservation(int id)
+        {
+            await _frontReservationServices.CancelReservation(id);
+
+            return Ok();
+        }
     }
 }

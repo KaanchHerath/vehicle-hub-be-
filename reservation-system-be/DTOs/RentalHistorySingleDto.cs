@@ -5,6 +5,7 @@ namespace reservation_system_be.DTOs
     public record struct RentalHistorySingleDto
     (
         int CustomerReservationId,
+        int VehicleId,
         string ModelName,
         string Make,
         DateTime StartDate,

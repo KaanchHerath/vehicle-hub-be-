@@ -31,6 +31,30 @@ namespace reservation_system_be.Services.EmployeeAuthService
             _emailService = emailService;
             _httpContextAccessor = httpContextAccessor;
         }
+
+        private string WelcomeMail(string employeeEmail, string resetLink)
+        {
+            string response = "<div style=\"width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;\">";
+            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;\">";
+            response += "<h1>VehicleHub</h1>";
+            response += "</div>";
+            response += "<div style=\"margin:20px;text-align:left;\">";
+            response += "<img src=\"https://drive.google.com/uc?export=view&id=1S40qYUDb_f9YRAaQeQmPETz5ABYbI32p\" alt=\"Company Logo\" style=\"width:150px;height:auto;display:block;margin:auto;\"/>";
+            response += "<h2 style=\"text-align:center;\">Welcome to Vehicle Hub!</h2>";
+            response += "<p>Thank you for working with our company. You are now an employee of Vehicle Hub.</p>";
+            response += "<p>Your default password is: <strong>NavodhVehicleHub789</strong>.</p>";
+            response += $"<p>Please <a href='{resetLink}'>click here</a> and login to reset your password immediately.</p>";
+            response += "<p style=\"margin-top:20px;\">We appreciate your commitment and look forward to working with you.</p>";
+            response += "<p>Best regards,</p>";
+            response += "<p><strong>VehicleHub Team</strong></p>";
+            response += "</div>";
+            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;margin-top:20px;text-align:center;\">";
+            response += "<p>Contact us: info@vehiclehub.com | (123) 456-7890</p>";
+            response += "<p>1234 Main St, Anytown, USA</p>";
+            response += "</div>";
+            response += "</div>";
+            return response;
+        }
         public async Task<string> Register(Employee employee)
         {
             const string defaultPassword = "NavodhVehicleHub789"; // Define a default password
@@ -55,17 +79,14 @@ namespace reservation_system_be.Services.EmployeeAuthService
 
             // Generate password reset token
             var token = GeneratePasswordResetToken(employee);
-            var resetLink = $"http://localhost:3000/reset-password?userId={employee.Id}&token={token}";
+            var resetLink = $"http://localhost:3000/admin-login";
 
 
             MailRequest mailRequest = new MailRequest
             {
                 ToEmail = employee.Email,
                 Subject = "Welcome to Vehicle Hub",
-                Body = "<h1>Welcome!</h1> <br> <p>Thank you for registering with our service. " +
-                "You are now an employee of Vehicle Hub. " +
-                "Your default password is: <strong>{NavodhVehicleHub789}</strong>. " +
-                $"Please <a href='{resetLink}'>click here</a> to reset your password immediately.</p>"
+                Body = WelcomeMail(employee.Email, resetLink)
             };
 
             await _emailService.SendEmailAsync(mailRequest);
@@ -205,5 +226,17 @@ namespace reservation_system_be.Services.EmployeeAuthService
             return "Logged out successfully!";
         }
 
+        public async Task DeactivateEmployee(int id)
+        {
+            var employee = await _employeeService.GetEmployeeById(id);
+            if (employee == null)
+            {
+                throw new DataNotFoundException("Customer not found");
+            }
+
+            // Set status to inactive instead of deleting the record
+            employee.Status = false;
+            await _employeeService.UpdateEmployee(id, employee);
+        }
     }
 }

@@ -71,5 +71,12 @@ namespace reservation_system_be.Controllers
             await _adminReservationService.CancelReservation(id, eid);
             return Ok();
         }
+
+        [HttpGet("Customer-Details/{id}")]
+        public async Task<IActionResult> CustomerDetails(int id)
+        {
+            var customer = await _adminReservationService.CustomerDetails(id);
+            return Ok(customer);
+        }
     }
 }

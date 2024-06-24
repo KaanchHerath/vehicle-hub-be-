@@ -269,8 +269,19 @@ namespace reservation_system_be.Services.CustomerAuthServices
             await _customerService.UpdateCustomer(id, customer);
         }
 
-        
-        
-        
+        public async Task ReactivateCustomer(int id)
+        {
+            var customer = await _customerService.GetCustomerById(id);
+            if (customer == null)
+            {
+                throw new DataNotFoundException("Customer not found");
+            }
+
+            // Set status to inactive instead of deleting the record
+            customer.Status = true;
+            await _customerService.UpdateCustomer(id, customer);
+        }
+
+
     }
 }
