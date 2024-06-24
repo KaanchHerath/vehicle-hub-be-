@@ -195,7 +195,7 @@ builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddHostedService<InsuranceExpiryCheckService>();
 
 // The maintenance due check service
-builder.Services.AddHostedService<VehicleMaintenanceDueService>();
+//builder.Services.AddHostedService<VehicleMaintenanceDueService>();
 
 // The customer reservation conflict service
 builder.Services.AddHostedService<CheckCustomerReservationConflictsService>();

@@ -6,7 +6,7 @@ using reservation_system_be.Services.VehicleServices;
 
 namespace reservation_system_be.Services.VehicleMaintenanceDueService
 {
-    public class VehicleMaintenanceDueService: IHostedService, IDisposable
+    /*public class VehicleMaintenanceDueService: IHostedService, IDisposable
     {
         private readonly ILogger<VehicleMaintenanceDueService> _logger;
         public readonly IServiceProvider _serviceProvider;
@@ -58,11 +58,11 @@ namespace reservation_system_be.Services.VehicleMaintenanceDueService
                             Generated_DateTime = DateTime.Now,
                         };
 
-                        /*if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastService.Id))
+                        if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastService.Id))
                         {
                             continue;
                         }
-                        await notificationService.AddNotification(notification);*/
+                        await notificationService.AddNotification(notification);
                     }
                 }
                 foreach (var vehicle in vehicles)
@@ -82,11 +82,11 @@ namespace reservation_system_be.Services.VehicleMaintenanceDueService
                             Generated_DateTime = DateTime.Now,
                         };
 
-                        /*if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastBrakePadReplacement.Id))
+                        if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastBrakePadReplacement.Id))
                         {
                             continue;
                         }
-                        await notificationService.AddNotification(notification);*/
+                        await notificationService.AddNotification(notification);
                     }    
                 }
             }
@@ -101,5 +101,5 @@ namespace reservation_system_be.Services.VehicleMaintenanceDueService
         {
             _timer?.Change(Timeout.Infinite, 0);
         }
-    }
+    }*/
 }
