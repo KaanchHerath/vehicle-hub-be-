@@ -118,6 +118,7 @@ namespace reservation_system_be.Services.FrontReservationServices
             var ongoingRentalSingle = new OngoingRentalSingleDto
             {
                 CustomerReservationId = customerReservation.Id,
+                VehicleId = customerReservation.Vehicle.Id,
                 ModelName = customerReservation.Vehicle.VehicleModel.Name,
                 Make = customerReservation.Vehicle.VehicleModel.VehicleMake.Name,
                 StartDate = customerReservation.Reservation.StartDate,
@@ -204,6 +205,7 @@ namespace reservation_system_be.Services.FrontReservationServices
             var rentalHistorySingle = new RentalHistorySingleDto
             {
                 CustomerReservationId = customerReservation.Id,
+                VehicleId = customerReservation.Vehicle.Id,
                 ModelName = customerReservation.Vehicle.VehicleModel.Name,
                 Make = customerReservation.Vehicle.VehicleModel.VehicleMake.Name,
                 StartDate = customerReservation.Reservation.StartDate,
@@ -293,4 +295,4 @@ namespace reservation_system_be.Services.FrontReservationServices
         }
     }
 }
-}
+
