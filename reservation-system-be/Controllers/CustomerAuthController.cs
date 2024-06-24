@@ -11,6 +11,9 @@ using System.Text;
 using reservation_system_be.Services.CustomerAuthServices;
 using reservation_system_be.DTOs;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Azure;
 
 namespace reservation_system_be.Controllers
 {
@@ -125,7 +128,7 @@ namespace reservation_system_be.Controllers
             return Ok(result);
         }
 
-        [HttpPut("deactivate/{id}")]
+        [HttpPost("deactivate/{id}")]
         public async Task<IActionResult> DeactivateCustomer(int id)
         {
             try
@@ -142,6 +145,13 @@ namespace reservation_system_be.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+
+       
+
+        
+
+
+
     }
 
 

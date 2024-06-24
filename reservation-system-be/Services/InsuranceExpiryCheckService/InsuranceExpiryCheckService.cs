@@ -59,7 +59,7 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
                         Generated_DateTime = DateTime.Now,
                     };
 
-                    /*if(context.Notifications.Any(n => n.VehicleInsuranceID == insurance.Id))
+                   /* if(context.Notifications.Any(n => n.VehicleInsuranceID == insurance.Id))
                     {
                         continue;
                     }
