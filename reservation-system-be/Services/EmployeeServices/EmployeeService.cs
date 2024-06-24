@@ -88,7 +88,10 @@ namespace reservation_system_be.Services.EmployeeServices
 
             }
 
-            
+        public async Task<Employee> GetEmployeeById(int id)
+        {
+            return await _context.Employees.FindAsync(id);
         }
+    }
     }   
 
