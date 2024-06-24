@@ -76,8 +76,8 @@ namespace reservation_system_be.Controllers
         {
             try
             {
-                await _adminVehicleService.GetVehicleHover(regNo);
-                return Ok();
+                var vehicleHover = await _adminVehicleService.GetVehicleHover(regNo);
+                return Ok(vehicleHover);
             }
             catch (DataNotFoundException e)
             {
