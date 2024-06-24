@@ -187,7 +187,7 @@ builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IExternalLoginService, ExternalLoginService>();
 builder.Services.AddScoped<IBillingDetailsService, BillingDetailsService>();
 
-
+builder.Services.AddHttpClient();
 builder.Services.AddTransient<IEmailService, EmailService>();
 
 
