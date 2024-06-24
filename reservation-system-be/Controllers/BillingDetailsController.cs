@@ -32,5 +32,16 @@ namespace reservation_system_be.Controllers
             }
             return Ok(billingDetail);
         }
+
+        [HttpGet("ByCustomer/{customerId}")]
+        public async Task<IActionResult> GetByCustomerId(int customerId)
+        {
+            var billingDetails = await _billingDetailsService.GetBillingDetailsByCustomerIdAsync(customerId);
+            if (billingDetails == null || !billingDetails.Any())
+            {
+                return NotFound($"No billing details found for CustomerId: {customerId}");
+            }
+            return Ok(billingDetails);
+        }
     }
 }

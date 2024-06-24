@@ -8,5 +8,6 @@ namespace reservation_system_be.Services.BillingDetailsServices
     {
         Task<IEnumerable<BillingDetailsDTO>> GetAllBillingDetailsAsync();
         Task<BillingDetailsDTO?> GetBillingDetailByIdAsync(int id);
+        Task<IEnumerable<BillingDetailsDTO>> GetBillingDetailsByCustomerIdAsync(int customerId);
     }
 }

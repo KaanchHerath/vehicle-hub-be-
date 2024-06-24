@@ -11,7 +11,7 @@ namespace reservation_system_be.Services.BillingDetailsServices
 {
     public class BillingDetailsService : IBillingDetailsService
     {
-        private readonly DataContext  _context;
+        private readonly DataContext _context;
 
         public BillingDetailsService(DataContext context)
         {
@@ -59,6 +59,28 @@ namespace reservation_system_be.Services.BillingDetailsServices
                     invoice.CustomerReservation.Vehicle.RegistrationNumber
                 ))
                 .FirstOrDefaultAsync();
+        }
+
+        public async Task<IEnumerable<BillingDetailsDTO>> GetBillingDetailsByCustomerIdAsync(int customerId)
+        {
+            return await _context.Invoices
+                .Include(invoice => invoice.CustomerReservation)
+                    .ThenInclude(cr => cr.Customer)
+                .Include(invoice => invoice.CustomerReservation)
+                    .ThenInclude(cr => cr.Reservation)
+                .Include(invoice => invoice.CustomerReservation)
+                    .ThenInclude(cr => cr.Vehicle)
+                .Where(invoice => invoice.CustomerReservation.CustomerId == customerId)
+                .Select(invoice => new BillingDetailsDTO(
+                    invoice.Id,
+                    invoice.Amount,
+                    invoice.DateCreated,
+                    invoice.CustomerReservation.Reservation.Status,
+                    invoice.CustomerReservation.CustomerId,
+                    invoice.CustomerReservation.Customer.Name,
+                    invoice.CustomerReservation.Vehicle.RegistrationNumber
+                ))
+                .ToListAsync();
         }
     }
 }
