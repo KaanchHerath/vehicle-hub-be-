@@ -47,6 +47,7 @@ using Microsoft.OpenApi.Models;
 using reservation_system_be.Services.AdminNotificationServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Google;
+using reservation_system_be.Services.BillingDetailsServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -184,6 +185,7 @@ builder.Services.AddScoped<IFeedbackService, FeedbackService>();
 builder.Services.AddScoped<IAdminNotificationService, AdminNotificationService>();
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IExternalLoginService, ExternalLoginService>();
+builder.Services.AddScoped<IBillingDetailsService, BillingDetailsService>();
 
 
 builder.Services.AddTransient<IEmailService, EmailService>();

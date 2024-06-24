@@ -9,7 +9,10 @@ namespace reservation_system_be.Services.NotificationServices
         Task<List<Notification>> GetNotifications();
 
         Task<bool> DeleteNotification(int notificationId);
+
         Task<Notification> AddNotification(Notification notification);
+
+        Task<bool> MarkAsRead(int notificationId);
     }
 
 }
