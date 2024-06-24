@@ -208,7 +208,8 @@ namespace reservation_system_be.Services.AdminReservationServices
 
             customerReservation.Reservation.Status = Status.Ongoing;
             customerReservation.Reservation.EmployeeId = eid;
-            await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
+            _context.Entry(customerReservation.Reservation).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
             var notification = new Notification
             {
@@ -406,5 +407,24 @@ namespace reservation_system_be.Services.AdminReservationServices
 
             await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
         }
+
+        public async Task<CustomerHoverDto> CustomerDetails(int id)
+        {
+            var customerReservation = await _context.CustomerReservations
+                .Include(cr => cr.Customer)
+                .FirstOrDefaultAsync(cr => cr.Id == id);
+
+            var customerHoverDto = new CustomerHoverDto
+            {
+                Id = customerReservation.Customer.Id,
+                Name = customerReservation.Customer.Name,
+                Email = customerReservation.Customer.Email,
+                Phone = customerReservation.Customer.ContactNo
+            };
+
+            return customerHoverDto;
+        }
+
+
     }
 }

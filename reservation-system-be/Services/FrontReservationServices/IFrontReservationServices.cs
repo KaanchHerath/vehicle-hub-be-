@@ -12,5 +12,6 @@ namespace reservation_system_be.Services.FrontReservationServices
         Task <RentalHistorySingleDto> RentalHistorySingle(int id);
         Task<BookingConfirmationDto> ViewBookingConfirmation(int id); // Invoice ID
         Task<DetailCarDto> GetVehicleDetails(int id);
+        Task CancelReservation(int id);
     }
 }

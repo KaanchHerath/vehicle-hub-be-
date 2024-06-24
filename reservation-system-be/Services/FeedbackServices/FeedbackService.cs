@@ -25,7 +25,7 @@ namespace reservation_system_be.Services.FeedbackServices
             {
                 var feedback = new Feedback
                 {
-                    Type = "service",
+                    Type = "customer",
                     Vehicle_Review = feedbackRequest.Vehicle_Review,
                     Service_Review = feedbackRequest.Service_Review,
                     RatingNo = feedbackRequest.RatingNo,
@@ -136,7 +136,6 @@ namespace reservation_system_be.Services.FeedbackServices
 
     public class FeedbackRequest
     {
-        public string Designation { get; set; } = string.Empty;
         public int RatingNo { get; set; }
         public string Service_Review { get; set; } = string.Empty;
         public string Vehicle_Review { get; set; } = string.Empty;
