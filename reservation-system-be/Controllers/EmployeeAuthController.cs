@@ -74,10 +74,30 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost("logout")]
+
         public IActionResult Logout()
         {
             var result = _employeeAuthService.Logout();
             return Ok(result);
+        }
+
+        [HttpPost("deactivate/{id}")]
+        [Authorize(Policy = "AdminOnly")]
+        public async Task<IActionResult> DeactivateEmployee(int id)
+        {
+            try
+            {
+                await _employeeAuthService.DeactivateEmployee(id);
+                return Ok(new { message = "Employee deactivated successfully" });
+            }
+            catch (DataNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
         }
 
     }
