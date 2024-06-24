@@ -71,5 +71,18 @@ namespace reservation_system_be.Controllers
                 return NotFound(e.Message);
             }
         }
+        [HttpGet("regNo")]
+        public async Task<ActionResult<VehicleHoverDto>> GetVehicleHover(string regNo)
+        {
+            try
+            {
+                await _adminVehicleService.GetVehicleHover(regNo);
+                return Ok();
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
     }
 }

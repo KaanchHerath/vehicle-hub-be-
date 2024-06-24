@@ -101,5 +101,26 @@ namespace reservation_system_be.Services.AdminVehicleServices
             return await _additionalFeaturesService.GetAdditionalFeatures(additionalFeatures.Id);
 
         }
+        public async Task<VehicleHoverDto> GetVehicleHover(string regNo)
+        {
+            var vehicle = await _context.Vehicles
+                .Include(v => v.VehicleModel) // Include related data
+                .Include(v => v.VehicleType)
+                .FirstOrDefaultAsync(v => v.RegistrationNumber == regNo);
+            if (vehicle == null)
+            {
+                throw new Exception("Vehicle not found");
+            }
+            var vehicleHoverDto = new VehicleHoverDto
+            {
+                Id = vehicle.Id,
+                RegistrationNumber = vehicle.RegistrationNumber,
+                Model = vehicle.VehicleModel.Name,
+                Type = vehicle.VehicleType.Name,
+                Year = vehicle.VehicleModel.Year,
+                Thumbnail = vehicle.Thumbnail
+            };
+            return vehicleHoverDto;
+        }
     }
 }
