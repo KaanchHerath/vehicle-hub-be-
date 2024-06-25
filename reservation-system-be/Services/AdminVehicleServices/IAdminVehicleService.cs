@@ -9,5 +9,6 @@ namespace reservation_system_be.Services.AdminVehicleServices
         Task UpdateVehicleModel(int id, VehicleModelDto createVehicleModelDto);
         Task<AdditionalFeaturesDto> ViewVehicleModel(int id);
         Task<VehicleHoverDto> GetVehicleHover(string regNo);
+        Task<VehicleModelHoverDto> GetVehicleModelHover(int id);
     }
 }

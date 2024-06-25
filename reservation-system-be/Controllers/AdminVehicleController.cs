@@ -76,8 +76,23 @@ namespace reservation_system_be.Controllers
         {
             try
             {
-                var vehicleHover = await _adminVehicleService.GetVehicleHover(regNo);
-                return Ok(vehicleHover);
+                var vehicleHoverDto = await _adminVehicleService.GetVehicleHover(regNo);
+                return Ok(vehicleHoverDto);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+
+        [HttpGet("hover/{id}")]
+        public async Task<ActionResult<VehicleModelHoverDto>> GetVehicleModelHover(int id)
+        {
+            try
+            {
+                var vehicleModelHoverDto = await _adminVehicleService.GetVehicleModelHover(id);
+                return Ok(vehicleModelHoverDto);
             }
             catch (DataNotFoundException e)
             {
