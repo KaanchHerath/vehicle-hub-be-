@@ -1,5 +1,6 @@
 ﻿using reservation_system_be.Data;
 using reservation_system_be.Models;
+using reservation_system_be.Services.AdminNotificationServices;
 using reservation_system_be.Services.CustomerReservationService;
 using reservation_system_be.Services.NotificationServices;
 using reservation_system_be.Services.VehicleServices;
@@ -34,6 +35,7 @@ namespace reservation_system_be.Services.CheckCustomerReservationConflictsServic
             {
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
                 var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+                var adminNotificationService = scope.ServiceProvider.GetRequiredService<IAdminNotificationService>();
                 var customerReservationService = scope.ServiceProvider.GetRequiredService<ICustomerReservationService>();
                 var vehicleService = scope.ServiceProvider.GetRequiredService<IVehicleService>();
 
@@ -56,7 +58,7 @@ namespace reservation_system_be.Services.CheckCustomerReservationConflictsServic
                         {
                             Type = "Reservation Conflicts",
                             Title = "Vehicle Unavailable",
-                            Description = $"The vehicle for the reservation {customerReservation.Id} with registration number {newVehicle.VehicleModel.VehicleMake.Name} {newVehicle.VehicleModel.Name} is currently unavailable ",
+                            Description = $"The {newVehicle.VehicleModel.VehicleMake.Name} {newVehicle.VehicleModel.Name} is unavailable for your reservation: {customerReservation.Id} on {customerReservation.Reservation.StartDate}.",
                             Generated_DateTime = DateTime.Now,
                             CustomerReservationId = customerReservation.Id
                         };
@@ -66,6 +68,21 @@ namespace reservation_system_be.Services.CheckCustomerReservationConflictsServic
                             continue;
                         }
                         await notificationService.AddNotification(notification);
+
+                        var adminNotification = new AdminNotification
+                        {
+                            Type = "Reservation Conflicts",
+                            Title = "Vehicle Unavailable",
+                            Description = $"The vehicle {newVehicle.RegistrationNumber} is unavailable for reservation: {customerReservation.Id} on {customerReservation.Reservation.StartDate}.",
+                            Generated_DateTime = DateTime.Now,
+                            IsRead = false
+                        };
+
+                        if (context.AdminNotifications.Any(n => n.Description == adminNotification.Description))
+                        {
+                            continue;
+                        }
+                        await adminNotificationService.AddAdminNotification(adminNotification);
                     }
                 }
 

@@ -145,6 +145,7 @@ namespace reservation_system_be.Services.CustomerAuthServices
             {
                 new Claim(JwtRegisteredClaimNames.Sub, customerAuthDTO.Email),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                 new Claim(ClaimTypes.Role, "customer")  // Adding the role claim here
             };
 
             var token = new JwtSecurityToken(
@@ -252,7 +253,18 @@ namespace reservation_system_be.Services.CustomerAuthServices
         public string Logout()
         {
             // Clear the user's session data
-            _httpContextAccessor.HttpContext?.Session.Clear();
+            var context = _httpContextAccessor.HttpContext;
+            if (context != null)
+            {
+                context.Session.Clear();
+
+                // Remove all cookies
+                foreach (var cookie in context.Request.Cookies.Keys)
+                {
+                    context.Response.Cookies.Delete(cookie);
+                }
+            }
+
             return "Logged out successfully!";
         }
 

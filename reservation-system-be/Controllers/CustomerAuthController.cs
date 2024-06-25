@@ -14,6 +14,7 @@ using Org.BouncyCastle.Asn1.Ocsp;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Authentication;
 using Azure;
+using Microsoft.AspNetCore.Authorization;
 
 namespace reservation_system_be.Controllers
 {
@@ -103,6 +104,7 @@ namespace reservation_system_be.Controllers
             }
         }
 
+        [Authorize(Policy = "CustomerOnly")]
         [HttpPost("ResetPasswordProfile")]
         public async Task<IActionResult> ResetPasswordProfile([FromBody] ProfilePasswordDTO profilePasswordDTO)
         {
