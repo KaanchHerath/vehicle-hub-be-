@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
 using reservation_system_be.DTOs;
@@ -19,6 +20,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet]
+        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult<IEnumerable<VehicleLog>>> GetAllVehicleLogs()
         {
             var vehicleLogs = await _vehicleLogService.GetAllVehicleLogs();
@@ -26,6 +28,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult<VehicleLog>> GetVehicleLog(int id)
         {
             try
@@ -40,6 +43,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
+        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult<VehicleLog>> AddVehicleLog(VehicleLog vehicleLog)
         {
             var newVehicleLog = await _vehicleLogService.CreateVehicleLog(vehicleLog);
@@ -47,6 +51,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult<VehicleLog>> UpdateVehicleLog(int id, VehicleLogDto vehicleLog)
         {
             try
@@ -61,6 +66,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> DeleteVehicleLog(int id)
         {
             try

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.DTOs;
 using reservation_system_be.Services.AdminReservationServices;
@@ -17,6 +18,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet("View-Reservations")]
+        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<IActionResult> ViewReservations()
         {
             var reservations = await _adminReservationService.ViewReservations();
@@ -24,6 +26,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost("Accept-Reservation/{id}")]
+        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<IActionResult> AcceptReservation(int id, int eid)
         {
             await _adminReservationService.AcceptReservation(id, eid);
@@ -31,6 +34,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost("Decline-Reservation/{id}")]
+        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<IActionResult> DeclineReservation(int id, int eid)
         {
             await _adminReservationService.DeclineReservation(id, eid);
@@ -38,6 +42,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost("Begin-Reservation/{id}")]
+        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<IActionResult> BeginReservation(int id, int eid)
         {
             await _adminReservationService.BeginReservation(id, eid);
@@ -45,6 +50,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost("End-Reservation/{id}")]
+        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<IActionResult> EndReservation(int id, int eid, VehicleLogDto vehicleLog)
         {
             await _adminReservationService.EndReservation(id, eid, vehicleLog);
@@ -52,6 +58,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet("Available-Vehicles/{id}")]
+        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<IActionResult> AvailableVehicles(int id)
         {
             var vehicles = await _adminReservationService.AvailableVehicles(id);
@@ -59,6 +66,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost("Change-Vehicle/{id}")]
+        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<IActionResult> ReservationChangeVehicle(int id, int vid)
         {
             await _adminReservationService.ReservationChangeVehicle(id, vid);
@@ -66,6 +74,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost("Cancel-Reservation/{id}")]
+        [Authorize(Policy = "AdminOnly")]
         public async Task<IActionResult> CancelReservation(int id, int eid)
         {
             await _adminReservationService.CancelReservation(id, eid);
@@ -73,6 +82,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet("Customer-Details/{id}")]
+        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<IActionResult> CustomerDetails(int id)
         {
             var customer = await _adminReservationService.CustomerDetails(id);
