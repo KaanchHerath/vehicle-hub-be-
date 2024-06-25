@@ -104,7 +104,7 @@ namespace reservation_system_be.Services.AdminVehicleServices
         public async Task<VehicleHoverDto> GetVehicleHover(string regNo)
         {
             var vehicle = await _context.Vehicles
-                .Include(v => v.VehicleModel) // Include related data
+                .Include(v => v.VehicleModel) 
                 .Include(v => v.VehicleType)
                 .FirstOrDefaultAsync(v => v.RegistrationNumber == regNo);
             if (vehicle == null)
@@ -121,6 +121,31 @@ namespace reservation_system_be.Services.AdminVehicleServices
                 Thumbnail = vehicle.Thumbnail
             };
             return vehicleHoverDto;
+        }
+        public async Task<VehicleModelHoverDto> GetVehicleModelHover(int id)
+        {
+           var vehicle = await _context.Vehicles
+                .Include(v => v.VehicleModel) 
+                .ThenInclude(vm => vm.VehicleMake)
+                .Where(v => v.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (vehicle == null)
+            {
+                throw new Exception("Vehicle not found");
+            }
+            var vehicleModelHoverDto = new VehicleModelHoverDto
+            {
+                Id = id,
+                VehicleModelId = vehicle.VehicleModel.Id,
+                Name = vehicle.VehicleModel.Name,
+                Year = vehicle.VehicleModel.Year,
+                EngineCapacity = vehicle.VehicleModel.EngineCapacity,
+                SeatingCapacity = vehicle.VehicleModel.SeatingCapacity,
+                Fuel = vehicle.VehicleModel.Fuel,
+                Make = vehicle.VehicleModel.VehicleMake.Logo
+            };
+            return vehicleModelHoverDto;
         }
     }
 }
