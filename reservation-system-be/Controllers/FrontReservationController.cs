@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.DTOs;
 using reservation_system_be.Services.FrontReservationServices;
@@ -17,6 +18,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost("request-reservation")]
+        [Authorize(Policy = "CustomerOnly")]
         public async Task<IActionResult> RequestReservation([FromBody] CreateCustomerReservationDto customerReservationDto)
         {
             var customerReservation = await _frontReservationServices.RequestReservations(customerReservationDto);
@@ -25,6 +27,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet("ongoing-rentals/{id}")]
+        [Authorize(Policy = "CustomerOnly")]
         public async Task<IActionResult> OngoingRentals(int id)
         {
             var ongoingRentals = await _frontReservationServices.OngoingRentals(id);
@@ -33,6 +36,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet("ongoing-rental-single/{id}")]
+        [Authorize(Policy = "CustomerOnly")]
         public async Task<IActionResult> OngoingRentalSingle(int id)
         {
             var ongoingRentalSingle = await _frontReservationServices.OngoingRentalSingle(id);
@@ -41,6 +45,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet("rental-history/{id}")]
+        [Authorize(Policy ="CustomerOnly")]
         public async Task<IActionResult> RentalHistory(int id)
         {
             var rentalHistory = await _frontReservationServices.RentalHistory(id);
@@ -49,6 +54,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet("rental-history-single/{id}")]
+        [Authorize(Policy ="CustomerOnly")]
         public async Task<IActionResult> RentalHistorySingle(int id)
         {
             var rentalHistorySingle = await _frontReservationServices.RentalHistorySingle(id);
@@ -57,6 +63,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet("view-booking-confirmation/{id}")]
+        [Authorize(Policy ="CustomerOnly")]
         public async Task<IActionResult> ViewBookingConfirmation(int id)
         {
             var bookingConfirmation = await _frontReservationServices.ViewBookingConfirmation(id);
@@ -73,6 +80,7 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost("cancel-reservation/{id}")]
+        [Authorize(Policy ="CustomerOnly")]
         public async Task<IActionResult> CancelReservation(int id)
         {
             await _frontReservationServices.CancelReservation(id);
