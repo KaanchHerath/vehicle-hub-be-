@@ -60,7 +60,8 @@ namespace reservation_system_be.Services.CheckCustomerReservationConflictsServic
                             Title = "Vehicle Unavailable",
                             Description = $"The {newVehicle.VehicleModel.VehicleMake.Name} {newVehicle.VehicleModel.Name} is unavailable for your reservation: {customerReservation.Id} on {customerReservation.Reservation.StartDate}.",
                             Generated_DateTime = DateTime.Now,
-                            CustomerReservationId = customerReservation.Id
+                            CustomerReservationId = customerReservation.Id,
+                            IsRead = false
                         };
 
                         if (context.Notifications.Any(n => n.Description == notification.Description))
@@ -85,8 +86,6 @@ namespace reservation_system_be.Services.CheckCustomerReservationConflictsServic
                         await adminNotificationService.AddAdminNotification(adminNotification);
                     }
                 }
-
-                await context.SaveChangesAsync();
             }
         }
 
