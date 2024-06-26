@@ -50,6 +50,7 @@ using reservation_system_be.Services.BillingDetailsServices;
 using reservation_system_be.Services.CancelUncollectedReservationServices;
 using reservation_system_be.Services.OverdueVehicleReservationService;
 using reservation_system_be.Services.ReservationPendingService;
+using reservation_system_be.Services.CheckPaymentService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -188,6 +189,7 @@ builder.Services.AddScoped<IAdminNotificationService, AdminNotificationService>(
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IExternalLoginService, ExternalLoginService>();
 builder.Services.AddScoped<IBillingDetailsService, BillingDetailsService>();
+builder.Services.AddScoped<ICheckPaymentService, CheckPaymentService>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddTransient<IEmailService, EmailService>();
