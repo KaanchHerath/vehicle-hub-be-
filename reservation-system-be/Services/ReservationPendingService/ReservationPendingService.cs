@@ -6,7 +6,7 @@ using reservation_system_be.Services.CustomerReservationService;
 using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Services.ReservationService;
 
-namespace reservation_system_be.Services.NewFolder
+namespace reservation_system_be.Services.ReservationPendingService
 {
     public class ReservationPendingService : IHostedService, IDisposable
     {

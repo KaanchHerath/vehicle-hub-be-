@@ -42,12 +42,13 @@ using reservation_system_be.Services.FeedbackServices;
 using reservation_system_be.Services.InsuranceExpiryCheckService;
 using reservation_system_be.Services.VehicleMaintenanceDueService;
 using reservation_system_be.Services.CheckCustomerReservationConflictsServices;
-using reservation_system_be.Services.NewFolder;
 using Microsoft.OpenApi.Models;
 using reservation_system_be.Services.AdminNotificationServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Google;
 using reservation_system_be.Services.BillingDetailsServices;
+using reservation_system_be.Services.ReservationPendingService;
+using reservation_system_be.Services.CancelUncollectedReservationServices;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -195,13 +196,16 @@ builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddHostedService<InsuranceExpiryCheckService>();
 
 // The maintenance due check service
-//builder.Services.AddHostedService<VehicleMaintenanceDueService>();
+builder.Services.AddHostedService<VehicleMaintenanceDueService>();
 
 // The customer reservation conflict service
 builder.Services.AddHostedService<CheckCustomerReservationConflictsService>();
 
 // The reservation automatic cancellation service
 builder.Services.AddHostedService<ReservationPendingService>();
+
+// The uncollected reservation cancellation service
+builder.Services.AddHostedService<CancelUncollectedReservationService>();
 
 builder.Services.AddCors(options =>
 {
