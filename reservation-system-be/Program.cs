@@ -47,8 +47,9 @@ using reservation_system_be.Services.AdminNotificationServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Google;
 using reservation_system_be.Services.BillingDetailsServices;
-using reservation_system_be.Services.ReservationPendingService;
 using reservation_system_be.Services.CancelUncollectedReservationServices;
+using reservation_system_be.Services.OverdueVehicleReservationService;
+using reservation_system_be.Services.NewFolder;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -206,6 +207,9 @@ builder.Services.AddHostedService<ReservationPendingService>();
 
 // The uncollected reservation cancellation service
 builder.Services.AddHostedService<CancelUncollectedReservationService>();
+
+//The Overdue Vehicle Reservation Service
+builder.Services.AddHostedService<OverdueVehicleReservationService>();
 
 builder.Services.AddCors(options =>
 {
