@@ -85,7 +85,4 @@ namespace reservation_system_be.Services.CancelUncollectedReservationServices
             _timer?.Dispose();
         }
     }
-    {
-
-    }
 }
