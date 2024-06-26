@@ -49,7 +49,7 @@ using Microsoft.AspNetCore.Authentication.Google;
 using reservation_system_be.Services.BillingDetailsServices;
 using reservation_system_be.Services.CancelUncollectedReservationServices;
 using reservation_system_be.Services.OverdueVehicleReservationService;
-using reservation_system_be.Services.NewFolder;
+using reservation_system_be.Services.ReservationPendingService;
 
 
 var builder = WebApplication.CreateBuilder(args);
