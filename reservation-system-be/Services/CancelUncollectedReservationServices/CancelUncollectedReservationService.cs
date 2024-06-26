@@ -2,8 +2,10 @@
 using reservation_system_be.Data;
 using reservation_system_be.Helper;
 using reservation_system_be.Models;
+using reservation_system_be.Services.AdminNotificationServices;
 using reservation_system_be.Services.CustomerReservationService;
 using reservation_system_be.Services.EmailServices;
+using reservation_system_be.Services.NotificationServices;
 using reservation_system_be.Services.ReservationService;
 
 namespace reservation_system_be.Services.CancelUncollectedReservationServices
@@ -34,9 +36,10 @@ namespace reservation_system_be.Services.CancelUncollectedReservationServices
                 var customerReservationService = scope.ServiceProvider.GetRequiredService<ICustomerReservationService>();
                 var reservationService = scope.ServiceProvider.GetRequiredService<IReservationService>();
                 var emailService = scope.ServiceProvider.GetRequiredService<IEmailService>();
+                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
 
                 var uncollectedReservations = await context.Reservations
-                    .Where(r => r.StartDate > DateTime.Now && r.Status == Status.Pending || r.Status == Status.Confirmed)
+                    .Where(r => r.StartDate < DateTime.Now && r.Status == Status.Pending || r.Status == Status.Confirmed)
                     .ToListAsync();
 
                 foreach (var reservation in uncollectedReservations)
@@ -46,6 +49,7 @@ namespace reservation_system_be.Services.CancelUncollectedReservationServices
 
                     var cr = await context.CustomerReservations
                         .FirstOrDefaultAsync(cr => cr.ReservationId == reservation.Id);
+
                     if (cr == null)
                     {
                         continue;
@@ -57,12 +61,12 @@ namespace reservation_system_be.Services.CancelUncollectedReservationServices
                     {
                         Type = "Reservation",
                         Title = "Reservation Cancelled",
-                        Description = $"Dear {customerReservation.Customer.Name}, your reservation for vehicle ID {customerReservation.Vehicle.RegistrationNumber} has been cancelled as the vehicle was not collected.",
+                        Description = $"Dear {customerReservation.Customer.Name}, your reservation for {customerReservation.Vehicle.VehicleModel.VehicleMake.Name} {customerReservation.Vehicle.VehicleModel.Name} has been cancelled as the vehicle was not collected on {customerReservation.Reservation.StartDate.ToString("yyyy-MM-dd")}.",
                         Generated_DateTime = DateTime.Now,
                         CustomerReservationId = customerReservation.Id,
                         IsRead = false
                     };
-                    await context.Notifications.AddAsync(notification);
+                    await notificationService.AddNotification(notification);
 
                     MailRequest mailRequest = new MailRequest
                     {
