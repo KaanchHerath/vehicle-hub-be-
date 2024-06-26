@@ -45,9 +45,6 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
                 expiringInsurances = expiringInsurances
                     .Where(e => e.Status)
                     .ToList();
- 
-                var vehicles = await context.Vehicles.ToListAsync(); // Fetch the data first with ToListAsync
-                var vehiclesWithInsurance = expiringInsurances.Select(e => e.VehicleId).Distinct().ToList();
 
                 foreach (var insurance in expiringInsurances)
                 {
@@ -68,26 +65,32 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
                     await adminNotificationService.AddAdminNotification(adminNotification);
                 }
 
-                var vehiclesWithoutInsurance = vehicles
-                    .Where(v => !vehiclesWithInsurance.Contains(v.Id))
-                    .ToList();
+                var vehicles = await context.Vehicles.ToListAsync();
 
-                foreach (var vehicle in vehiclesWithoutInsurance)
+                foreach (var vehicle in vehicles)
                 {
-                    var adminNotification = new AdminNotification
-                    {
-                        Type = "Insurance",
-                        Title = "Uninsured Vehicle",
-                        Description = $"Vehicle {vehicle.RegistrationNumber} currently does not have insurance coverage for the rest of {DateTime.Now.Year}.",
-                        Generated_DateTime = DateTime.Now,
-                        IsRead = false
-                    };
+                    var vehicleInsurance = await context.VehicleInsurances
+                        .Where(vi => vi.VehicleId == vehicle.Id)
+                        .OrderByDescending(vi => vi.ExpiryDate)
+                        .FirstOrDefaultAsync();
 
-                    if (context.AdminNotifications.Any(n => n.Description == adminNotification.Description))
+                    if (vehicleInsurance == null || vehicleInsurance.Status == false)
                     {
-                        continue;
+                        var adminNotification = new AdminNotification
+                        {
+                            Type = "Insurance",
+                            Title = "Uninsured Vehicle",
+                            Description = $"Vehicle {vehicle.RegistrationNumber} currently does not have insurance coverage for the rest of {DateTime.Now.Year}.",
+                            Generated_DateTime = DateTime.Now,
+                            IsRead = false
+                        };
+
+                        if (context.AdminNotifications.Any(n => n.Description == adminNotification.Description))
+                        {
+                            continue;
+                        }
+                        await adminNotificationService.AddAdminNotification(adminNotification);
                     }
-                    await adminNotificationService.AddAdminNotification(adminNotification);
                 }
             }
         }
