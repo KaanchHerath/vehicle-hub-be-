@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
 using reservation_system_be.Models;
+using reservation_system_be.Services.AdminNotificationServices;
 using reservation_system_be.Services.NotificationServices;
 using reservation_system_be.Services.VehicleServices;
 
@@ -34,7 +35,7 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
             using (var scope = _serviceProvider.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+                var adminNotificationService = scope.ServiceProvider.GetRequiredService<IAdminNotificationService>();
                 var vehicleService = scope.ServiceProvider.GetRequiredService<IVehicleService>();
 
                 var expiringInsurances = await context.VehicleInsurances
@@ -51,19 +52,20 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
                 foreach (var insurance in expiringInsurances)
                 {
                     var vehicle = await vehicleService.GetVehicle(insurance.VehicleId);
-                    var notification = new Notification
+                    var adminNotification = new AdminNotification
                     {
                         Type = "Insurance",
                         Title = "Insurance Expiry",
                         Description = $"Insurance for vehicle {vehicle.RegistrationNumber} is expiring on {insurance.ExpiryDate.ToString("yyyy-MM-dd")}",
                         Generated_DateTime = DateTime.Now,
+                        IsRead = false
                     };
 
-                   /* if(context.Notifications.Any(n => n.VehicleInsuranceID == insurance.Id))
+                    if(context.AdminNotifications.Any(n => n.Description == adminNotification.Description))
                     {
                         continue;
                     }
-                    await notificationService.AddNotification(notification);*/
+                    await adminNotificationService.AddAdminNotification(adminNotification);
                 }
 
                 var vehiclesWithoutInsurance = vehicles
@@ -72,19 +74,20 @@ namespace reservation_system_be.Services.InsuranceExpiryCheckService
 
                 foreach (var vehicle in vehiclesWithoutInsurance)
                 {
-                    var notification = new Notification
+                    var adminNotification = new AdminNotification
                     {
                         Type = "Insurance",
-                        Title = "No Insurance",
+                        Title = "Uninsured Vehicle",
                         Description = $"Vehicle {vehicle.RegistrationNumber} currently does not have insurance coverage for the rest of {DateTime.Now.Year}.",
                         Generated_DateTime = DateTime.Now,
+                        IsRead = false
                     };
 
-                    if (context.Notifications.Any(n => n.Description == notification.Description))
+                    if (context.AdminNotifications.Any(n => n.Description == adminNotification.Description))
                     {
                         continue;
                     }
-                    await notificationService.AddNotification(notification);
+                    await adminNotificationService.AddAdminNotification(adminNotification);
                 }
             }
         }
