@@ -57,7 +57,7 @@ namespace reservation_system_be.Services.CancelUncollectedReservationServices
                     {
                         Type = "Reservation",
                         Title = "Reservation Cancelled",
-                        Description = "Your reservation has been cancelled due to uncollected vehicle.",
+                        Description = $"Dear {customerReservation.Customer.Name}, your reservation for vehicle ID {customerReservation.Vehicle.RegistrationNumber} has been cancelled as the vehicle was not collected.",
                         Generated_DateTime = DateTime.Now,
                         CustomerReservationId = customerReservation.Id,
                         IsRead = false
@@ -84,8 +84,5 @@ namespace reservation_system_be.Services.CancelUncollectedReservationServices
         {
             _timer?.Dispose();
         }
-    }
-    {
-
     }
 }
