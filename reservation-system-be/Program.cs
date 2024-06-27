@@ -48,14 +48,29 @@ using reservation_system_be.Services.AdminNotificationServices;
 using Microsoft.Extensions.Configuration;
 using Microsoft.AspNetCore.Authentication.Google;
 using reservation_system_be.Services.BillingDetailsServices;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using reservation_system_be.Services.GoogleService;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddCookie()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["GoogleAuth:ClientId"];
+        options.ClientSecret = builder.Configuration["GoogleAuth:ClientSecret"];
+        options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.SaveTokens = true;
+        options.CallbackPath = "/google-callback";
+    })
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -116,6 +131,11 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
+
+// Configure logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
  options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -186,6 +206,7 @@ builder.Services.AddScoped<IAdminNotificationService, AdminNotificationService>(
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<IExternalLoginService, ExternalLoginService>();
 builder.Services.AddScoped<IBillingDetailsService, BillingDetailsService>();
+builder.Services.AddScoped<GoogleAuthService>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddTransient<IEmailService, EmailService>();
@@ -214,6 +235,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
 
 
 // Configure the HTTP request pipeline.
