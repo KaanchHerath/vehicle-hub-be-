@@ -63,7 +63,6 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet("view-booking-confirmation/{id}")]
-        [Authorize(Policy ="CustomerOnly")]
         public async Task<IActionResult> ViewBookingConfirmation(int id)
         {
             var bookingConfirmation = await _frontReservationServices.ViewBookingConfirmation(id);
