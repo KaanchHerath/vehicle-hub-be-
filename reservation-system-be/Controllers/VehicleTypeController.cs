@@ -8,7 +8,6 @@ namespace reservation_system_be.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    [Authorize(Policy = "AdminAndStaffOnly")]
     public class VehicleTypeController : ControllerBase
     {
         private readonly IVehicleTypeService _vehicleTypeService;

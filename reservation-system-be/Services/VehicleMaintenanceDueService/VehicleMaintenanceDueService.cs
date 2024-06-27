@@ -1,12 +1,13 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using reservation_system_be.Data;
 using reservation_system_be.Models;
+using reservation_system_be.Services.AdminNotificationServices;
 using reservation_system_be.Services.NotificationServices;
 using reservation_system_be.Services.VehicleServices;
 
 namespace reservation_system_be.Services.VehicleMaintenanceDueService
 {
-    /*public class VehicleMaintenanceDueService: IHostedService, IDisposable
+    public class VehicleMaintenanceDueService: IHostedService, IDisposable
     {
         private readonly ILogger<VehicleMaintenanceDueService> _logger;
         public readonly IServiceProvider _serviceProvider;
@@ -34,7 +35,7 @@ namespace reservation_system_be.Services.VehicleMaintenanceDueService
             using (var scope = _serviceProvider.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<DataContext>();
-                var notificationService = scope.ServiceProvider.GetRequiredService<INotificationService>();
+                var adminNotificationService = scope.ServiceProvider.GetRequiredService<IAdminNotificationService>();
                 var vehicleService = scope.ServiceProvider.GetRequiredService<IVehicleService>();
 
                 var vehicles = context.Vehicles
@@ -50,19 +51,20 @@ namespace reservation_system_be.Services.VehicleMaintenanceDueService
 
                     if (lastService != null && lastService.CurrentMileage + 5000 <= vehicle.Mileage)
                     {
-                        var notification = new Notification
+                        var adminNotification = new AdminNotification
                         {
                             Type = "Maintenance",
                             Title = "Vehicle Service Maintenance Due",
-                            Description = $"Vehicle {vehicle.RegistrationNumber} is due for Service.",
+                            Description = $"Vehicle {vehicle.RegistrationNumber} is due for Service Maintenance at {vehicle.Mileage}km.",
                             Generated_DateTime = DateTime.Now,
+                            IsRead = false
                         };
 
-                        if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastService.Id))
+                        if (context.AdminNotifications.Any(n => n.Description == adminNotification.Description))
                         {
                             continue;
                         }
-                        await notificationService.AddNotification(notification);
+                        await adminNotificationService.AddAdminNotification(adminNotification);
                     }
                 }
                 foreach (var vehicle in vehicles)
@@ -74,19 +76,20 @@ namespace reservation_system_be.Services.VehicleMaintenanceDueService
 
                     if (lastBrakePadReplacement != null && lastBrakePadReplacement.CurrentMileage + 15000 <= vehicle.Mileage)
                     {
-                        var notification = new Notification
+                        var adminNotification = new AdminNotification
                         {
                             Type = "Maintenance",
                             Title = "Vehicle Break Pad Replacement Maintenance Due",
-                            Description = $"Vehicle {vehicle.RegistrationNumber} is due for Brake Pad Replacement Maintenance.",
+                            Description = $"Vehicle {vehicle.RegistrationNumber} is due for Brake Pad Replacement Maintenance at {vehicle.Mileage}km.",
                             Generated_DateTime = DateTime.Now,
+                            IsRead = false
                         };
 
-                        if (context.Notifications.Any(n => n.VehicleMaintenanceId == lastBrakePadReplacement.Id))
+                        if (context.AdminNotifications.Any(n => n.Description == adminNotification.Description))
                         {
                             continue;
                         }
-                        await notificationService.AddNotification(notification);
+                        await adminNotificationService.AddAdminNotification(adminNotification);
                     }    
                 }
             }
@@ -101,5 +104,5 @@ namespace reservation_system_be.Services.VehicleMaintenanceDueService
         {
             _timer?.Change(Timeout.Infinite, 0);
         }
-    }*/
+    }
 }

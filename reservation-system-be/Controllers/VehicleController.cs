@@ -20,7 +20,6 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpGet]
-        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult<List<VehicleDto>>> GetAllVehicles()
         {
             {
@@ -31,7 +30,6 @@ namespace reservation_system_be.Controllers
         
 
         [HttpGet("{id}")]
-        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult<VehicleDto>> GetVehicle(int id)
         {
             try
@@ -45,7 +43,6 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPost]
-        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult<Vehicle>> CreateVehicle([FromForm] CreateVehicleDto createVehicleDto, IFormFile formFile, IFormFile front, IFormFile rear, IFormFile dashboard, IFormFile interior)
         {
             try
@@ -68,7 +65,6 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("Details/{id}")]
-        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult<Vehicle>> UpdateVehicle(int id,UpdateVehicleDetailsDto createVehicleDto)
         {
             try
@@ -83,7 +79,6 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("Thumbnail/{id}")]
-        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult> UpdateThumbnail(int id, IFormFile formFile)
         { 
             try
@@ -98,7 +93,6 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("FrontImg/{id}")]
-        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult> UpdateFrontImg(int id,IFormFile front)
         {
             try
@@ -113,7 +107,6 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("RearImg/{id}")]
-        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult> UpdateRearImg(int id, IFormFile rear)
         {
             try
@@ -128,7 +121,6 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("DashboardImg/{id}")]
-        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult> UpdateDashboardImg(int id, IFormFile dashboard)
         {
             try
@@ -143,7 +135,6 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpPut("InteriorImg/{id}")]
-        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult> UpdateInteriorImg(int id, IFormFile interior)
         {
             try
@@ -158,7 +149,6 @@ namespace reservation_system_be.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize(Policy = "AdminAndStaffOnly")]
         public async Task<ActionResult> DeleteVehicle(int id)
         {
             try

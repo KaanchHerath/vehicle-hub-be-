@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
 using reservation_system_be.DTOs;
@@ -11,6 +12,7 @@ using reservation_system_be.Services.VehicleUtilizationReportServices;
 namespace reservation_system_be.Controllers
 {
     [Route("api/[controller]")]
+    [Authorize(Policy = "AdminOnly")]
     [ApiController]
     public class VehicleUtilizationReportController : Controller 
     {
