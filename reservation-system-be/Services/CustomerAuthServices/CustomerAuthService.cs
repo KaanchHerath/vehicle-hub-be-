@@ -72,7 +72,7 @@ namespace reservation_system_be.Services.CustomerAuthServices
             {
                 ToEmail = customer.Email,
                 Subject = "Welcome to Vehicle Hub",
-                Body = "<h1>Welcome!</h1> <br> <p>Thank you for registering with our service. Now you can reserve vehicles whenever you need.</p>"
+                Body = WelcomeMail(customer.Email)
             };
 
             await _emailService.SendEmailAsync(mailRequest);
@@ -80,6 +80,40 @@ namespace reservation_system_be.Services.CustomerAuthServices
 
             return "Customer registered successfully!";
 
+        }
+
+        private string WelcomeMail(string customerEmail)
+        {
+            string response = @"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8' />
+    <title>Welcome to VehicleHub</title>
+</head>
+<body style='width: 100%; background-color: #f4f4f4; text-align: center; padding: 20px; font-family: Arial, sans-serif;'>
+    <div style='text-align: center; margin-bottom: 20px'>
+        <img src='https://drive.google.com/uc?export=view&id=1wlXifh_GzGGiA43mOQ_MX06LJ6soPqXM' alt='Vehicle Hub Logo' style='width: 200px; height: auto; display: inline-block; vertical-align: middle;' />
+    </div>
+    <div style='background-color: #ffffff; padding: 50px 50px 10px 50px; border-radius: 10px; margin: 20px auto; width: fit-content;'>
+        <h1 style='color: #000000; margin: 20px 0; text-align: center; font-size: 40px;'>Welcome to VehicleHub!</h1>
+        <h2 style='color: #000000; text-align: center; font-size: 18px; font-weight: normal; margin-bottom: 5px;'>Dear Valued Customer,</h2>
+        <p style='color: #888888; text-align: center; font-size: 14px; margin-top: 5px;'>" + DateTime.Now.ToString("MMM dd, yyyy") + @"</p>
+        <p style='color: #000000; text-align: left; padding-top: 40px; padding-bottom: 10px;'>Thank you for registering with VehicleHub. We are thrilled to have you with us!</p>
+        <p style='color: #000000; text-align: left; margin-top: 20px;'>At VehicleHub, we are dedicated to providing you with exceptional service and a wide range of top-quality vehicles. Whether you need a vehicle for a day, a week, or longer, we have the perfect option for you.</p>
+        <p style='color: #000000; text-align: left; margin-top: 20px;'>To get started, visit our <a href='https://www.vehiclehub.com'>website</a> and explore our latest offers and vehicle options.</p>
+        <p style='color: #000000; text-align: left; margin-top: 20px;'>We are here to assist you with any queries and ensure you have a seamless experience.</p>
+        <p style='color: #000000; text-align: left; margin-bottom: 5px;'>Warm regards,</p>
+        <p style='color: #000000; text-align: left; margin-top: 5px;'><strong>VehicleHub Team</strong></p>
+        <p style='padding: 10px; margin-top: 40px; text-align: center;'>Contact us: <a href='mailto:vehiclehub01@gmail.com'>vehiclehub01@gmail.com</a> | <a href='tel:+94771234567'>+94 77 123 4567</a></p>
+    </div>
+    <div style='text-align: center; margin-top: 20px; color: #7f7f7f;'>
+        <p style='font-size: 12px;'><strong>All rights reserved @VehicleHub. " + DateTime.Now.Year + @"</strong></p>
+        <p style='font-size: 12px;'>1234 Galle Road, Colombo, Sri Lanka</p>
+    </div>
+</body>
+</html>";
+            return response;
         }
 
         public async Task<AuthDto> Login(CustomerAuthDTO customerAuthDTO)
