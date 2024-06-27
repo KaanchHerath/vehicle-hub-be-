@@ -84,31 +84,43 @@ namespace reservation_system_be.Services.AdminReservationServices
         private string DepositRequestMail(int id)
         {
             string encryptedId = EncryptionHelper.Encrypt(id);
-            // Construct the payment link with the invoice ID
-            string paymentLink = "http://localhost:3000/bookingconfirmation/" + encryptedId; // fix link
+            string paymentLink = "http://localhost:3000/bookingconfirmation/" + encryptedId;
 
-            string response = "<div style=\"width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;\">";
-            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;\">";
-            response += "<h1>VehicleHub</h1>";
-            response += "</div>";
-            response += "<div style=\"margin:20px;text-align:left;\">";
-            response += "<img src=\"https://drive.google.com/uc?export=view&id=1S40qYUDb_f9YRAaQeQmPETz5ABYbI32p\" alt=\"Company Logo\" style=\"width:150px;height:auto;display:block;margin:auto;\"/>";
-            response += "<h2 style=\"text-align:center;\">Deposit Payment Required</h2>";
-            response += "<p>Thank you for your vehicle reservation request.</p>";
-            response += "<p style=\"margin-top:20px;\">To confirm your reservation, please make a deposit payment within the next 3 days. If we do not receive your payment, your pending reservation request will be cancelled.</p>";
-            response += "<p>You can make your payment by clicking the link below:</p>";
-            response += "<p style=\"text-align:center;\"><a href=\"" + paymentLink + "\" style=\"background-color:#283280;color:#ffffff;padding:10px 20px;text-decoration:none;border-radius:5px;\">Make Deposit Payment</a></p>";
-            response += "<p>We appreciate your business and look forward to serving you.</p>";
-            response += "<p>Best regards,</p>";
-            response += "<p><strong>VehicleHub Team</strong></p>";
-            response += "</div>";
-            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;margin-top:20px;text-align:center;\">";
-            response += "<p>Contact us: vehiclehub01@gmail.com | +94 77 123 4567</p>";
-            response += "<p>1234 Galle Road, Colombo, Sri Lanka</p>";
-            response += "</div>";
-            response += "</div>";
+            string response = @"
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset='UTF-8' />
+                    <title>Deposit Request Mail</title>
+                </head>
+                <body style='width: 100%; background-color: #f4f4f4; text-align: center; padding: 20px; font-family: Arial, sans-serif;'>
+                    <div style='text-align: center; margin-bottom: 20px'>
+                        <img src='https://drive.google.com/uc?export=view&id=1wlXifh_GzGGiA43mOQ_MX06LJ6soPqXM' alt='Vehicle Hub Logo' style='width: 200px; height: auto; display: inline-block; vertical-align: middle;' />
+                    </div>
+                    <div style='background-color: #ffffff; padding: 50px 50px 10px 50px; border-radius: 10px; margin: 20px auto; max-width: 650px;'>
+                        <h1 style='color: #000000; margin: 20px 0; text-align: center; font-size: 40px;'>Reservation accepted!</h1>
+                        <p style='color: #888888; text-align: center; font-size: 14px; margin: 5px;'>" + DateTime.Now.ToString("MMM dd, yyyy") + @"</p>
+                        <p style='color: #000000; text-align: left; padding-top: 40px; padding-bottom: 10px;'>Thank you for your vehicle reservation request.</p>
+                        <p style='color: #000000; text-align: left; margin: 5px 0;'>To confirm your reservation, please make a deposit payment within the next 3 days. If we do not receive your payment, your pending reservation request will be cancelled.</p>
+                        <p style='color: #000000; text-align: left; margin: 5px 0;'>You can make your payment by clicking the link below:</p>
+                        <p style='text-align: center; margin: 50px 0;'>
+                            <a href='" + paymentLink + @"' style='background-color: #283280; border: none; color: #fbdac6; padding: 15px 20px; text-decoration: none; border-radius: 5px; font-size: small;'>Make Deposit Payment</a>
+                        </p>
+                        <p style='color: #000000; text-align: left; margin-top: 20px;'>We appreciate your business and look forward to serving you.</p>
+                        <p style='color: #000000; text-align: left; margin-bottom: 5px;'>Best regards,</p>
+                        <p style='color: #000000; text-align: left; margin-top: 5px;'><strong>VehicleHub Team</strong></p>
+                        <p style='padding: 10px; margin-top: 40px; text-align: center;'>Contact us: <a href='mailto:vehiclehub01@gmail.com'>vehiclehub01@gmail.com</a> | <a href='tel:+94771234567'>+94 77 123 4567</a></p>
+                    </div>
+                    <div style='text-align: center; margin-top: 20px; color: #7f7f7f;'>
+                        <p style='font-size: 12px;'><strong>All rights reserved @VehicleHub. " + DateTime.Now.Year + @"</strong></p>
+                        <p style='font-size: 12px;'>1234 Galle Road, Colombo, Sri Lanka</p>
+                    </div>
+                </body>
+                </html>";
+
             return response;
         }
+
 
 
         public async Task DeclineReservation(int id, int eid)
