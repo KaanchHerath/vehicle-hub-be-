@@ -49,18 +49,18 @@ namespace reservation_system_be.Services.ReservationPendingService
                         continue;
                     }
 
-                    var invoice = context.Invoices
-                        .FirstOrDefault(i => i.CustomerReservationId == pendingCustomerReservation.Id);
+                    var invoice = await context.Invoices
+                        .FirstOrDefaultAsync(i => i.CustomerReservationId == pendingCustomerReservation.Id);
 
-                    var customerReservation = customerReservationService.GetCustomerReservation(pendingCustomerReservation.Id);
+                    var customerReservation = await customerReservationService.GetCustomerReservation(pendingCustomerReservation.Id);
 
                     if (invoice != null && (DateTime.UtcNow - invoice.DateCreated).TotalDays > 3)
                     {
                         MailRequest mailRequest = new MailRequest
                         {
-                            ToEmail = customerReservation.Result.Customer.Email,
+                            ToEmail = customerReservation.Customer.Email,
                             Subject = "Pending Reservation has been cancelled",
-                            Body = $"Your reservation is pending for more than 3 days. Please note that the reservation will be cancelled."
+                            Body = "Your reservation is pending for more than 3 days. Please note that the reservation will be cancelled."
                         };
                         await emailService.SendEmailAsync(mailRequest);
 
@@ -70,6 +70,7 @@ namespace reservation_system_be.Services.ReservationPendingService
                 }
             }
         }
+
         public Task StopAsync(CancellationToken stoppingToken)
         {
             _logger.LogInformation("Reservation Pending Service is stopping.");
