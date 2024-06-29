@@ -12,7 +12,7 @@ using reservation_system_be.Services.VehicleUtilizationReportServices;
 namespace reservation_system_be.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Policy = "AdminOnly")]
+    //[Authorize(Policy = "AdminOnly")]
     [ApiController]
     public class VehicleUtilizationReportController : Controller 
     {

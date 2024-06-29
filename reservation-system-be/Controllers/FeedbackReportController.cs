@@ -12,7 +12,7 @@ using reservation_system_be.Services.FeedbackReportService;
 namespace reservation_system_be.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Policy = "AdminOnly")]
+    //[Authorize(Policy = "AdminOnly")]
     public class FeedbackReportController : Controller
     {
 

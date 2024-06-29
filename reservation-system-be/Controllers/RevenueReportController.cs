@@ -8,7 +8,7 @@ using reservation_system_be.Services.RevenueReportServices;
 namespace reservation_system_be.Controllers
 {
     [Route("api/[controller]")]
-    [Authorize(Policy = "AdminOnly")]
+    //[Authorize(Policy = "AdminOnly")]
     [ApiController]
     public class RevenueReportController : ControllerBase
     {
