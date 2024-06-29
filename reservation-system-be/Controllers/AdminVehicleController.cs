@@ -100,5 +100,19 @@ namespace reservation_system_be.Controllers
                 return NotFound(e.Message);
             }
         }
+
+        [HttpGet("maintenance/{id}")]
+        public async Task<ActionResult<VehicleMaintenanceDescriptionHoverDto>> GetVehicleMaintenanceDescription(int id)
+        {
+            try
+            {
+                var vehicleMaintenanceDescriptionHoverDto = await _adminVehicleService.GetVehicleMaintenanceDescription(id);
+                return Ok(vehicleMaintenanceDescriptionHoverDto);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
     }
 }
