@@ -22,8 +22,9 @@ namespace reservation_system_be.Services.VehicleMakeServices
 
         public async Task<List<VehicleMake>> GetAllVehicleMakes()
         {
-            var makes = await _context.VehicleMake.ToListAsync();
-            makes = makes.OrderByDescending(m => m.Id).ToList();
+            var makes = await _context.VehicleMake
+                .OrderByDescending(m => m.Id)
+                .ToListAsync();
             return makes;
         }
 

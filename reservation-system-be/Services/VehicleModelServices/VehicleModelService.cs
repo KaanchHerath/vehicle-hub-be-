@@ -32,6 +32,7 @@ namespace reservation_system_be.Services.VehicleModelServices
                 SeatingCapacity = v.SeatingCapacity,
                 Fuel = v.Fuel
             })
+            .OrderByDescending(v => v.Id)
             .ToListAsync();
 
             return vehicleModels;
