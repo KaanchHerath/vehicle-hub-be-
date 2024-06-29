@@ -437,6 +437,24 @@ namespace reservation_system_be.Services.AdminReservationServices
             return customerHoverDto;
         }
 
+        public async Task<VehicleLogDescriptionHoverDto> GetVehicleLogDescription(int id)
+        {
+            var vehicleLog = await _context.VehicleLogs
+                .FirstOrDefaultAsync(vl => vl.Id == id);
+            if (vehicleLog == null)
+            {
+                throw new DataNotFoundException("Vehicle Log not found");
+            }
+
+            var vehicleLogDescriptionHoverDto = new VehicleLogDescriptionHoverDto
+            {
+                Id = id,
+                Description = vehicleLog.Description ?? "No description available"
+
+            };
+            return vehicleLogDescriptionHoverDto;
+        }
+
 
     }
 }

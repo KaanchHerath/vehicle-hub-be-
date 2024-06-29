@@ -88,5 +88,12 @@ namespace reservation_system_be.Controllers
             var customer = await _adminReservationService.CustomerDetails(id);
             return Ok(customer);
         }
+        [HttpGet("Vehicle-Log-Description/{id}")]
+        [Authorize(Policy = "AdminAndStaffOnly")]
+        public async Task<IActionResult> GetVehicleLogDescription(int id)
+        {
+            var vehicleLogDescription = await _adminReservationService.GetVehicleLogDescription(id);
+            return Ok(vehicleLogDescription);
+        }
     }
 }
