@@ -147,5 +147,20 @@ namespace reservation_system_be.Services.AdminVehicleServices
             };
             return vehicleModelHoverDto;
         }
+        public async Task<VehicleMaintenanceDescriptionHoverDto> GetVehicleMaintenanceDescription(int id)
+        {
+            var vehicleMaintenance = await _context.VehicleMaintenances
+                .FirstOrDefaultAsync(v => v.Id == id);
+            if (vehicleMaintenance == null)
+            {
+                throw new Exception("Vehicle Maintenance Description not found");
+            }
+            var vehicleMaintenanceDescriptionHoverDto = new VehicleMaintenanceDescriptionHoverDto
+            {
+                Id = vehicleMaintenance.Id,
+                Description = vehicleMaintenance.Description ?? "No description available"
+            };
+            return vehicleMaintenanceDescriptionHoverDto;
+        }
     }
 }
