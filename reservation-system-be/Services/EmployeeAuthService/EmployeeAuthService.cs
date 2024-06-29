@@ -34,27 +34,43 @@ namespace reservation_system_be.Services.EmployeeAuthService
 
         private string WelcomeMail(string employeeEmail, string resetLink)
         {
-            string response = "<div style=\"width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;\">";
-            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;\">";
-            response += "<h1>VehicleHub</h1>";
-            response += "</div>";
-            response += "<div style=\"margin:20px;text-align:left;\">";
-            response += "<img src=\"https://drive.google.com/uc?export=view&id=1S40qYUDb_f9YRAaQeQmPETz5ABYbI32p\" alt=\"Company Logo\" style=\"width:150px;height:auto;display:block;margin:auto;\"/>";
-            response += "<h2 style=\"text-align:center;\">Welcome to Vehicle Hub!</h2>";
-            response += "<p>Thank you for working with our company. You are now an employee of Vehicle Hub.</p>";
-            response += "<p>Your default password is: <strong>NavodhVehicleHub789</strong>.</p>";
-            response += $"<p>Please <a href='{resetLink}'>click here</a> and login to reset your password immediately.</p>";
-            response += "<p style=\"margin-top:20px;\">We appreciate your commitment and look forward to working with you.</p>";
-            response += "<p>Best regards,</p>";
-            response += "<p><strong>VehicleHub Team</strong></p>";
-            response += "</div>";
-            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;margin-top:20px;text-align:center;\">";
-            response += "<p>Contact us: info@vehiclehub.com | (123) 456-7890</p>";
-            response += "<p>1234 Main St, Anytown, USA</p>";
-            response += "</div>";
-            response += "</div>";
+            string response = $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8' />
+    <title>Welcome to VehicleHub</title>
+</head>
+<body style='width: 100%; background-color: #f4f4f4; text-align: center; padding: 20px; font-family: Arial, sans-serif;'>
+    <div style='width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;'>
+        <div style='background-color:#283280;color:#ffffff;padding:10px;'>
+            <h1>VehicleHub</h1>
+        </div>
+        <div style='margin:20px;text-align:left;'>
+            <img src='https://drive.google.com/uc?export=view&id=1wlXifh_GzGGiA43mOQ_MX06LJ6soPqXM' alt='Vehicle Hub Logo' style='width: 150px; height: auto; display: block; margin: auto;'/>
+            <h2 style='text-align:center;'>Welcome to Vehicle Hub!</h2>
+            <p>Thank you for working with our company. You are now an employee of Vehicle Hub.</p>
+            <p>Your default password is: <strong>NavodhVehicleHub789</strong>.</p>
+            <p>Please <a href='{resetLink}'>click here</a> and login to reset your password immediately.</p>
+            <p style='margin-top:20px;'>We appreciate your commitment and look forward to working with you.</p>
+            <p>Best regards,</p>
+            <p><strong>VehicleHub Team</strong></p>
+        </div>
+        <div style='background-color:#283280;color:#ffffff;padding:10px;margin-top:20px;text-align:center;'>
+            <p>Contact us: info@vehiclehub.com | (123) 456-7890</p>
+            <p>1234 Main St, Anytown, USA</p>
+        </div>
+        <div style='text-align: center; margin-top: 20px; color: #7f7f7f;'>
+            <p style='font-size: 12px;'><strong>All rights reserved @VehicleHub. {DateTime.Now.Year}</strong></p>
+            <p style='font-size: 12px;'>1234 Galle Road, Colombo, Sri Lanka</p>
+        </div>
+    </div>
+</body>
+</html>";
+
             return response;
         }
+
         public async Task<string> Register(Employee employee)
         {
             const string defaultPassword = "NavodhVehicleHub789"; // Define a default password
@@ -106,7 +122,7 @@ namespace reservation_system_be.Services.EmployeeAuthService
                 {
             new Claim(ClaimTypes.Name, employee.Id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.UtcNow.AddHours(10),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 

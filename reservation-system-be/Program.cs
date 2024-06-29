@@ -53,6 +53,7 @@ using reservation_system_be.Services.ReservationPendingService;
 using reservation_system_be.Services.CheckPaymentService;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using reservation_system_be.Services.GoogleService;
+using reservation_system_be.Services.FacebookService;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -72,6 +73,11 @@ builder.Services.AddAuthentication(options =>
         options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
         options.SaveTokens = true;
         options.CallbackPath = "/google-callback";
+    })
+    .AddFacebook(options =>
+    {
+        options.AppId = "2447475068777035";
+        options.AppSecret = "86b1a4e52e4091606c44f6f6f01dc4e0";
     })
     .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
@@ -211,6 +217,7 @@ builder.Services.AddScoped<IExternalLoginService, ExternalLoginService>();
 builder.Services.AddScoped<IBillingDetailsService, BillingDetailsService>();
 builder.Services.AddScoped<ICheckPaymentService, CheckPaymentService>();
 builder.Services.AddScoped<GoogleAuthService>();
+builder.Services.AddScoped<FacebookAuthService>();
 
 builder.Services.AddHttpClient();
 builder.Services.AddTransient<IEmailService, EmailService>();

@@ -1,30 +1,31 @@
-﻿using Google.Apis.Auth;
-using Google.Apis.Auth.OAuth2.Responses;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using reservation_system_be.DTOs;
 using reservation_system_be.Helper;
 using reservation_system_be.Models;
 using reservation_system_be.Services.CustomerServices;
 using reservation_system_be.Services.EmailServices;
+using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Net.WebRequestMethods;
 
-
-namespace reservation_system_be.Services.GoogleService
+namespace reservation_system_be.Services.FacebookService
 {
-    public class GoogleAuthService
+    public class FacebookAuthService
     {
         private readonly IConfiguration _config;
         private readonly ICustomerService _customerService;
-        private readonly ILogger<GoogleAuthService> _logger;
+        private readonly ILogger<FacebookAuthService> _logger;
         private readonly IEmailService _emailService;
 
-
-        public GoogleAuthService(ICustomerService customerService, IConfiguration config, ILogger<GoogleAuthService> logger, IEmailService emailService)
+        public FacebookAuthService(ICustomerService customerService, IConfiguration config, ILogger<FacebookAuthService> logger, IEmailService emailService)
         {
             _customerService = customerService;
             _config = config;
@@ -32,63 +33,58 @@ namespace reservation_system_be.Services.GoogleService
             _emailService = emailService;
         }
 
-        public string GetGoogleAuthorizationUrl(string redirectUrl)
+        public string GetFacebookAuthorizationUrl(string redirectUrl)
         {
-            var clientId = _config["GoogleAuth:ClientId"];
-            return $"https://accounts.google.com/o/oauth2/v2/auth?response_type=code&client_id={clientId}&redirect_uri={redirectUrl}&scope=email%20profile";
+            var appId = _config["FacebookAuth:AppId"];
+            var encodedRedirectUri = System.Web.HttpUtility.UrlEncode(redirectUrl);
+
+            // Construct the Facebook authorization URL
+            return $"https://www.facebook.com/v10.0/dialog/oauth?client_id={appId}&redirect_uri={encodedRedirectUri}&scope=email";
         }
 
-        public async Task<AuthDto> HandleGoogleCallbackAsync(string email)
+        public async Task<AuthDto> HandleFacebookCallAsync(string accessToken)
         {
             try
             {
-                _logger.LogInformation("Handling Google callback with email: {email}", email);
+                // Exchange Facebook access token for user info
+                var userInfo = await GetUserInfoFromFacebookAsync(accessToken);
 
-                // Check if credential is null or empty
-                if (string.IsNullOrEmpty(email))
+                if (userInfo == null || string.IsNullOrEmpty(userInfo.Email))
                 {
-                    _logger.LogWarning("Email is null or empty");
-                    throw new ArgumentException("Email is null or empty");
+                    _logger.LogWarning("Email is null or empty from Facebook user info.");
+                    throw new ArgumentException("Email is null or empty from Facebook user info.");
                 }
 
-
-                // Check if user already exists
-                var user = await _customerService.GetCustomerByEmail(email);
-                if (user != null)
+                var existingUser = await _customerService.GetCustomerByEmail(userInfo.Email);
+                if (existingUser != null)
                 {
                     _logger.LogInformation("User found. Authenticating user...");
+                    var token = GenerateJWTToken(userInfo);
+                    var encryptedCustomerId = EncryptionHelper.Encrypt(existingUser.Id);
 
-                    // Authenticate user and generate JWT token
-                    var googleDTO = new GoogleDTO { Email = user.Email };
-                    var token = GenerateJWTToken(googleDTO);
-                    var encryptedCustomerId = EncryptionHelper.Encrypt(user.Id);
-
-                    // Send welcome email to the new customer
-                    await SendWelcomeEmailAsync(user.Email);
+                   
 
                     return new AuthDto
                     {
                         token = token,
                         id = encryptedCustomerId,
-                        status = user.Status
+                        status = existingUser.Status
                     };
                 }
                 else
                 {
                     _logger.LogInformation("User not found. Creating new user...");
 
-                    // Create new user
                     var newCustomer = new Customer
                     {
-                        Email = email,
-                        // Add other necessary fields here
+                        Email = userInfo.Email,
                     };
                     await _customerService.AddCustomer(newCustomer);
 
-                    // Generate JWT token for new user
-                    var googleDTO = new GoogleDTO { Email = newCustomer.Email };
-                    var token = GenerateJWTToken(googleDTO);
+                    var token = GenerateJWTToken(userInfo);
                     var encryptedCustomerId = EncryptionHelper.Encrypt(newCustomer.Id);
+
+                    await SendWelcomeEmailAsync(newCustomer.Email);
 
                     return new AuthDto
                     {
@@ -98,15 +94,32 @@ namespace reservation_system_be.Services.GoogleService
                     };
                 }
             }
-            catch (ArgumentException ex)
-            {
-                _logger.LogError(ex, "ArgumentException occurred in HandleGoogleCallbackAsync");
-                throw;
-            }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "An unexpected error occurred in HandleGoogleCallbackAsync");
-                throw new InvalidOperationException("An error occurred while handling the Google callback", ex);
+                _logger.LogError(ex, "An error occurred while handling the Facebook callback");
+                throw new InvalidOperationException("An error occurred while handling the Facebook callback", ex);
+            }
+        }
+
+        private async Task<FacebookDTO> GetUserInfoFromFacebookAsync(string accessToken)
+        {
+            // Make a request to Facebook API to get user info
+            var requestUrl = $"https://graph.facebook.com/me?fields=email&access_token={accessToken}";
+
+            using (var httpClient = new HttpClient())
+            {
+                var response = await httpClient.GetAsync(requestUrl);
+                if (response.IsSuccessStatusCode)
+                {
+                    var jsonString = await response.Content.ReadAsStringAsync();
+                    var userInfo = JsonConvert.DeserializeObject<FacebookDTO>(jsonString);
+                    return userInfo;
+                }
+                else
+                {
+                    _logger.LogError("Failed to retrieve user info from Facebook API");
+                    throw new HttpRequestException("Failed to retrieve user info from Facebook API");
+                }
             }
         }
 
@@ -127,13 +140,12 @@ namespace reservation_system_be.Services.GoogleService
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Failed to send welcome email to {customerEmail}", customerEmail);
-                // Handle exception as needed
             }
         }
 
         private string WelcomeMail(string customerEmail)
         {
-            string response = $@"
+            return $@"
 <!DOCTYPE html>
 <html>
 <head>
@@ -162,12 +174,9 @@ namespace reservation_system_be.Services.GoogleService
     </div>
 </body>
 </html>";
-
-            return response;
         }
 
-
-        private string GenerateJWTToken(GoogleDTO googleDTO)
+        private string GenerateJWTToken(FacebookDTO facebookDTO)
         {
             var key = _config["Jwt:Key"];
             var issuer = _config["Jwt:Issuer"];
@@ -178,10 +187,10 @@ namespace reservation_system_be.Services.GoogleService
 
             var claims = new[]
             {
-            new Claim(JwtRegisteredClaimNames.Sub, googleDTO.Email),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-            new Claim(ClaimTypes.Role, "customer")
-        };
+                new Claim(JwtRegisteredClaimNames.Sub, facebookDTO.Email),
+                new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
+                new Claim(ClaimTypes.Role, "customer")
+            };
 
             var token = new JwtSecurityToken(
                 issuer: issuer,
@@ -193,7 +202,5 @@ namespace reservation_system_be.Services.GoogleService
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
-
-       
     }
 }
