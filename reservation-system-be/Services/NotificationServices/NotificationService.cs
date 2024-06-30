@@ -23,6 +23,7 @@ namespace reservation_system_be.Services.NotificationServices
                           (notification, customerReservation) => new { notification, customerReservation })
                     .Where(nrc => nrc.customerReservation.CustomerId == uid)
                     .OrderByDescending(nrc => nrc.notification.Generated_DateTime)
+                    .Take(20)
                     .Select(nrc => nrc.notification)
                     .ToListAsync();
 
@@ -40,6 +41,7 @@ namespace reservation_system_be.Services.NotificationServices
             {
                 var notifications = await _context.Notifications
                                                   .OrderByDescending(n => n.Generated_DateTime)
+                                                  .Take(20)
                                                   .ToListAsync();
                 return notifications;
             }
@@ -48,7 +50,7 @@ namespace reservation_system_be.Services.NotificationServices
                 throw new Exception("Error getting notifications for user.", ex);
             }
         }
-        
+
         public async Task<bool> DeleteNotification(int notificationId)
         {
             try

@@ -48,7 +48,10 @@ namespace reservation_system_be.Services.VehicleFilterServices
                           reservation.Reservation.StartDate > endDate ||
                           (reservation.Reservation.EndDate == startDate && reservation.Reservation.EndTime <= startTime) ||
                           (reservation.Reservation.StartDate == endDate && reservation.Reservation.StartTime >= endTime)
-                        )
+                        ) &&
+                        !(reservation.Reservation.Status == Status.Ended ||
+                          reservation.Reservation.Status == Status.Completed ||
+                          reservation.Reservation.Status == Status.Cancelled)
                     ))
                 .ToListAsync();
 
@@ -84,6 +87,7 @@ namespace reservation_system_be.Services.VehicleFilterServices
             }
             return bookNowDtos;
         }
+
 
     }
 }
