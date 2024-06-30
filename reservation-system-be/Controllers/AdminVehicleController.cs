@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using reservation_system_be.Data;
 using reservation_system_be.DTOs;
 using reservation_system_be.Services.AdminVehicleServices;
@@ -65,6 +66,48 @@ namespace reservation_system_be.Controllers
             {
                 await _adminVehicleService.UpdateVehicleModel(id, createVehicleModelDto);
                 return Ok();
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+        [HttpGet("regNo")]
+        public async Task<ActionResult<VehicleHoverDto>> GetVehicleHover(string regNo)
+        {
+            try
+            {
+                var vehicleHoverDto = await _adminVehicleService.GetVehicleHover(regNo);
+                return Ok(vehicleHoverDto);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+
+        [HttpGet("hover/{id}")]
+        public async Task<ActionResult<VehicleModelHoverDto>> GetVehicleModelHover(int id)
+        {
+            try
+            {
+                var vehicleModelHoverDto = await _adminVehicleService.GetVehicleModelHover(id);
+                return Ok(vehicleModelHoverDto);
+            }
+            catch (DataNotFoundException e)
+            {
+                return NotFound(e.Message);
+            }
+        }
+
+        [HttpGet("maintenance/{id}")]
+        public async Task<ActionResult<VehicleMaintenanceDescriptionHoverDto>> GetVehicleMaintenanceDescription(int id)
+        {
+            try
+            {
+                var vehicleMaintenanceDescriptionHoverDto = await _adminVehicleService.GetVehicleMaintenanceDescription(id);
+                return Ok(vehicleMaintenanceDescriptionHoverDto);
             }
             catch (DataNotFoundException e)
             {

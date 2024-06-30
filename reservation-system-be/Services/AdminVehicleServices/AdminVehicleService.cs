@@ -101,5 +101,66 @@ namespace reservation_system_be.Services.AdminVehicleServices
             return await _additionalFeaturesService.GetAdditionalFeatures(additionalFeatures.Id);
 
         }
+        public async Task<VehicleHoverDto> GetVehicleHover(string regNo)
+        {
+            var vehicle = await _context.Vehicles
+                .Include(v => v.VehicleModel) 
+                .Include(v => v.VehicleType)
+                .FirstOrDefaultAsync(v => v.RegistrationNumber == regNo);
+            if (vehicle == null)
+            {
+                throw new Exception("Vehicle not found");
+            }
+            var vehicleHoverDto = new VehicleHoverDto
+            {
+                Id = vehicle.Id,
+                RegistrationNumber = vehicle.RegistrationNumber,
+                Model = vehicle.VehicleModel.Name,
+                Type = vehicle.VehicleType.Name,
+                Year = vehicle.VehicleModel.Year,
+                Thumbnail = vehicle.Thumbnail
+            };
+            return vehicleHoverDto;
+        }
+        public async Task<VehicleModelHoverDto> GetVehicleModelHover(int id)
+        {
+           var vehicle = await _context.Vehicles
+                .Include(v => v.VehicleModel) 
+                .ThenInclude(vm => vm.VehicleMake)
+                .Where(v => v.Id == id)
+                .FirstOrDefaultAsync();
+
+            if (vehicle == null)
+            {
+                throw new Exception("Vehicle not found");
+            }
+            var vehicleModelHoverDto = new VehicleModelHoverDto
+            {
+                Id = id,
+                VehicleModelId = vehicle.VehicleModel.Id,
+                Name = vehicle.VehicleModel.Name,
+                Year = vehicle.VehicleModel.Year,
+                EngineCapacity = vehicle.VehicleModel.EngineCapacity,
+                SeatingCapacity = vehicle.VehicleModel.SeatingCapacity,
+                Fuel = vehicle.VehicleModel.Fuel,
+                Make = vehicle.VehicleModel.VehicleMake.Logo
+            };
+            return vehicleModelHoverDto;
+        }
+        public async Task<VehicleMaintenanceDescriptionHoverDto> GetVehicleMaintenanceDescription(int id)
+        {
+            var vehicleMaintenance = await _context.VehicleMaintenances
+                .FirstOrDefaultAsync(v => v.Id == id);
+            if (vehicleMaintenance == null)
+            {
+                throw new Exception("Vehicle Maintenance Description not found");
+            }
+            var vehicleMaintenanceDescriptionHoverDto = new VehicleMaintenanceDescriptionHoverDto
+            {
+                Id = vehicleMaintenance.Id,
+                Description = vehicleMaintenance.Description ?? "No description available"
+            };
+            return vehicleMaintenanceDescriptionHoverDto;
+        }
     }
 }

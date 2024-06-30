@@ -9,5 +9,6 @@ namespace reservation_system_be.Services.EmployeeServices
         Task<Employee> AddEmployee(Employee employee);
         Task<Employee> UpdateEmployee(int id, Employee employee);
         Task DeleteEmployee(int id);
+        Task<Employee> GetEmployeeById(int id);
     }
 }

@@ -13,5 +13,7 @@ namespace reservation_system_be.Services.AdminReservationServices
         Task <IEnumerable<VehicleCardDto>> AvailableVehicles(int id);
         Task ReservationChangeVehicle(int id, int vid);
         Task CancelReservation(int id, int eid);
+        Task<CustomerHoverDto> CustomerDetails(int id);
+        Task<VehicleLogDescriptionHoverDto> GetVehicleLogDescription(int id);
     }
 }
