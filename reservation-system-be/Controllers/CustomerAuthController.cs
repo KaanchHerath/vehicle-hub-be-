@@ -11,6 +11,10 @@ using System.Text;
 using reservation_system_be.Services.CustomerAuthServices;
 using reservation_system_be.DTOs;
 using Org.BouncyCastle.Asn1.Ocsp;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using Azure;
+using Microsoft.AspNetCore.Authorization;
 
 namespace reservation_system_be.Controllers
 {
@@ -100,6 +104,7 @@ namespace reservation_system_be.Controllers
             }
         }
 
+        [Authorize(Policy = "CustomerOnly")]
         [HttpPost("ResetPasswordProfile")]
         public async Task<IActionResult> ResetPasswordProfile([FromBody] ProfilePasswordDTO profilePasswordDTO)
         {
@@ -125,7 +130,7 @@ namespace reservation_system_be.Controllers
             return Ok(result);
         }
 
-        [HttpPut("deactivate/{id}")]
+        [HttpPost("deactivate/{id}")]
         public async Task<IActionResult> DeactivateCustomer(int id)
         {
             try
@@ -142,6 +147,29 @@ namespace reservation_system_be.Controllers
                 return StatusCode(500, new { message = ex.Message });
             }
         }
+
+        [HttpPost("reactivate/{id}")]
+        public async Task<IActionResult> ReactivateCustomer(int id)
+        {
+            try
+            {
+                await _customerAuthService.ReactivateCustomer(id);
+                return Ok(new { message = "Customer Reactivated successfully" });
+            }
+            catch (DataNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = ex.Message });
+            }
+        }
+
+
+
+
+
     }
 
 

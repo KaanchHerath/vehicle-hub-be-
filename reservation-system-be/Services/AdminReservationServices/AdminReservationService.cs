@@ -84,31 +84,44 @@ namespace reservation_system_be.Services.AdminReservationServices
         private string DepositRequestMail(int id)
         {
             string encryptedId = EncryptionHelper.Encrypt(id);
-            // Construct the payment link with the invoice ID
-            string paymentLink = "http://localhost:3000/bookingconfirmation/" + encryptedId; // fix link
+            string paymentLink = "http://localhost:3000/bookingconfirmation/" + encryptedId;
 
-            string response = "<div style=\"width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;\">";
-            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;\">";
-            response += "<h1>VehicleHub</h1>";
-            response += "</div>";
-            response += "<div style=\"margin:20px;text-align:left;\">";
-            response += "<img src=\"https://drive.google.com/uc?export=view&id=1S40qYUDb_f9YRAaQeQmPETz5ABYbI32p\" alt=\"Company Logo\" style=\"width:150px;height:auto;display:block;margin:auto;\"/>";
-            response += "<h2 style=\"text-align:center;\">Deposit Payment Required</h2>";
-            response += "<p>Thank you for your vehicle reservation request.</p>";
-            response += "<p style=\"margin-top:20px;\">To confirm your reservation, please make a deposit payment within the next 3 days. If we do not receive your payment, your pending reservation request will be cancelled.</p>";
-            response += "<p>You can make your payment by clicking the link below:</p>";
-            response += "<p style=\"text-align:center;\"><a href=\"" + paymentLink + "\" style=\"background-color:#283280;color:#ffffff;padding:10px 20px;text-decoration:none;border-radius:5px;\">Make Deposit Payment</a></p>";
-            response += "<p>We appreciate your business and look forward to serving you.</p>";
-            response += "<p>Best regards,</p>";
-            response += "<p><strong>VehicleHub Team</strong></p>";
-            response += "</div>";
-            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;margin-top:20px;text-align:center;\">";
-            response += "<p>Contact us: vehiclehub01@gmail.com | +94 77 123 4567</p>";
-            response += "<p>1234 Galle Road, Colombo, Sri Lanka</p>";
-            response += "</div>";
-            response += "</div>";
+            string response = @"
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset='UTF-8' />
+                    <title>Deposit Request Mail</title>
+                </head>
+                <body style='width: 100%; background-color: #f4f4f4; text-align: center; padding: 20px; font-family: Arial, sans-serif;'>
+                    <div style='text-align: center; margin-bottom: 20px'>
+                        <img src='https://drive.google.com/uc?export=view&id=1wlXifh_GzGGiA43mOQ_MX06LJ6soPqXM' alt='Vehicle Hub Logo' style='width: 200px; height: auto; display: inline-block; vertical-align: middle;' />
+                    </div>
+                    <div style='background-color: #ffffff; padding: 50px 50px 10px 50px; border-radius: 10px; margin: 20px auto; max-width: 650px;'>
+                        <h1 style='color: #000000; margin: 20px 0; text-align: center; font-size: 40px;'>Reservation accepted!</h1>
+                        <h2 style='color: #000000; text-align: center; font-size: 18px; font-weight: normal; margin-bottom: 5px;'>Reservation #"" + reservationId + @""</h2>
+                        <p style='color: #888888; text-align: center; font-size: 14px; margin: 5px;'>" + DateTime.Now.ToString("MMM dd, yyyy") + @"</p>
+                        <p style='color: #000000; text-align: left; padding-top: 40px; padding-bottom: 10px;'>Thank you for your vehicle reservation request.</p>
+                        <p style='color: #000000; text-align: left; margin: 5px 0;'>To confirm your reservation, please make a deposit payment within the next 3 days. If we do not receive your payment, your pending reservation request will be cancelled.</p>
+                        <p style='color: #000000; text-align: left; margin: 5px 0;'>You can make your payment by clicking the link below:</p>
+                        <p style='text-align: center; margin: 50px 0;'>
+                            <a href='" + paymentLink + @"' style='background-color: #283280; border: none; color: #fbdac6; padding: 15px 20px; text-decoration: none; border-radius: 5px; font-size: small;'>Make Deposit Payment</a>
+                        </p>
+                        <p style='color: #000000; text-align: left; margin-top: 20px;'>We appreciate your business and look forward to serving you.</p>
+                        <p style='color: #000000; text-align: left; margin-bottom: 5px;'>Best regards,</p>
+                        <p style='color: #000000; text-align: left; margin-top: 5px;'><strong>VehicleHub Team</strong></p>
+                        <p style='padding: 10px; margin-top: 40px; text-align: center;'>Contact us: <a href='mailto:vehiclehub01@gmail.com'>vehiclehub01@gmail.com</a> | <a href='tel:+94771234567'>+94 77 123 4567</a></p>
+                    </div>
+                    <div style='text-align: center; margin-top: 20px; color: #7f7f7f;'>
+                        <p style='font-size: 12px;'><strong>All rights reserved @VehicleHub. " + DateTime.Now.Year + @"</strong></p>
+                        <p style='font-size: 12px;'>1234 Galle Road, Colombo, Sri Lanka</p>
+                    </div>
+                </body>
+                </html>";
+
             return response;
         }
+
 
 
         public async Task DeclineReservation(int id, int eid)
@@ -145,29 +158,42 @@ namespace reservation_system_be.Services.AdminReservationServices
             // Construct the home link for redirection
             string vehicleFleetLink = "http://localhost:3000/vehiclefleet"; // fix link
 
-            string response = "<div style=\"width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;\">";
-            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;\">";
-            response += "<h1>VehicleHub</h1>";
-            response += "</div>";
-            response += "<div style=\"margin:20px;text-align:left;\">";
-            response += "<img src=\"https://drive.google.com/uc?export=view&id=1S40qYUDb_f9YRAaQeQmPETz5ABYbI32p\" alt=\"Company Logo\" style=\"width:150px;height:auto;display:block;margin:auto;\"/>";
-            response += "<h2 style=\"text-align:center;\">Reservation Request Declined</h2>";
-            response += "<p>Dear Customer,</p>";
-            response += "<p>We regret to inform you that your vehicle reservation request with ID #" + id + " has been declined.</p>";
-            response += "<p>We apologize for any inconvenience this may have caused. If you have any questions or need further details, please feel free to contact us.</p>";
-            response += "<p>Our team is here to assist you and we hope to serve you in the future.</p>";
-            response += "<p>You can make another reservation by clicking the link below:</p>";
-            response += "<p style=\"text-align:center;\"><a href=\"" + vehicleFleetLink + "\" style=\"background-color:#283280;color:#ffffff;padding:10px 20px;text-decoration:none;border-radius:5px;\">Make Another Reservation</a></p>";
-            response += "<p>Best regards,</p>";
-            response += "<p><strong>VehicleHub Team</strong></p>";
-            response += "</div>";
-            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;margin-top:20px;text-align:center;\">";
-            response += "<p>Contact us: vehiclehub01@gmail.com | +94 77 123 4567</p>";
-            response += "<p>1234 Galle Road, Colombo, Sri Lanka</p>";
-            response += "</div>";
-            response += "</div>";
+            string response = @"
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset='UTF-8' />
+                    <title>Reservation Declined Mail</title>
+                </head>
+                <body style='width: 100%; background-color: #f4f4f4; text-align: center; padding: 20px; font-family: Arial, sans-serif;'>
+                    <div style='text-align: center; margin-bottom: 20px'>
+                        <img src='https://drive.google.com/uc?export=view&id=1wlXifh_GzGGiA43mOQ_MX06LJ6soPqXM' alt='Vehicle Hub Logo' style='width: 200px; height: auto; display: inline-block; vertical-align: middle;' />
+                    </div>
+                    <div style='background-color: #ffffff; padding: 50px 50px 10px 50px; border-radius: 10px; margin: 20px auto; max-width: 650px;'>
+                        <h1 style='color: #000000; margin: 20px 0; text-align: center; font-size: 40px;'>Reservation Request Declined</h1>
+                        <p style='color: #888888; text-align: center; font-size: 14px; margin: 5px;'>" + DateTime.Now.ToString("MMM dd, yyyy") + @"</p>
+                        <p style='color: #000000; text-align: left; padding-top: 40px; padding-bottom: 10px;'>Dear Customer,</p>
+                        <p style='color: #000000; text-align: left; margin: 5px 0;'>We regret to inform you that your vehicle reservation request with ID #" + id + @" has been declined.</p>
+                        <p style='color: #000000; text-align: left; margin: 5px 0;'>We apologize for any inconvenience this may have caused. If you have any questions or need further details, please feel free to contact us.</p>
+                        <p style='color: #000000; text-align: left; margin: 5px 0;'>Our team is here to assist you and we hope to serve you in the future.</p>
+                        <p style='color: #000000; text-align: left; margin: 5px 0;'>You can make another reservation by clicking the link below:</p>
+                        <p style='text-align: center; margin: 50px 0;'>
+                            <a href='" + vehicleFleetLink + @"' style='background-color: #283280; border: none; color: #fbdac6; padding: 15px 20px; text-decoration: none; border-radius: 5px; font-size: small;'>Make Another Reservation</a>
+                        </p>
+                        <p style='color: #000000; text-align: left; margin-bottom: 5px;'>Best regards,</p>
+                        <p style='color: #000000; text-align: left; margin-top: 5px;'><strong>VehicleHub Team</strong></p>
+                        <p style='padding: 10px; margin-top: 40px; text-align: center;'>Contact us: <a href='mailto:vehiclehub01@gmail.com'>vehiclehub01@gmail.com</a> | <a href='tel:+94771234567'>+94 77 123 4567</a></p>
+                    </div>
+                    <div style='text-align: center; margin-top: 20px; color: #7f7f7f;'>
+                        <p style='font-size: 12px;'><strong>All rights reserved @VehicleHub. " + DateTime.Now.Year + @"</strong></p>
+                        <p style='font-size: 12px;'>1234 Galle Road, Colombo, Sri Lanka</p>
+                    </div>
+                </body>
+                </html>";
+
             return response;
         }
+
 
 
         public async Task<IEnumerable<ViewReservationDto>> ViewReservations()
@@ -208,7 +234,8 @@ namespace reservation_system_be.Services.AdminReservationServices
 
             customerReservation.Reservation.Status = Status.Ongoing;
             customerReservation.Reservation.EmployeeId = eid;
-            await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
+            _context.Entry(customerReservation.Reservation).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
 
             var notification = new Notification
             {
@@ -289,7 +316,7 @@ namespace reservation_system_be.Services.AdminReservationServices
             {
                 Type = "Reservation",
                 Title = "Reservation Ended",
-                Description = "Your reservation has ended. Please make the final payment to the complete the reservation. Thank you for choosing VehicleHub!",
+                Description = $"Your reservation with ID #{customerReservation.Id} has ended. Please make the final payment to the complete the reservation. Thank you for choosing VehicleHub!",
                 Generated_DateTime = DateTime.Now,
                 CustomerReservationId = customerReservation.Id
             };
@@ -299,39 +326,51 @@ namespace reservation_system_be.Services.AdminReservationServices
             {
                 ToEmail = customerReservation.Customer.Email,
                 Subject = "Reservation Ended",
-                Body = ReservationEndedMail(invoice.Id)
+                Body = ReservationEndedMail(invoice.Id, customerReservation.Id)
             };
             await _emailService.SendEmailAsync(mailRequest);
         }
 
-        private string ReservationEndedMail(int id)
+        private string ReservationEndedMail(int id, int reservationId)
         {
             string encryptedId = EncryptionHelper.Encrypt(id);
-            // Construct the home link for redirection
-            string paymentLink = "http://localhost:3000/bookingconfirmation/" + encryptedId; // fix link
+            string paymentLink = "http://localhost:3000/bookingconfirmation/" + encryptedId;
 
-            string response = "<div style=\"width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;\">";
-            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;\">";
-            response += "<h1>VehicleHub</h1>";
-            response += "</div>";
-            response += "<div style=\"margin:20px;text-align:left;\">";
-            response += "<img src=\"https://drive.google.com/uc?export=view&id=1S40qYUDb_f9YRAaQeQmPETz5ABYbI32p\" alt=\"Company Logo\" style=\"width:150px;height:auto;display:block;margin:auto;\"/>";
-            response += "<h2 style=\"text-align:center;\">Reservation Ended</h2>";
-            response += "<p>Dear Customer,</p>";
-            response += "<p>Your reservation with ID #" + id + " has ended. We hope you enjoyed your ride with us.</p>";
-            response += "<p>Please make the final payment to complete the reservation. You can make your payment by clicking the link below:</p>";
-            response += "<p style=\"text-align:center;\"><a href=\"" + paymentLink + "\" style=\"background-color:#283280;color:#ffffff;padding:10px 20px;text-decoration:none;border-radius:5px;\">Make Final Payment</a></p>";
-            response += "<p>Thank you for choosing VehicleHub. We look forward to serving you again.</p>";
-            response += "<p>Best regards,</p>";
-            response += "<p><strong>VehicleHub Team</strong></p>";
-            response += "</div>";
-            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;margin-top:20px;text-align:center;\">";
-            response += "<p>Contact us: vehiclehub01@gmail.com | +94 77 123 4567</p>";
-            response += "<p>1234 Galle Road, Colombo, Sri Lanka</p>";
-            response += "</div>";
-            response += "</div>";
+            string response = @"
+                <!DOCTYPE html>
+                <html>
+                  <head>
+                    <meta charset='UTF-8' />
+                    <title>Final Payment Request Mail</title>
+                  </head>
+                  <body style='width: 100%; background-color: #f4f4f4; text-align: center; padding: 20px; font-family: Arial, sans-serif;'>
+                    <div style='text-align: center; margin-bottom: 20px'>
+                      <img src='https://drive.google.com/uc?export=view&id=1wlXifh_GzGGiA43mOQ_MX06LJ6soPqXM' alt='Vehicle Hub Logo' style='width: 200px; height: auto; display: inline-block; vertical-align: middle;'/>
+                    </div>
+                    <div style='background-color: #ffffff; padding: 50px 50px 10px 50px; border-radius: 10px; margin: 20px auto; max-width: 650px;'>
+                      <h1 style='color: #000000; margin: 20px 0; text-align: center; font-size: 40px;'>Reservation Ended</h1>
+                      <h2 style='color: #000000; text-align: center; font-size: 18px; font-weight: normal; margin-bottom: 5px;'>Reservation #" + reservationId + @"</h2>
+                      <p style='color: #888888; text-align: center; font-size: 14px; margin: 5px;'>" + DateTime.Now.ToString("MMM dd, yyyy") + @"</p>
+                      <p style='color: #000000; text-align: left; padding-top: 40px; padding-bottom: 10px;'>Thank you for choosing VehicleHub for your vehicle reservation.</p>
+                      <p style='color: #000000; text-align: left; margin: 5px 0;'>We hope you had a great experience with us. To complete your reservation, please make the final payment at your earliest convenience.</p>
+                      <p style='color: #000000; text-align: left; margin: 5px 0;'>You can make your final payment by clicking the link below:</p>
+                      <p style='text-align: center; margin: 50px 0;'><a href='" + paymentLink + @"'style='background-color: #283280; border: none; color: #fbdac6; padding: 15px 20px; text-decoration: none; border-radius: 5px; font-size: small;'>Make Final Payment</a></p>
+                      <p style='color: #000000; text-align: left; margin-top: 20px;'>We appreciate your business and look forward to serving you again.</p>
+                      <p style='color: #000000; text-align: left; margin-bottom: 5px;'>Best regards,</p>
+                      <p style='color: #000000; text-align: left; margin-top: 5px;'><strong>VehicleHub Team</strong></p>
+                      <p style='padding: 10px; margin-top: 40px; text-align: center;'>Contact us: <a href='mailto:vehiclehub01@gmail.com'>vehiclehub01@gmail.com</a> | <a href='tel:+94771234567'>+94 77 123 4567</a></p>
+                    </div>
+                    <div style='text-align: center; margin-top: 20px; color: #7f7f7f;'>
+                      <p style='font-size: 12px;'><strong>All rights reserved @VehicleHub. "" + DateTime.Now.Year + @""</strong></p>
+                      <p style='font-size: 12px;'>1234 Galle Road, Colombo, Sri Lanka</p>
+                    </div>
+                  </body>
+                </html>
+                ";
+
             return response;
         }
+
 
         private float CalFinalAmount(CustomerReservationDto customerReservation, VehicleLog vehicleLog)
         {
@@ -393,8 +432,68 @@ namespace reservation_system_be.Services.AdminReservationServices
 
             customerReservation.VehicleId = vid;
 
-            await _customerReservationService.UpdateCustomerReservation(id, customerReservation);
+            _context.Entry(customerReservation).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            var cr = await _customerReservationService.GetCustomerReservation(id);
+
+            var notification = new Notification
+            {
+                Type = "Reservation",
+                Title = "Vehicle Changed",
+                Description = $"Your vehicle of Reservation #{customerReservation.Id} has been changed to {cr.Vehicle.VehicleModel.VehicleMake.Name} {cr.Vehicle.VehicleModel.Name}.",
+                Generated_DateTime = DateTime.Now,
+                CustomerReservationId = customerReservation.Id
+            };
+            await _notificationService.AddNotification(notification);
+
+            MailRequest mailRequest = new MailRequest
+            {
+                ToEmail = customerReservation.Customer.Email,
+                Subject = "Vehicle Changed",
+                Body = VehicleChangedMail(customerReservation.Id, cr.Vehicle.VehicleModel.VehicleMake.Name, cr.Vehicle.VehicleModel.Name, cr.Vehicle.Id, cr.Vehicle.VehicleModel.Year)
+            };
+            await _emailService.SendEmailAsync(mailRequest);
         }
+
+        private string VehicleChangedMail(int reservationId, string make, string model, int vehicleId, int year)
+        {
+            string vehicleLink = "http://localhost:3000/vehiclefleet/" + vehicleId;
+
+            string response = @"
+                <!DOCTYPE html>
+                <html><head><meta charset='UTF-8' /><title>Vehicle Change Notification</title></head>
+                <body style='width: 100%; background-color: #f4f4f4; text-align: center; padding: 20px; font-family: Arial, sans-serif;'>
+                  <div style='text-align: center; margin-bottom: 20px'>
+                    <img src='https://drive.google.com/uc?export=view&id=1wlXifh_GzGGiA43mOQ_MX06LJ6soPqXM' alt='Vehicle Hub Logo' style='width: 200px; height: auto; display: inline-block; vertical-align: middle;' />
+                  </div>
+                  <div style='background-color: #ffffff; padding: 50px 50px 10px 50px; border-radius: 10px; margin: 20px auto; max-width: 500px;'>
+                    <h1 style='color: #000000; margin: 20px 0; text-align: center; font-size: 40px;'>Vehicle Change Notification</h1>
+                    <h2 style='color: #000000; text-align: center; font-size: 18px; font-weight: normal; margin-bottom: 5px;'>Reservation #" + reservationId + @"</h2>
+                    <p style='color: #888888; text-align: center; font-size: 14px; margin: 5px;'>" + DateTime.Now.ToString("MMM dd, yyyy") + @"</p>
+                    <p style='color: #000000; text-align: left; padding-top: 40px; padding-bottom: 10px;'>We wanted to inform you that the vehicle for your reservation has been changed. The new vehicle details are as follows:</p>
+                    <p style='color: #000000; text-align: left; margin: 5px 0;'><strong>Make:</strong> " + make + @"</p>
+                    <p style='color: #000000; text-align: left; margin: 5px 0;'><strong>Model:</strong> " + model + @"</p>
+                    <p style='color: #000000; text-align: left; margin: 5px 0; padding-bottom: 10px'><strong>Year:</strong> " + year + @"</p>
+                    <p style='color: #000000; text-align: left; margin: 5px 0;'>If you are not satisfied with the changed vehicle, please notify us as soon as possible. You can contact us to request a cancellation and a refund of your deposit payment if it has already been made.</p>
+                    <p style='text-align: center; margin: 50px 0;'><a href='" + vehicleLink + @"' style='background-color: #283280; border: none; color: #fbdac6; padding: 15px 20px; text-decoration: none; border-radius: 5px; font-size: small;'>View Vehicle</a></p>
+                    <p style='color: #000000; text-align: left; margin-top: 20px;'>We apologize for any inconvenience caused and appreciate your understanding.</p>
+                    <p style='color: #000000; text-align: left; margin-bottom: 5px;'>Best regards,</p>
+                    <p style='color: #000000; text-align: left; margin-top: 5px;'><strong>VehicleHub Team</strong></p>
+                    <p style='padding: 10px; margin-top: 40px; text-align: center;'>Contact us: <a href='mailto:vehiclehub01@gmail.com'>vehiclehub01@gmail.com</a> | <a href='tel:+94771234567'>+94 77 123 4567</a></p>
+                  </div>
+                  <div style='text-align: center; margin-top: 20px; color: #7f7f7f;'>
+                    <p style='font-size: 12px;'><strong>All rights reserved @VehicleHub. " + DateTime.Now.Year + @"</strong></p>
+                    <p style='font-size: 12px;'>1234 Galle Road, Colombo, Sri Lanka</p>
+                  </div>
+                </body></html>
+                ";
+
+            return response;
+        }
+
+
+
 
         public async Task CancelReservation(int id, int eid)
         {
@@ -404,6 +503,98 @@ namespace reservation_system_be.Services.AdminReservationServices
             customerReservation.Reservation.EmployeeId = eid;
 
             await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
+
+            var notification = new Notification
+            {
+                Type = "Reservation",
+                Title = "Reservation Cancelled",
+                Description = "Your reservation has been cancelled. Please contact us for further details.",
+                Generated_DateTime = DateTime.Now,
+                CustomerReservationId = customerReservation.Id
+            };
+            await _notificationService.AddNotification(notification);
+
+            MailRequest mailRequest = new MailRequest
+            {
+                ToEmail = customerReservation.Customer.Email,
+                Subject = "Reservation Cancelled",
+                Body = CancelMailBody(customerReservation.Id)
+            };
+            await _emailService.SendEmailAsync(mailRequest);
         }
+
+        private string CancelMailBody(int reservationId)
+        {
+            string contactLink = "http://localhost:3000/contactus";
+
+            string response = @"
+                <!DOCTYPE html>
+                <html><head><meta charset='UTF-8' /><title>Reservation Cancellation Notification</title></head>
+                <body style='width: 100%; background-color: #f4f4f4; text-align: center; padding: 20px; font-family: Arial, sans-serif;'>
+                  <div style='text-align: center; margin-bottom: 20px'>
+                    <img src='https://drive.google.com/uc?export=view&id=1wlXifh_GzGGiA43mOQ_MX06LJ6soPqXM' alt='Vehicle Hub Logo' style='width: 200px; height: auto; display: inline-block; vertical-align: middle;' />
+                  </div>
+                  <div style='background-color: #ffffff; padding: 50px 50px 10px 50px; border-radius: 10px; margin: 20px auto; max-width: 650px;'>
+                    <h1 style='color: #000000; margin: 20px 0; text-align: center; font-size: 40px;'>Reservation Cancellation</h1>
+                    <h2 style='color: #000000; text-align: center; font-size: 18px; font-weight: normal; margin-bottom: 5px;'>Reservation #" + reservationId + @"</h2>
+                    <p style='color: #888888; text-align: center; font-size: 14px; margin: 5px;'>" + DateTime.Now.ToString("MMM dd, yyyy") + @"</p>
+                    <p style='color: #000000; text-align: left; padding-top: 40px; padding-bottom: 10px;'>We regret to inform you that due to unforeseen circumstances, we have had to cancel your vehicle reservation. We understand that this news is disappointing and we sincerely apologize for any inconvenience this may cause.</p>
+                    <p style='color: #000000; text-align: left; margin: 5px 0;'>Please be assured that any deposit payment you have made will be refunded in full. Our team is working diligently to process the refund and you should receive it within the next 3-5 business days.</p>
+                    <p style='color: #000000; text-align: left; margin: 5px 0;'>We truly value your business and appreciate your understanding in this matter. If you have any questions or need further assistance, please do not hesitate to contact us.</p>
+                    <div style='text-align: center; margin: 40px auto;'>
+                      <a href='" + contactLink + @"' style='background-color: #283280; border: none; color: #fbdac6; padding: 15px 20px; text-decoration: none; border-radius: 5px; font-size: small;'>Contact Us</a>
+                    </div>
+                    <p style='color: #000000; text-align: left; margin-top: 20px;'>Once again, we apologize for any inconvenience and thank you for your understanding.</p>
+                    <p style='color: #000000; text-align: left; margin-bottom: 5px;'>Best regards,</p>
+                    <p style='color: #000000; text-align: left; margin-top: 5px;'><strong>VehicleHub Team</strong></p>
+                    <p style='padding: 10px; margin-top: 40px; text-align: center;'>Contact us: <a href='mailto:vehiclehub01@gmail.com'>vehiclehub01@gmail.com</a> | <a href='tel:+94771234567'>+94 77 123 4567</a></p>
+                  </div>
+                  <div style='text-align: center; margin-top: 20px; color: #7f7f7f;'>
+                    <p style='font-size: 12px;'><strong>All rights reserved @VehicleHub. " + DateTime.Now.Year + @"</strong></p>
+                    <p style='font-size: 12px;'>1234 Galle Road, Colombo, Sri Lanka</p>
+                  </div>
+                </body></html>
+                ";
+
+            return response;
+        }
+
+
+        public async Task<CustomerHoverDto> CustomerDetails(int id)
+        {
+            var customerReservation = await _context.CustomerReservations
+                .Include(cr => cr.Customer)
+                .FirstOrDefaultAsync(cr => cr.Id == id);
+
+            var customerHoverDto = new CustomerHoverDto
+            {
+                Id = customerReservation.Customer.Id,
+                Name = customerReservation.Customer.Name,
+                Email = customerReservation.Customer.Email,
+                Phone = customerReservation.Customer.ContactNo
+            };
+
+            return customerHoverDto;
+        }
+
+        public async Task<VehicleLogDescriptionHoverDto> GetVehicleLogDescription(int id)
+        {
+            var vehicleLog = await _context.VehicleLogs
+                .FirstOrDefaultAsync(vl => vl.Id == id);
+            if (vehicleLog == null)
+            {
+                throw new DataNotFoundException("Vehicle Log not found");
+            }
+
+            var vehicleLogDescriptionHoverDto = new VehicleLogDescriptionHoverDto
+            {
+                Id = id,
+                Description = vehicleLog.Description ?? "No description available"
+
+            };
+            return vehicleLogDescriptionHoverDto;
+        }
+
+
     }
 }

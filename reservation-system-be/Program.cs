@@ -42,16 +42,44 @@ using reservation_system_be.Services.FeedbackServices;
 using reservation_system_be.Services.InsuranceExpiryCheckService;
 using reservation_system_be.Services.VehicleMaintenanceDueService;
 using reservation_system_be.Services.CheckCustomerReservationConflictsServices;
-using reservation_system_be.Services.NewFolder;
 using Microsoft.OpenApi.Models;
+using reservation_system_be.Services.AdminNotificationServices;
+using Microsoft.Extensions.Configuration;
+using Microsoft.AspNetCore.Authentication.Google;
+using reservation_system_be.Services.BillingDetailsServices;
+using reservation_system_be.Services.CancelUncollectedReservationServices;
+using reservation_system_be.Services.OverdueVehicleReservationService;
+using reservation_system_be.Services.ReservationPendingService;
+using reservation_system_be.Services.CheckPaymentService;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using reservation_system_be.Services.GoogleService;
+using reservation_system_be.Services.FacebookService;
 
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+    .AddCookie()
+    .AddGoogle(options =>
+    {
+        options.ClientId = builder.Configuration["GoogleAuth:ClientId"];
+        options.ClientSecret = builder.Configuration["GoogleAuth:ClientSecret"];
+        options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+        options.SaveTokens = true;
+        options.CallbackPath = "/google-callback";
+    })
+    .AddFacebook(options =>
+    {
+        options.AppId = "2447475068777035";
+        options.AppSecret = "86b1a4e52e4091606c44f6f6f01dc4e0";
+    })
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
         options.TokenValidationParameters = new TokenValidationParameters
         {
@@ -64,6 +92,8 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])) // Specify the secret key
         };
     });
+
+
 
 builder.Services.AddSwaggerGen(c =>
 {
@@ -110,6 +140,11 @@ builder.Services.AddDbContext<DataContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 builder.Services.AddControllers();
+
+// Configure logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 
 builder.Services.AddControllers().AddJsonOptions(options =>
  options.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter()));
@@ -176,10 +211,15 @@ builder.Services.AddScoped<IFrontReservationServices, FrontReservationServices>(
 builder.Services.AddScoped<IFileService, FileService>();
 builder.Services.AddScoped<IVehicleFilterService, VehicleFilterService>();
 builder.Services.AddScoped<IFeedbackService, FeedbackService>();
+builder.Services.AddScoped<IAdminNotificationService, AdminNotificationService>();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IExternalLoginService, ExternalLoginService>();
+builder.Services.AddScoped<IBillingDetailsService, BillingDetailsService>();
+builder.Services.AddScoped<ICheckPaymentService, CheckPaymentService>();
+builder.Services.AddScoped<GoogleAuthService>();
+builder.Services.AddScoped<FacebookAuthService>();
 
-
-
+builder.Services.AddHttpClient();
 builder.Services.AddTransient<IEmailService, EmailService>();
 
 
@@ -195,6 +235,12 @@ builder.Services.AddHostedService<CheckCustomerReservationConflictsService>();
 // The reservation automatic cancellation service
 builder.Services.AddHostedService<ReservationPendingService>();
 
+// The uncollected reservation cancellation service
+builder.Services.AddHostedService<CancelUncollectedReservationService>();
+
+//The Overdue Vehicle Reservation Service
+builder.Services.AddHostedService<OverdueVehicleReservationService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin", builder =>
@@ -206,6 +252,7 @@ builder.Services.AddCors(options =>
 });
 
 var app = builder.Build();
+
 
 
 // Configure the HTTP request pipeline.

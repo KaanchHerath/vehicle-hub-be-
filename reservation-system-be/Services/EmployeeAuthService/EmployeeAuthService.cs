@@ -31,6 +31,46 @@ namespace reservation_system_be.Services.EmployeeAuthService
             _emailService = emailService;
             _httpContextAccessor = httpContextAccessor;
         }
+
+        private string WelcomeMail(string employeeEmail, string resetLink)
+        {
+            string response = $@"
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='UTF-8' />
+    <title>Welcome to VehicleHub</title>
+</head>
+<body style='width: 100%; background-color: #f4f4f4; text-align: center; padding: 20px; font-family: Arial, sans-serif;'>
+    <div style='width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;'>
+        <div style='background-color:#283280;color:#ffffff;padding:10px;'>
+            <h1>VehicleHub</h1>
+        </div>
+        <div style='margin:20px;text-align:left;'>
+            <img src='https://drive.google.com/uc?export=view&id=1wlXifh_GzGGiA43mOQ_MX06LJ6soPqXM' alt='Vehicle Hub Logo' style='width: 150px; height: auto; display: block; margin: auto;'/>
+            <h2 style='text-align:center;'>Welcome to Vehicle Hub!</h2>
+            <p>Thank you for working with our company. You are now an employee of Vehicle Hub.</p>
+            <p>Your default password is: <strong>NavodhVehicleHub789</strong>.</p>
+            <p>Please <a href='{resetLink}'>click here</a> and login to reset your password immediately.</p>
+            <p style='margin-top:20px;'>We appreciate your commitment and look forward to working with you.</p>
+            <p>Best regards,</p>
+            <p><strong>VehicleHub Team</strong></p>
+        </div>
+        <div style='background-color:#283280;color:#ffffff;padding:10px;margin-top:20px;text-align:center;'>
+            <p>Contact us: info@vehiclehub.com | (123) 456-7890</p>
+            <p>1234 Main St, Anytown, USA</p>
+        </div>
+        <div style='text-align: center; margin-top: 20px; color: #7f7f7f;'>
+            <p style='font-size: 12px;'><strong>All rights reserved @VehicleHub. {DateTime.Now.Year}</strong></p>
+            <p style='font-size: 12px;'>1234 Galle Road, Colombo, Sri Lanka</p>
+        </div>
+    </div>
+</body>
+</html>";
+
+            return response;
+        }
+
         public async Task<string> Register(Employee employee)
         {
             const string defaultPassword = "NavodhVehicleHub789"; // Define a default password
@@ -55,17 +95,14 @@ namespace reservation_system_be.Services.EmployeeAuthService
 
             // Generate password reset token
             var token = GeneratePasswordResetToken(employee);
-            var resetLink = $"http://localhost:3000/reset-password?userId={employee.Id}&token={token}";
+            var resetLink = $"http://localhost:3000/admin-login";
 
 
             MailRequest mailRequest = new MailRequest
             {
                 ToEmail = employee.Email,
                 Subject = "Welcome to Vehicle Hub",
-                Body = "<h1>Welcome!</h1> <br> <p>Thank you for registering with our service. " +
-                "You are now an employee of Vehicle Hub. " +
-                "Your default password is: <strong>{NavodhVehicleHub789}</strong>. " +
-                $"Please <a href='{resetLink}'>click here</a> to reset your password immediately.</p>"
+                Body = WelcomeMail(employee.Email, resetLink)
             };
 
             await _emailService.SendEmailAsync(mailRequest);
@@ -85,7 +122,7 @@ namespace reservation_system_be.Services.EmployeeAuthService
                 {
             new Claim(ClaimTypes.Name, employee.Id.ToString())
                 }),
-                Expires = DateTime.UtcNow.AddHours(1),
+                Expires = DateTime.UtcNow.AddHours(10),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };
 
@@ -201,9 +238,32 @@ namespace reservation_system_be.Services.EmployeeAuthService
         public string Logout()
         {
             // Clear the user's session data
-            _httpContextAccessor.HttpContext?.Session.Clear();
+            var context = _httpContextAccessor.HttpContext;
+            if (context != null)
+            {
+                context.Session.Clear();
+
+                // Remove all cookies
+                foreach (var cookie in context.Request.Cookies.Keys)
+                {
+                    context.Response.Cookies.Delete(cookie);
+                }
+            }
+
             return "Logged out successfully!";
         }
 
+        public async Task DeactivateEmployee(int id)
+        {
+            var employee = await _employeeService.GetEmployeeById(id);
+            if (employee == null)
+            {
+                throw new DataNotFoundException("Customer not found");
+            }
+
+            // Set status to inactive instead of deleting the record
+            employee.Status = false;
+            await _employeeService.UpdateEmployee(id, employee);
+        }
     }
 }

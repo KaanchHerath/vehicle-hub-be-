@@ -57,7 +57,6 @@ namespace reservation_system_be.Services.EmployeeServices
                 existingEmployee.Email = employee.Email;
                 existingEmployee.Status = employee.Status;
                 existingEmployee.Address = employee.Address;
-                existingEmployee.Password = employee.Password;
                 existingEmployee.Role = employee.Role;
                 existingEmployee.ContactNo = employee.ContactNo;
                 existingEmployee.Gender = employee.Gender;
@@ -88,7 +87,10 @@ namespace reservation_system_be.Services.EmployeeServices
 
             }
 
-            
+        public async Task<Employee> GetEmployeeById(int id)
+        {
+            return await _context.Employees.FindAsync(id);
         }
+    }
     }   
 

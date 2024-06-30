@@ -25,8 +25,7 @@ namespace reservation_system_be.Models
             [JsonConverter(typeof(JsonStringEnumConverter))]
             public Status Status { get; set; } = Status.Waiting;
             [JsonIgnore]
-            public CustomerReservation? CustomerReservation { get; set; }
-            
+            public CustomerReservation? CustomerReservation { get; set; }     
             [JsonIgnore]
             public VehicleAvailability? VehicleAvailability { get; set; }
             public int NoOfDays

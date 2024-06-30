@@ -9,6 +9,7 @@ using reservation_system_be.Services.CustomerReservationService;
 using reservation_system_be.Services.CustomerServices;
 using reservation_system_be.Services.EmailServices;
 using reservation_system_be.Services.InvoiceService;
+using reservation_system_be.Services.ReservationService;
 using reservation_system_be.Services.VehicleServices;
 
 namespace reservation_system_be.Services.FrontReservationServices
@@ -21,8 +22,9 @@ namespace reservation_system_be.Services.FrontReservationServices
         private readonly ICustomerService _customerService;
         private readonly IInvoiceService _invoiceService;
         private readonly IVehicleService _vehicleService;
+        private readonly IReservationService _reservationService;
         public FrontReservationServices(DataContext context, ICustomerReservationService customerReservationService, IEmailService emailService,
-            ICustomerService customerService, IInvoiceService invoiceService, IVehicleService vehicleService)
+            ICustomerService customerService, IInvoiceService invoiceService, IVehicleService vehicleService, IReservationService reservationService)
         {
             _context = context;
             _customerReservationService = customerReservationService;
@@ -30,6 +32,7 @@ namespace reservation_system_be.Services.FrontReservationServices
             _customerService = customerService;
             _invoiceService = invoiceService;
             _vehicleService = vehicleService;
+            _reservationService = reservationService;
         }
 
         public async Task<CustomerReservation> RequestReservations(CreateCustomerReservationDto customerReservationDto)
@@ -41,38 +44,53 @@ namespace reservation_system_be.Services.FrontReservationServices
             {
                 ToEmail = cr.Customer.Email,
                 Subject = "VehicleHub - Reservation Request",
-                Body = RequestMail(cr.Vehicle.RegistrationNumber, cr.Vehicle.VehicleModel.Name, cr.Reservation.StartDate, cr.Reservation.EndDate)
+                Body = RequestMail(cr.Id, cr.Vehicle.VehicleModel.Name, cr.Vehicle.VehicleModel.VehicleMake.Name, cr.Reservation.StartDate, cr.Reservation.StartTime,cr.Reservation.EndDate, cr.Reservation.EndTime)
             };
             await _emailService.SendEmailAsync(mailRequest);
 
             return customerReservation;
         }
 
-        private string RequestMail(string registrationNumber, string carName, DateTime pickupDateTime, DateTime dropoffDateTime)
+        private string RequestMail(int reservationId, string model, string make, DateTime startDate, TimeOnly startTime, DateTime endDate, TimeOnly endTime)
         {
-            string response = "<div style=\"width:100%;background-color:#f4f4f4;text-align:center;margin:10px;padding:10px;font-family:Arial, sans-serif;\">";
-            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;\">";
-            response += "<h1>VehicleHub</h1>";
-            response += "</div>";
-            response += "<div style=\"margin:20px;text-align:left;\">";
-            response += "<img src=\"https://drive.google.com/uc?export=view&id=1S40qYUDb_f9YRAaQeQmPETz5ABYbI32p\" alt=\"Company Logo\" style=\"width:150px;height:auto;display:block;margin:auto;\"/>";
-            response += "<h2 style=\"text-align:center;\">Thank you for your request!</h2>";
-            response += "<p>We have received your request for the vehicle. Here are the details:</p>";
-            response += "<p><strong>Registration Number:</strong> " + registrationNumber + "</p>";
-            response += "<p><strong>Car Name:</strong> " + carName + "</p>";
-            response += "<p><strong>Pickup Date & Time:</strong> " + pickupDateTime + "</p>";
-            response += "<p><strong>Dropoff Date & Time:</strong> " + dropoffDateTime + "</p>";
-            response += "<p style=\"margin-top:20px;\">We appreciate your business and look forward to serving you.</p>";
-            response += "<p>Best regards,</p>";
-            response += "<p><strong>VehicleHub Team</strong></p>";
-            response += "</div>";
-            response += "<div style=\"background-color:#283280;color:#ffffff;padding:10px;margin-top:20px;text-align:center;\">";
-            response += "<p>Contact us: info@vehiclehub.com | (123) 456-7890</p>";
-            response += "<p>1234 Main St, Anytown, USA</p>";
-            response += "</div>";
-            response += "</div>";
+            string formattedPickupDateTime = startDate.ToString("dddd, MMMM dd, yyyy") + " at " + startTime.ToString("hh:mm tt");
+            string formattedDropoffDateTime = endDate.ToString("dddd, MMMM dd, yyyy") + " at " + endTime.ToString("hh:mm tt");
+            string carName = make + " " + model;
+
+            string response = @"
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset='UTF-8' />
+                    <title>Request Mail</title>
+                </head>
+                <body style='width: 100%; background-color: #f4f4f4; text-align: center; padding: 20px; font-family: Arial, sans-serif;'>
+                    <div style='text-align: center; margin-bottom: 20px'>
+                        <img src='https://drive.google.com/uc?export=view&id=1wlXifh_GzGGiA43mOQ_MX06LJ6soPqXM' alt='Vehicle Hub Logo' style='width: 200px; height: auto; display: inline-block; vertical-align: middle;' />
+                    </div>
+                    <div style='background-color: #ffffff; padding: 50px 50px 10px 50px; border-radius: 10px; margin: 20px auto; width: fit-content;'>
+                        <h1 style='color: #000000; margin: 20px 0; text-align: center; font-size: 40px;'>Request received</h1>
+                        <h2 style='color: #000000; text-align: center; font-size: 18px; font-weight: normal; margin-bottom: 5px;'>Reservation #" + reservationId + @"</h2>
+                        <p style='color: #888888; text-align: center; font-size: 14px; margin-top: 5px;'>" + DateTime.Now.ToString("MMM dd, yyyy") + @"</p>
+                        <p style='color: #000000; text-align: left; padding-top: 40px; padding-bottom: 10px;'>We have received your request for the vehicle. Here are the details:</p>
+                        <p style='color: #000000; text-align: left; margin: 5px 0'><strong>Car Name:</strong> " + carName + @"</p>
+                        <p style='color: #000000; text-align: left; margin: 5px 0'><strong>Pickup Date & Time:</strong> " + formattedPickupDateTime + @"</p>
+                        <p style='color: #000000; text-align: left; margin: 5px 0'><strong>Dropoff Date & Time:</strong> " + formattedDropoffDateTime + @"</p>
+                        <p style='color: #000000; text-align: left; margin-top: 20px;'>We appreciate your business and look forward to serving you.</p>
+                        <p style='color: #000000; text-align: left; margin-bottom: 5px;'>Best regards,</p>
+                        <p style='color: #000000; text-align: left; margin-top: 5px;'><strong>VehicleHub Team</strong></p>
+                        <p style='padding: 10px; margin-top: 40px; text-align: center;'>Contact us: <a href='mailto:vehiclehub01@gmail.com'>vehiclehub01@gmail.com</a> | <a href='tel:+94771234567'>+94 77 123 4567</a></p>
+                    </div>
+                    <div style='text-align: center; margin-top: 20px; color: #7f7f7f;'>
+                        <p style='font-size: 12px;'><strong>All rights reserved @VehicleHub. " + DateTime.Now.Year + @"</strong></p>
+                        <p style='font-size: 12px;'>1234 Galle Road, Colombo, Sri Lanka</p>
+                    </div>
+                </body>
+                </html>";
             return response;
         }
+
+
 
         public async Task<IEnumerable<RentalDto>> OngoingRentals(int id) // Customer ID
         {
@@ -115,6 +133,7 @@ namespace reservation_system_be.Services.FrontReservationServices
             var ongoingRentalSingle = new OngoingRentalSingleDto
             {
                 CustomerReservationId = customerReservation.Id,
+                VehicleId = customerReservation.Vehicle.Id,
                 ModelName = customerReservation.Vehicle.VehicleModel.Name,
                 Make = customerReservation.Vehicle.VehicleModel.VehicleMake.Name,
                 StartDate = customerReservation.Reservation.StartDate,
@@ -173,7 +192,7 @@ namespace reservation_system_be.Services.FrontReservationServices
                 var vehicleLog = await _context.VehicleLogs.FirstOrDefaultAsync(vl => vl.CustomerReservationId == id);
                 if (vehicleLog == null)
                 {
-                    throw new DataNotFoundException("No rental history found");
+                    throw new DataNotFoundException("No vehicle log found found");
                 }
                 extraKMCost = vehicleLog.ExtraKM * customerReservation.Vehicle.CostPerExtraKM;
                 penalty = vehicleLog.Penalty;
@@ -181,13 +200,17 @@ namespace reservation_system_be.Services.FrontReservationServices
                 var invoice = await _context.Invoices.Where(i => i.Type == "Final").FirstOrDefaultAsync(i => i.CustomerReservationId == id);
                 if (invoice == null)
                 {
-                    throw new DataNotFoundException("No rental history found");
+                    throw new DataNotFoundException("No final invoice found");
                 }
                 amount = invoice.Amount;
             }
             else if (customerReservation.Reservation.Status == Status.Cancelled)
             {
-                // Intentionally left blank for cancelled reservations
+                var invoice = await _context.Invoices.Where(i => i.Type == "Deposit").FirstOrDefaultAsync(i => i.CustomerReservationId == id);
+                if (invoice != null)
+                {
+                    amount = invoice.Amount;
+                }
             }
             else
             {
@@ -197,6 +220,7 @@ namespace reservation_system_be.Services.FrontReservationServices
             var rentalHistorySingle = new RentalHistorySingleDto
             {
                 CustomerReservationId = customerReservation.Id,
+                VehicleId = customerReservation.Vehicle.Id,
                 ModelName = customerReservation.Vehicle.VehicleModel.Name,
                 Make = customerReservation.Vehicle.VehicleModel.VehicleMake.Name,
                 StartDate = customerReservation.Reservation.StartDate,
@@ -275,5 +299,15 @@ namespace reservation_system_be.Services.FrontReservationServices
 
             return detailCarDto;
         }
+
+        public async Task CancelReservation(int id)
+        {
+            var customerReservation = await _customerReservationService.GetCustomerReservation(id);
+
+            customerReservation.Reservation.Status = Status.Cancelled;
+
+            await _reservationService.UpdateReservation(customerReservation.Reservation.Id, customerReservation.Reservation);
+        }
     }
 }
+

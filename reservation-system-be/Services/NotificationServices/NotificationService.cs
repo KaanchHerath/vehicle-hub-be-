@@ -22,6 +22,8 @@ namespace reservation_system_be.Services.NotificationServices
                           customerReservation => customerReservation.Id,
                           (notification, customerReservation) => new { notification, customerReservation })
                     .Where(nrc => nrc.customerReservation.CustomerId == uid)
+                    .OrderByDescending(nrc => nrc.notification.Generated_DateTime)
+                    .Take(20)
                     .Select(nrc => nrc.notification)
                     .ToListAsync();
 
@@ -39,6 +41,7 @@ namespace reservation_system_be.Services.NotificationServices
             {
                 var notifications = await _context.Notifications
                                                   .OrderByDescending(n => n.Generated_DateTime)
+                                                  .Take(20)
                                                   .ToListAsync();
                 return notifications;
             }
@@ -81,6 +84,30 @@ namespace reservation_system_be.Services.NotificationServices
                 throw new Exception("Error adding notification.", ex);
             }
         }
+
+        public async Task<bool> MarkAsRead(int notificationId)
+        {
+            try
+            {
+                var notification = await _context.Notifications.FindAsync(notificationId);
+
+                if (notification == null)
+                {
+                    throw new Exception("Notification not found.");
+                }
+
+                notification.IsRead = true;
+                _context.Notifications.Update(notification);
+                await _context.SaveChangesAsync();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error updating notification.", ex);
+            }
+        }
+
 
     }
 }
